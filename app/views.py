@@ -43,38 +43,8 @@ def home():
 	return
 
 
-@app.route('/generate/single')
-def generate_single():
-	'''
-	renders 'generate.html'
-
-	GET: The respective pyechonest/spotipy helper(s) will be called, 
-	and produce a table (iter obj) of artists/and or songs  
-
-	POST: Take form info (which should now be a collection of songs/artists), 
-	and feed it into the pyechonest helper that will create a catalog, 
-	which feeds into a playlist.
-	return redirect(url_for('results.html')) with newly formed playlist.
-	'''
-
-
-@app.route('/generate/group')
-def generate_single():
-	'''
-	renders 'generate.html'
-
-	GET: The respective pyechonest/spotipy helper(s) will be called, 
-	and produce a table (iter obj) of artists/and or songs  
-
-	POST: Take form info (which should now be a collection of songs/artists), 
-	and feed it into the pyechonest helper that will create a catalog, 
-	which feeds into a playlist.
-	return redirect(url_for('results.html')) with newly formed playlist.
-	'''
-
-
-@app.route('/generate/group')
-def generate_single():
+@app.route('/generate')
+def generate():
 	'''
 	renders 'generate.html'
 
