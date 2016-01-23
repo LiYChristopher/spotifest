@@ -1,10 +1,13 @@
-from app import app
+from festify import festify
 from flask import render_template, url_for
+import requests
+import spotipy
+import spotipy.util
 
 
-@app.route('/login')
+@festify.route('/login')
 def oauth_login():
-	''' 
+	'''
 	renders 'login.html'
 
 	GET: A page that prompts user to submit login details,
@@ -13,10 +16,29 @@ def oauth_login():
 	POST: If login is valid, redirect to url_for('home'), else
 	flash an error -- "Your spotiy credentials are invalid."
 	'''
-	return
+	with open('credentials.txt') as cred:
+		CLIENT_ID = str(cred.readline().split('>')[1]).replace('\n', '')
+		CLIENT_SECRET = str(cred.readline().split('>')[1]).replace('\n', '')
+		REDIRECT_URI = str(cred.readline().split('>')[1]).replace('\n', '')
+
+	# utility of spotipy.oauth2.SpotifyOauth
+	# let's us store everything in one container, as well as gives us the authorize URL.
+	oauth = spotipy.oauth2.SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET,
+										redirect_uri=REDIRECT_URI, scope='playlist-modify-public')
+
+	# but since the above doesn't build the actual URL for us, we have to do it ourselves
+	# through requests library.
+	payload = {'client_id': oauth.client_id, 'client_secret': oauth.client_secret,
+				'response_type': 'code', 'redirect_uri': oauth.redirect_uri,
+				'scope': oauth.scope}
+
+	# pass the URL through as a *arg to render template
+	r = requests.get(oauth.OAUTH_AUTHORIZE_URL, params=payload)
+	return render_template('login.html', oauth=r.url)
 
 
-@app.route('/home')
+@festify.route('/')
+@festify.route('/home')
 def home():
 	'''
 	renders 'home.html'
@@ -40,10 +62,10 @@ def home():
 
 	return redirect(url_for('results.html')) with newly formed playlist.
 	'''
-	return
+	return 'Hello world.'
 
 
-@app.route('/generate')
+@festify.route('/generate')
 def generate():
 	'''
 	renders 'generate.html'
@@ -59,7 +81,7 @@ def generate():
 	'''
 
 
-@app.route('/results')
+@festify.route('/results')
 def results():
 	'''
 	renders 'login.html'
@@ -71,7 +93,7 @@ def results():
 	the desktop player. (see spotipy API)
 	'''
 
-@app.errorhandler(404)
+@festify.errorhandler(404)
 def not_found(e):
 	'''
 	renders '404.html'

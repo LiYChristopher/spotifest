@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	{% if oauth%}
+		<p><a href="{{ oauth }}">Login</a></p>
+	{% endif %}
+{% endblock %}
