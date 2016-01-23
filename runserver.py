@@ -1,3 +1,5 @@
-from festify import festify
+from library import create_app
 
-festify.run(debug=True)
+app = create_app()
+
+app.run(debug=True)
