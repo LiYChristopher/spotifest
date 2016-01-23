@@ -1,20 +1,19 @@
 <!DOCTYPE html>
+
 <html>
 	<head>
 	</head>
 
-<body>
-
+	<body>
 	{% with messages = get_flashed_messages() %}
 		{% if messages %}
-			{% for message in messages%}
-				{% message %}
+			{% for message in messages %}
+				{{ message }}
 			{% endfor %}
 		{% endif %}
 	{% endwith %}
 
-{%block content%}{% endblock %}
-
-</body>
-
+	{% block scripts %}{% endblock %}
+	{% block content %}{% endblock %}
+	</body>
 </html>
