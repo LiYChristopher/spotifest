@@ -1,8 +1,10 @@
 from library import app
 from library.app import create_app
+from library.app import spotify_connect
 from config import BaseConfig
 
 from flask import render_template, request, redirect, url_for
+from flask import session
 import spotipy
 import spotipy.util as util
 import os
@@ -30,17 +32,21 @@ def login():
 
     form
     '''
-    # utility of spotify.oauth2.SpotifyOauth
-    # lets us store everythin in 1 container, as well as give us the auth URL
-    oauth = spotipy.oauth2.SpotifyOAuth(client_id=BaseConfig.CLIENT_ID,
-                                        client_secret=BaseConfig.CLIENT_SECRET,
-                                        redirect_uri=BaseConfig.REDIRECT_URI,
-                                        scope='playlist-modify-public')
-
-    # above doesn't build the actual URL, we do it via the requests library
-    payload = {'client_id': oauth.client_id, 'client_secret': oauth.client_id,
-                'response_type': 'code', 'redirect_uri': oauth.redirect_uri,
-                'scope': oauth.scope}
-
+    oauth = spotify_connect(app)
+    payload = {'client_id': oauth.client_id, 
+            'response_type': 'code', 'redirect_uri': oauth.redirect_uri,
+            'scope': oauth.scope}
     r = requests.get(oauth.OAUTH_AUTHORIZE_URL, params=payload)
     return render_template('login.html', oauth=r.url)
+
+
+@app.route('/home', methods=['POST', 'GET'])
+def home():
+    oauth = spotify_connect(app)
+    response = oauth.get_access_token(request.args['code'])
+    token = response['access_token']
+
+    s = spotipy.Spotify(auth=token)
+    offset = 0
+    albums = s.current_user_saved_tracks(limit=50, offset=offset)
+    return render_template('home.html', albums=albums['items'])
