@@ -1,15 +1,6 @@
-WTF_CSRF_ENABLED = True
-SECRET_KEY = 'default_key_to_change'
+#config.py
 
-import re
-
-class DefaultConfig(object):
-
-	creds = {}
-	with open('credentials.txt', 'r') as cred:
-		for i in cred.readlines():
-			read = re.search(r'(\w+):(.+)', i,re.I)
-			creds[read.group(0)] = read.groups(1)
-	print creds
-	def __init__(self):
-		pass
+class BaseConfig(object):
+    CLIENT_ID = 'ddcd27ddd412424697d8af8cf3a5bc17'
+    CLIENT_SECRET = 'adc6a0f42ece438798e3e29aad9cff95'
+    REDIRECT_URI = 'http://www.google.com/'
