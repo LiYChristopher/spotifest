@@ -19,7 +19,7 @@ def create_app(config=None, app_name=None, blueprints=None):
 def spotify_connect(app, config=None, scope='playlist-modify-public'):
     """ Connect to Spotify using spotipy & our app config credentials"""
     # all creds in 1 container EXCEPT scope (to be added later)
-    spotipy.oauth2.SpotifyOAuth(client_id=config.CLIENT_ID,
+    oauth = spotipy.oauth2.SpotifyOAuth(client_id=config.CLIENT_ID,
                                 client_secret=config.CLIENT_SECRET,
                                 redirect_uri=config.REDIRECT_URI,
                                 scope=scope)
