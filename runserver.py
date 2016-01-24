@@ -1,5 +1,4 @@
 from library import create_app
-
-app = create_app()
+from library import app
 
 app.run(debug=True)

@@ -1,4 +1,4 @@
-
+from library import app
 from library.app import create_app
 from config import BaseConfig
 
@@ -8,7 +8,6 @@ import spotipy.util as util
 import os
 import requests
 
-app = create_app()
 
 @app.route('/')
 def auth_check():
@@ -33,9 +32,9 @@ def login():
     '''
     # utility of spotify.oauth2.SpotifyOauth
     # lets us store everythin in 1 container, as well as give us the auth URL
-    oauth = spotipy.oauth.SpotifyOAuth(client_id=BaseConfig.CLIENT_ID,
+    oauth = spotipy.oauth2.SpotifyOAuth(client_id=BaseConfig.CLIENT_ID,
                                         client_secret=BaseConfig.CLIENT_SECRET,
-                                        redirect_uri=Baseconfig.REDIRECT_URI,
+                                        redirect_uri=BaseConfig.REDIRECT_URI,
                                         scope='playlist-modify-public')
 
     # above doesn't build the actual URL, we do it via the requests library
@@ -44,5 +43,4 @@ def login():
                 'scope': oauth.scope}
 
     r = requests.get(oauth.OAUTH_AUTHORIZE_URL, params=payload)
-    return r.url
-    pass
+    return render_template('login.html', oauth=r.url)
