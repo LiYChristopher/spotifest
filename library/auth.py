@@ -15,12 +15,13 @@ import requests
 oauth = spotify_connect(app, scope=['user-library-read', 'playlist-read-collaborative',
                                 'user-follow-read', 'playlist-modify-public'])
 
-
+"""
 @login_manager.needs_refresh_handler
 def refresh_token():
     ''' Manages exchange of refresh_token for a new access_token, helper function
-    that's called in .login()
+    thats called in .login() 
     '''
+
     if 'logged_in' in session:
         if session['logged_in'] is True:
             if 'refresh' in session and 'token' in session:
@@ -40,7 +41,7 @@ def refresh_token():
         session['logged_in'] = False
         return redirect(url_for('login'))
     return
-
+"""
 
 @app.route('/login', methods=['POST', 'GET'])
 @app.route('/', methods=['POST', 'GET'])
@@ -70,8 +71,8 @@ def home():
         session['refresh'] = response['refresh_token']
         session['logged_in'] = True
     else:
-        print 'refresh??'
-        refresh_token()
+        pass
+        #refresh_token()
     s = spotipy.Spotify(auth=session['token'])
     offset = 0
     albums = s.current_user_saved_tracks(limit=50, offset=offset)
