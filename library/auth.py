@@ -16,25 +16,29 @@ oauth = spotify_connect(app, scope=['user-library-read', 'playlist-read-collabor
                                 'user-follow-read', 'playlist-modify-public'])
 
 
+@login_manager.needs_refresh_handler
 def refresh_token():
     ''' Manages exchange of refresh_token for a new access_token, helper function
     that's called in .login()
     '''
-    if session['logged_in'] is True:
-        if 'refresh' in session and 'token' in session:
-            re_auth = base64.b64encode(oauth.client_id + ':' + oauth.client_secret)
-            headers = {'Authorization': 'Basic {}'.format(str(re_auth))}
-            payload = {'grant_type': 'refresh_token',
-                       'refresh_token': session['refresh']}
-            r = requests.post(oauth.OAUTH_TOKEN_URL, data=payload, headers=headers)
-            if 'error' in  r.json():
-                del session['token']
-                del session['refresh']
-                session['logged_in'] = False
-                return redirect(url_for('login'))
-            session['token'] = r.json()['access_token']
+    if 'logged_in' in session:
+        if session['logged_in'] is True:
+            if 'refresh' in session and 'token' in session:
+                re_auth = base64.b64encode(oauth.client_id + ':' + oauth.client_secret)
+                headers = {'Authorization': 'Basic {}'.format(str(re_auth))}
+                payload = {'grant_type': 'refresh_token',
+                           'refresh_token': session['refresh']}
+                r = requests.post(oauth.OAUTH_TOKEN_URL, data=payload, headers=headers)
+                if 'error' in  r.json():
+                    del session['token']
+                    del session['refresh']
+                    session['logged_in'] = False
+                    return redirect(url_for('login'))
+                session['token'] = r.json()['access_token']
     else:
-        print 'No session refresh.'
+        print session.__dict__
+        session['logged_in'] = False
+        return redirect(url_for('login'))
     return
 
 
@@ -66,6 +70,7 @@ def home():
         session['refresh'] = response['refresh_token']
         session['logged_in'] = True
     else:
+        print 'refresh??'
         refresh_token()
     s = spotipy.Spotify(auth=session['token'])
     offset = 0
