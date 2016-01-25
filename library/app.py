@@ -17,7 +17,7 @@ def create_app(config=None, app_name=None, blueprints=None):
     return app
 
 
-def spotify_connect(app, config=None, scope='playlist-modify-public'):
+def spotify_connect(app, config=None, scope=''):
     ''' Connect to Spotify using spotipy & our app config credentials'. '''
 
     oauth = spotipy.oauth2.SpotifyOAuth(client_id=BaseConfig.CLIENT_ID,
