@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#Mac/Linux
+.DS_Store
+
 # C extensions
 *.so
 
@@ -33,6 +36,9 @@ var/
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+
+# creds
+credentials.txt
 
 # Unit test / coverage reports
 htmlcov/

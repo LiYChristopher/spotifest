@@ -1,5 +1,5 @@
 #config.py
-
+SECRET_KEY = 'this_is_a_secret'
 
 class BaseConfig(object):
 
