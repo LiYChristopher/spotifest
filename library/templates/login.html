@@ -1,7 +1,17 @@
 {% extends 'base.html' %}
 
+
 {% block content %}
-	{% if oauth%}
-		<p><a href="{{ oauth }}">Login</a></p>
-	{% endif %}
+<div class="inner cover">
+    <h1 class="cover-heading">Let's start your ideal Festival</h1>
+    <p class="lead">Festify will create the perfect festival base on the musical taste of the awesome people that will
+        enjoy this musical experience.</p>
+    <br>
+    <p class="lead">
+    {% if oauth%}
+      <a href="{{ oauth }}" class="btn btn-success btn-lg">Login</a>
+    {% endif %}
+    </p>
+</div>
+
 {% endblock %}
