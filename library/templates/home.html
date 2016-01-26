@@ -1,14 +1,35 @@
 {% extends 'base.html' %}
 
-{% block content %}
 
-	<p> Redirect to here. </p>
+{% block login %}
 
-	{% if albums %}
-		{% for album in albums %}
-			<p>{{ album['track']['name'] }} - {{ album['track']['album']['name'] }}</p><b>
-			
-		{% endfor %}
-	{% endif %}
+    {% if login == false %}
+    <div class="inner cover">
+            <h1 class="cover-heading">Let's start your ideal Festival</h1>
+            <p class="lead">Festify will create the perfect festival base on the musical taste of the awesome people that will
+                enjoy this musical experience.</p>
+            <br>
+            <p class="lead">
+            <a href="{{ oauth }}" class="btn btn-success btn-lg">Login</a>
+
+    </div>
+    </p>
+
+
+    {% endif %}
+{% endblock %}
+
+
+{% block lists %}
+
+    {% if albums %}
+        {% for album in albums %}
+            <p><div class="inner cover">
+                These are your favourite tracks.
+            <p>{{ album['track']['name'] }} - {{ album['track']['album']['name'] }}</p>
+            </div><b>
+
+        {% endfor %}
+    {% endif %}
 
 {% endblock %}
