@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	{% if followed %}
+		{% for f in followed %}
+			<p>{{ f['name'] }}</p><b>
+			
+		{% endfor %}
+	{% endif %}
+{% endblock %}

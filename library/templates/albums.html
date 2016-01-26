@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	{% if albums %}
+		{% for album in albums %}
+			<p>{{ album['track']['name'] }} - {{ album['track']['album']['name'] }}</p><b>
+			
+		{% endfor %}
+	{% endif %}
+{% endblock %}
