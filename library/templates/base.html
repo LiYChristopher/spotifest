@@ -15,7 +15,7 @@
 
   </head>
 
-	<body>
+    <body>
         <div class="site-wrapper">
 
             <div class="site-wrapper-inner">
@@ -35,7 +35,13 @@
                             </nav>
                         </div>
                     </div>
-                {% block content %}
+                {% block login %}
+
+                {% endblock %}
+
+                <p>
+
+                {% block lists %}
 
                 {% endblock %}
 
@@ -61,14 +67,14 @@
     <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
 
 
-	{% with messages = get_flashed_messages() %}
-		{% if messages %}
-			{% for message in messages %}
-				{{ message }}
-			{% endfor %}
-		{% endif %}
-	{% endwith %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-	{% block scripts %}{% endblock %}
-	</body>
+    {% block scripts %}{% endblock %}
+    </body>
 </html>
