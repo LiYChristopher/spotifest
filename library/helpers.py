@@ -9,6 +9,7 @@ import random
 
 config.ECHO_NEST_API_KEY = "SNRNTTK9UXTWYCMBH"
 
+
 def get_user_preferences(spotipy):
     """
     wrapper for all the user preference helper functions,
@@ -27,8 +28,9 @@ def get_user_saved_tracks(spotipy):
     """
     return a set with the saved tracks.
     for now it will return a set with only the artists
+
     """
-    offset = 0 # this set will be deleted if later we returns tracks instead of artists
+    offset = 0  # this set will be deleted if later we returns tracks instead of artists
     while True:
         albums = spotipy.current_user_saved_tracks(limit=50, offset=offset)
         if not albums['items']:
@@ -65,6 +67,7 @@ def get_user_playlists(spotipy):
             tracks = spotipy.next(tracks)
     return set(playlist_artists_list)
 
+
 def get_user_followed(spotipy):
     """
     return a set with artists followed by artist.
@@ -73,6 +76,7 @@ def get_user_followed(spotipy):
     for artist in followed['artists']['items']:
         artists = {artist['name'] for artist in followed['artists']['items']}
     return artists
+
 
 def create_playlist(spotipy, user_id, name_playlist):
     """
@@ -151,4 +155,3 @@ def get_songs_id(spotipy, playlist):
         spotify_id = spotipy.search(q, type='track', limit=1)['tracks']['items'][0]['id']
         songs_id.append(spotify_id)
     return songs_id
-
