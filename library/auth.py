@@ -118,6 +118,7 @@ def home(config=BaseConfig, scope='user-library-read'):
                 new_user = User(user_id, token, response['refresh_token'])
                 login_user(new_user)
             current_user = User.users[session.get('user_id')].access
+            print current_user
             s = spotipy.Spotify(auth=current_user)
             offset = 0
             albums = s.current_user_saved_tracks(limit=50, offset=offset)

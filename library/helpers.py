@@ -1,6 +1,22 @@
 import spotipy
 import spotipy.util as util
 
+s = spotipy.Spotify(auth='BQBqDSRgrEgLXGxrrBI6xPzWkBPgkoV0-VKi1hneSYaikxxZV2vZf3KyVsfSJ1uFLAj0cKggqA4EHkJWkFMvscXQG4WP6-3bvgWg_JSU1sx-UWNricjDe2XQwOQmPVXJKa3XKnOL6C0i5qu-uIT2TKY4Hue0zBV4E_7__I6XLMQLl_Olrz_ix5XaBPMp_Lt6NewYW2RbZOeQNk4')
+
+
+def get_user_preferences(spotipy):
+    """
+    wrapper for all the user preference helper functions,
+    returning a single set with all artists listened to from a user.
+    """
+    # artists from saved tracks
+    from_saved_tracks = get_user_saved_tracks(spotipy)
+    # artists form user playlists (public)
+    from_user_playlists = get_user_playlists(spotipy)
+    # artists from followed artists
+    from_followed_artists = get_user_followed(spotipy)
+    return from_saved_tracks | from_user_playlists | from_followed_artists
+
 
 def get_user_saved_tracks(spotipy):
     """
@@ -46,6 +62,15 @@ def get_user_playlists(spotipy):
             tracks = spotipy.next(tracks)
     return set(playlist_artists_list)
 
+def get_user_followed(spotipy):
+    """
+    return a set with artists followed by artist.
+    """
+    artists = set()
+    followed = spotipy.current_user_followed_artists()
+    for artist in followed['artists']['items']:
+        artists.add(artist['name'])
+    return artists
 
 def create_playlist(spotipy, user_id, name_playlist):
     """
@@ -78,3 +103,5 @@ def get_id_from_playlist(spotipy, name_playlist):
         if playlist['name'] == name_playlist:
             return playlist['id']
     return 'Could not find id of new playlist'
+
+print get_user_preferences(s)
