@@ -8,7 +8,6 @@ def get_user_saved_tracks(spotipy):
     for now it will return a set with only the artists
     """
     offset = 0
-    tracks = set()
     artists = set()  # this set will be deleted if later we returns tracks instead of artists
     while True:
         albums = spotipy.current_user_saved_tracks(limit=50, offset=offset)
@@ -16,7 +15,6 @@ def get_user_saved_tracks(spotipy):
             break
         for item in albums['items']:
             track = item['track']
-            tracks.add(track['name'])
             artists.add(track['artists'][0]['name'])
         offset += len(albums['items'])
     return artists
@@ -36,16 +34,16 @@ def get_user_playlists(spotipy):
             playlist_artists_list.append(track['artists'][0]['name'])
 
     playlist_artists_list = []
-    playlist_artists = set()
     offset = 0
     user_id = spotipy.current_user()['id']
     playlists = spotipy.user_playlists(user_id)
     for playlist in playlists['items']:
-        results = spotipy.user_playlist(user_id, playlist['id'], fields="tracks,next")
+        owner = playlist['owner']['id']
+        results = spotipy.user_playlist(owner, playlist['id'], fields="tracks,next")
         tracks = results['tracks']
         show_tracks(tracks)
         while tracks['next']:
-            tracks = sp.next(tracks)
+            tracks = spotipy.next(tracks)
     return set(playlist_artists_list)
 
 
