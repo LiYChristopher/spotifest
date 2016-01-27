@@ -96,7 +96,7 @@ def add_songs_to_playlist(spotipy, user_id, playlist_id, id_songs):
     print 'track added to playlist'
 
 
-def get_id_from_playlist(spotipy, name_playlist):
+def get_id_from_playlist(spotipy, user_id, name_playlist):
     """
     function that return the id of a playlist
     providing the id
@@ -139,4 +139,14 @@ def seed_playlist(catalog):
     pl = playlist.static(type='artist-radio', seed_catalog=catalog, results=50)
     catalog.delete()
     return pl
+
+
+def get_songs_id(spotipy, song_names):
+    """
+    get a list of sgons names and return list of songs ids
+    """
+    songs_id = []
+    for item in song_names:
+        songs_id.append(spotipy.search(item, type='track')['tracks']['items'][0]['uri'])
+    return songs_id
 

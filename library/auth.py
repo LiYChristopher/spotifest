@@ -11,7 +11,7 @@ import spotipy
 import spotipy.util as util
 import base64
 import requests
-
+import helpers
 
 def oauth_prep(config=None, scope=['user-library-read']):
     ''' Connect to Spotify using spotipy & our app config credentials.
@@ -131,4 +131,12 @@ def home(config=BaseConfig, scope='user-library-read'):
         artists = get_user_preferences(s)
         catalog = random_catalog(artists)
         playlist = seed_playlist(catalog)
+        songs_names = []
+        user_id = s.me()['id']
+        for item in playlist:
+            songs_names.append(item.title)
+        songs_id = helpers.get_songs_id(s, songs_names)
+        helpers.create_playlist(s, user_id, 'Festify Test')
+        id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
+        helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
         return render_template('results.html', playlist=playlist)
