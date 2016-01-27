@@ -28,15 +28,13 @@ def get_user_saved_tracks(spotipy):
     return a set with the saved tracks.
     for now it will return a set with only the artists
     """
-    offset = 0
-    artists = set()  # this set will be deleted if later we returns tracks instead of artists
+    offset = 0 # this set will be deleted if later we returns tracks instead of artists
     while True:
         albums = spotipy.current_user_saved_tracks(limit=50, offset=offset)
         if not albums['items']:
             break
-        for item in albums['items']:
-            track = item['track']
-            artists.add(track['artists'][0]['name'])
+        artists = {item['track']['artists'][0]['name']
+                    for item in albums['items']}
         offset += len(albums['items'])
     return artists
 
@@ -71,10 +69,9 @@ def get_user_followed(spotipy):
     """
     return a set with artists followed by artist.
     """
-    artists = set()
     followed = spotipy.current_user_followed_artists()
     for artist in followed['artists']['items']:
-        artists.add(artist['name'])
+        artists = {artist['name'] for artist in followed['artists']['items']}
     return artists
 
 def create_playlist(spotipy, user_id, name_playlist):
@@ -141,12 +138,17 @@ def seed_playlist(catalog):
     return pl
 
 
-def get_songs_id(spotipy, song_names):
+def get_songs_id(spotipy, playlist):
     """
     get a list of sgons names and return list of songs ids
     """
     songs_id = []
-    for item in song_names:
-        songs_id.append(spotipy.search(item, type='track')['tracks']['items'][0]['uri'])
+    for item in playlist:
+        q = "track:{} artist:{}".format(unicode(item.title), unicode(item.artist_name))
+        result = spotipy.search(q, type='track', limit=1)
+        if not result['tracks'].get('items'):
+            continue
+        spotify_id = spotipy.search(q, type='track', limit=1)['tracks']['items'][0]['id']
+        songs_id.append(spotify_id)
     return songs_id
 

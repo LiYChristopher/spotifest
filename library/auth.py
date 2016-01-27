@@ -131,11 +131,8 @@ def home(config=BaseConfig, scope='user-library-read'):
         artists = get_user_preferences(s)
         catalog = random_catalog(artists)
         playlist = seed_playlist(catalog)
-        songs_names = []
         user_id = s.me()['id']
-        for item in playlist:
-            songs_names.append(item.title)
-        songs_id = helpers.get_songs_id(s, songs_names)
+        songs_id = helpers.get_songs_id(s, playlist)
         helpers.create_playlist(s, user_id, 'Festify Test')
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
         helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
