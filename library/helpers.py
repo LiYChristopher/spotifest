@@ -1,6 +1,13 @@
 import spotipy
 import spotipy.util as util
 
+from pyechonest import config
+from pyechonest import playlist
+from pyechonest.catalog import Catalog
+
+import random
+
+config.ECHO_NEST_API_KEY = "SNRNTTK9UXTWYCMBH"
 
 def get_user_preferences(spotipy):
     """
@@ -101,4 +108,35 @@ def get_id_from_playlist(spotipy, name_playlist):
         if playlist['name'] == name_playlist:
             return playlist['id']
     return 'Could not find id of new playlist'
+
+
+def insert_to_catalog(catalog, item):
+    ready = process_to_item(item)
+    ticket = catalog.update(ready)
+    return ticket
+
+
+def process_to_item(artist):
+    ''' Converts artist or song object into a formatted
+    item to be inserted into a Catalog object.'''
+    item = [{}]
+    item[0]['action'] = 'update'
+    item[0]['item'] = {}
+    item[0]['item']['artist_name'] = artist
+    return item
+
+
+def random_catalog(artists, limit=15):
+    catalog = Catalog('your_catalog', 'general')
+    artists = list(artists)
+    for _ in xrange(limit):
+        choice = random.choice(artists)
+        insert_to_catalog(catalog, choice)
+    return catalog
+
+
+def seed_playlist(catalog):
+    pl = playlist.static(type='artist-radio', seed_catalog=catalog, results=50)
+    catalog.delete()
+    return pl
 

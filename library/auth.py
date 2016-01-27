@@ -1,4 +1,6 @@
 from library.app import app, login_manager
+from library.helpers import get_user_preferences
+from library.helpers import random_catalog, seed_playlist
 from config import BaseConfig
 
 from flask.ext.login import login_user
@@ -123,3 +125,10 @@ def home(config=BaseConfig, scope='user-library-read'):
             albums = s.current_user_saved_tracks(limit=50, offset=offset)
             return render_template('home.html', albums=albums['items'],
                                     login=True)
+    if request.method == 'POST':
+        current_user = User.users[session.get('user_id')].access
+        s = spotipy.Spotify(auth=current_user)
+        artists = get_user_preferences(s)
+        catalog = random_catalog(artists)
+        playlist = seed_playlist(catalog)
+        return render_template('results.html', playlist=playlist)
