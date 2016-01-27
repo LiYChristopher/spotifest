@@ -1,8 +1,6 @@
 import spotipy
 import spotipy.util as util
 
-s = spotipy.Spotify(auth='BQBqDSRgrEgLXGxrrBI6xPzWkBPgkoV0-VKi1hneSYaikxxZV2vZf3KyVsfSJ1uFLAj0cKggqA4EHkJWkFMvscXQG4WP6-3bvgWg_JSU1sx-UWNricjDe2XQwOQmPVXJKa3XKnOL6C0i5qu-uIT2TKY4Hue0zBV4E_7__I6XLMQLl_Olrz_ix5XaBPMp_Lt6NewYW2RbZOeQNk4')
-
 
 def get_user_preferences(spotipy):
     """
@@ -104,4 +102,3 @@ def get_id_from_playlist(spotipy, name_playlist):
             return playlist['id']
     return 'Could not find id of new playlist'
 
-print get_user_preferences(s)
