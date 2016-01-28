@@ -13,6 +13,7 @@ import base64
 import requests
 import helpers
 
+
 def oauth_prep(config=None, scope=['user-library-read']):
     ''' Connect to Spotify using spotipy & our app config credentials.
     'scope' should be a list. Multiple scopes will be processed below. '''
@@ -36,7 +37,7 @@ class User(UserMixin):
 
     def __init__(self, spotify_id, access_token, refresh_token):
         self.id = unicode(spotify_id)
-        self.access = access_token 
+        self.access = access_token
         self.refresh = refresh_token
         self.users[self.id] = self
 
@@ -128,10 +129,10 @@ def home(config=BaseConfig, scope='user-library-read'):
     if request.method == 'POST':
         current_user = User.users[session.get('user_id')].access
         s = spotipy.Spotify(auth=current_user)
+        user_id = s.me()['id']
         artists = get_user_preferences(s)
         catalog = random_catalog(artists)
         playlist = seed_playlist(catalog)
-        user_id = s.me()['id']
         songs_id = helpers.get_songs_id(s, playlist)
         helpers.create_playlist(s, user_id, 'Festify Test')
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
