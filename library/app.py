@@ -1,5 +1,6 @@
 #creates the app and can include a config.py
 from flask import Flask
+from celery import Celery
 from flask.ext.login import LoginManager
 
 def create_app(config=None, app_name=None, blueprints=None):
@@ -7,6 +8,10 @@ def create_app(config=None, app_name=None, blueprints=None):
     return app
 
 app = create_app()
+app.config.from_object('config')
+
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
 
 login_manager = LoginManager()
 login_manager.init_app(app)

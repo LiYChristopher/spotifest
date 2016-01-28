@@ -1,4 +1,4 @@
-from library.app import app, login_manager
+from library.app import app, celery, login_manager
 from library.helpers import get_user_preferences
 from library.helpers import random_catalog, seed_playlist
 from config import BaseConfig
@@ -7,6 +7,7 @@ from flask.ext.login import login_user
 from flask.ext.login import UserMixin
 from flask import render_template, request, redirect, url_for
 from flask import session
+import redis
 import spotipy
 import spotipy.util as util
 import base64
@@ -29,6 +30,12 @@ scope = ['user-library-read', 'playlist-read-collaborative',
          'user-follow-read', 'playlist-modify-public']
 
 oauth = oauth_prep(BaseConfig, scope)
+
+@celery.task
+def convert_to_spotify(s, playlist, offset):
+    #with app.test_request_context('/home'):
+    print 'running task ...'
+    return helpers.get_songs_id(s, playlist, offset)
 
 
 class User(UserMixin):
@@ -107,6 +114,7 @@ def home(config=BaseConfig, scope='user-library-read'):
 
     render home.html
     '''
+
     if request.method == 'GET':
         if not 'code' in request.args:
             auth_url = login()
@@ -121,6 +129,7 @@ def home(config=BaseConfig, scope='user-library-read'):
                 new_user = User(user_id, token, response['refresh_token'])
                 login_user(new_user)
             current_user = User.users[session.get('user_id')].access
+
             s = spotipy.Spotify(auth=current_user)
             offset = 0
             albums = s.current_user_saved_tracks(limit=50, offset=offset)
@@ -133,7 +142,25 @@ def home(config=BaseConfig, scope='user-library-read'):
         artists = get_user_preferences(s)
         catalog = random_catalog(artists)
         playlist = seed_playlist(catalog)
-        songs_id = helpers.get_songs_id(s, playlist)
+
+        # testing task queue
+        task_ids = []
+        for set_of_ids in xrange(10, 60, 10):
+            task = convert_to_spotify.apply_async(args=[s, playlist, set_of_ids])
+            print "adding {} to queue.".format(task.task_id)
+            task_ids.append(task.task_id)
+        songs_id = []
+        while task_ids:
+            for t in task_ids:
+                cur_task = convert_to_spotify.AsyncResult(t)
+                if cur_task.state == 'SUCCESS':
+                    print "TASK RESULT", convert_to_spotify.AsyncResult(t).result
+                    result = convert_to_spotify.AsyncResult(t).result
+                    task_ids.remove(t)
+                    songs_id += result
+                else:
+                    continue
+
         helpers.create_playlist(s, user_id, 'Festify Test')
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
         helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)

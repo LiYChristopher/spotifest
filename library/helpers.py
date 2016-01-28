@@ -142,13 +142,14 @@ def seed_playlist(catalog):
     return pl
 
 
-def get_songs_id(spotipy, playlist):
+def get_songs_id(spotipy, playlist, offset):
     """
     get a list of sgons names and return list of songs ids
     """
     songs_id = []
-    for item in playlist:
-        q = "track:{} artist:{}".format(unicode(item.title), unicode(item.artist_name))
+    for item in playlist[offset:offset+10]:
+        q = "track:{} artist:{}".format(item.title.encode('utf-8'),
+                                        item.artist_name.encode('utf-8'))
         result = spotipy.search(q, type='track', limit=1)
         if not result['tracks'].get('items'):
             continue
