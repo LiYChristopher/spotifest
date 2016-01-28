@@ -1,0 +1,11 @@
+{% extends 'base.html'%}
+
+ <h1 class="cover-heading">Enjoy the show!</h1>
+
+	{% block lists %}
+	{% if playlist %}
+		{% for song in playlist %}
+			<p>{{ song.artist_name }} - {{ song.title }}</p>
+		{% endfor %}
+	{% endif %}
+	{% endblock %}

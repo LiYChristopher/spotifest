@@ -1,4 +1,6 @@
 from library.app import app, login_manager
+from library.helpers import get_user_preferences
+from library.helpers import random_catalog, seed_playlist
 from config import BaseConfig
 
 from flask.ext.login import login_user
@@ -9,6 +11,7 @@ import spotipy
 import spotipy.util as util
 import base64
 import requests
+import helpers
 
 
 def oauth_prep(config=None, scope=['user-library-read']):
@@ -34,7 +37,7 @@ class User(UserMixin):
 
     def __init__(self, spotify_id, access_token, refresh_token):
         self.id = unicode(spotify_id)
-        self.access = access_token 
+        self.access = access_token
         self.refresh = refresh_token
         self.users[self.id] = self
 
@@ -123,3 +126,15 @@ def home(config=BaseConfig, scope='user-library-read'):
             albums = s.current_user_saved_tracks(limit=50, offset=offset)
             return render_template('home.html', albums=albums['items'],
                                     login=True)
+    if request.method == 'POST':
+        current_user = User.users[session.get('user_id')].access
+        s = spotipy.Spotify(auth=current_user)
+        user_id = s.me()['id']
+        artists = get_user_preferences(s)
+        catalog = random_catalog(artists)
+        playlist = seed_playlist(catalog)
+        songs_id = helpers.get_songs_id(s, playlist)
+        helpers.create_playlist(s, user_id, 'Festify Test')
+        id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
+        helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
+        return render_template('results.html', playlist=playlist)
