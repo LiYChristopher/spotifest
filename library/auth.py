@@ -137,4 +137,5 @@ def home(config=BaseConfig, scope='user-library-read'):
         helpers.create_playlist(s, user_id, 'Festify Test')
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
         helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
-        return render_template('results.html', playlist=playlist)
+        playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
+        return render_template('results.html', playlist_url=playlist_url)
