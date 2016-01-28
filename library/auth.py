@@ -145,7 +145,7 @@ def home(config=BaseConfig, scope='user-library-read'):
 
         # testing task queue
         task_ids = []
-        for set_of_ids in xrange(10, 60, 10):
+        for set_of_ids in xrange(0, 60, 10):
             task = convert_to_spotify.apply_async(args=[s, playlist, set_of_ids])
             print "adding {} to queue.".format(task.task_id)
             task_ids.append(task.task_id)

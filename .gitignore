@@ -40,6 +40,9 @@ pip-delete-this-directory.txt
 # creds
 credentials.txt
 
+# redis
+.rdb
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
