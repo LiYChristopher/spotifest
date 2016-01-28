@@ -1,11 +1,6 @@
 {% extends 'base.html'%}
-
- <h1 class="cover-heading">Enjoy the show!</h1>
-
-	{% block lists %}
-	{% if playlist %}
-		{% for song in playlist %}
-			<p>{{ song.artist_name }} - {{ song.title }}</p>
-		{% endfor %}
-	{% endif %}
-	{% endblock %}
+{% block login %}
+    <h1 style="color:white;" class="cover-heading">Enjoy the show!</h1>
+    <br>
+    <iframe src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>
+{% endblock %}
