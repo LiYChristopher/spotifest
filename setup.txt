@@ -1,0 +1,16 @@
+Celery and Redis
+================
+
+pip install celery
+pip install redis
+
+Install redis onto your computer. Prior to running, in the command-line:
+redis-server
+
+and then another tab
+celery worker -A library.app.celery -I config -c 3 --loglevel=info
+
+-A - Points to app/celery location
+-I - Imports modules (this is where config links for redis are)
+-c - # of concurrent processes - play around with this based on your computer processing power
+--loglevel=info - debug messages
