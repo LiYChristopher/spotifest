@@ -1,19 +1,19 @@
 {% extends 'base.html'%}
 
 {% block login %}
-    <% if enough_data == false %>
+    {% if enough_data == false %}
 
         <h1 style="color:white;" class="cover-heading">
             You don't have that many saved artists yet.. let us help you!
         </h1>
         <br>
 
-    <% else %>
+    {% else %}
 
         <h1 style="color:white;" class="cover-heading">Enjoy the show!</h1>
         <br>
 
-    <% endif %>
+    {% endif %}
 
 {% endblock %}
 

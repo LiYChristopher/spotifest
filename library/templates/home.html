@@ -13,16 +13,16 @@
             <a href="{{ oauth }}" class="btn btn-success btn-lg">Login</a>
              </p>
     </div>
-   	{% else%}
+   	{% else %}
 	<div class="inner cover">
-	    <h1 class="cover-heading">Let's see the set list</h1>
+	    <h1 class="cover-heading">Let's see the set list!</h1>
 	    <br>
 	    <p class="lead">
 	      <form action="{{ url_for('home') }}" method="post">
 	        <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
 	      </form>
 	    </p>
-	</div>   	
+	</div>
 
 
     {% endif %}
