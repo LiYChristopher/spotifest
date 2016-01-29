@@ -1,12 +1,5 @@
 {% extends 'base.html'%}
 
-{% block lists %}
-
-
-    <iframe src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>
-
-{% endblock %} 
-
     {% if enough_data == false %}
 
         <h1 style="color:white;" class="cover-heading">
@@ -21,3 +14,9 @@
 
     {% endif %}
 
+	{% block lists %}
+
+
+	    <iframe src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>
+
+	{% endblock %} 
