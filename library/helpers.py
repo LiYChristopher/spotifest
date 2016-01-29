@@ -1,11 +1,12 @@
+import random
 import spotipy
 import spotipy.util as util
 
 from pyechonest import config
 from pyechonest import playlist
 from pyechonest.catalog import Catalog
+from library.app import celery
 
-import random
 
 config.ECHO_NEST_API_KEY = "SNRNTTK9UXTWYCMBH"
 
@@ -14,26 +15,70 @@ suggested_artists = set(['Radiohead', 'Nirvana', 'The Beatles', 'David Bowie',
                         'Grimes', 'Sungrazer', 'Queens of the Stone Age'])
 
 
+def process_spotify_ids(total_items, chunk_size, helper_args=[]):
+    '''
+    Wrapper function that will start/run concurrent conversions of
+    artist/song names to spotify IDs via celery. Returns list of
+    all song_ids
+    '''
+    if not helper_args:
+        return "stop"
+    task_ids = []
+    limit = total_items + chunk_size
+    for chunk in xrange(0, limit, chunk_size):
+        async_args = helper_args + [chunk]
+        task = get_songs_id.apply_async(args=async_args)
+        #print "adding {} to queue.".format(task.task_id)
+        task_ids.append(task.task_id)
+    songs_id = []
+    while task_ids:
+        for t in task_ids:
+            cur_task = get_songs_id.AsyncResult(t)
+            if cur_task.state == 'SUCCESS':
+                result = get_songs_id.AsyncResult(t).result
+                task_ids.remove(t)
+                songs_id += result
+            else:
+                continue
+    return songs_id
+
+
 def get_user_preferences(spotipy):
-    """
+    '''
     wrapper for all the user preference helper functions,
     returning a single set with all artists listened to from a user.
-    """
+    '''
+    tasks = []
+    preferences = set()
     # artists from saved tracks
-    from_saved_tracks = get_user_saved_tracks(spotipy)
+    st = get_user_saved_tracks.apply_async(args=[spotipy])
+    st_results = get_user_saved_tracks.AsyncResult(st.task_id)
+    tasks.append(st_results)
     # artists form user playlists (public)
-    from_user_playlists = get_user_playlists(spotipy)
+    up = get_user_playlists.apply_async(args=[spotipy])
+    up_results = get_user_playlists.AsyncResult(up.task_id)
+    tasks.append(up_results)
     # artists from followed artists
-    from_followed_artists = get_user_followed(spotipy)
-    return from_saved_tracks | from_user_playlists | from_followed_artists
+    fa = get_user_followed.apply_async(args=[spotipy])
+    fa_results = get_user_followed.AsyncResult(fa.task_id)
+    tasks.append(fa_results)
+    while tasks:
+        for t in tasks:
+            if t.state == 'SUCCESS':
+                result = t.result
+                tasks.remove(t)
+                preferences = preferences | set(result)
+            else:
+                continue
+    return preferences
 
 
+@celery.task(name='saved_tracks')
 def get_user_saved_tracks(spotipy):
-    """
+    '''
     return a set with the saved tracks.
     for now it will return a set with only the artists
-
-    """
+    '''
     offset = 0  # this set will be deleted if later we returns tracks instead of artists
     while True:
         albums = spotipy.current_user_saved_tracks(limit=50, offset=offset)
@@ -45,15 +90,16 @@ def get_user_saved_tracks(spotipy):
     return artists
 
 
+@celery.task(name='saved_playlists')
 def get_user_playlists(spotipy):
-    """
+    '''
     return a set with users tracks on playlist
     for now it will return a set with only the artists
-    """
+    '''
     def show_tracks(results):
-        """
+        '''
         helper function for get_user_playlists()
-        """
+        '''
         for i, item in enumerate(tracks['items']):
             track = item['track']
             playlist_artists_list.append(track['artists'][0]['name'])
@@ -72,10 +118,11 @@ def get_user_playlists(spotipy):
     return set(playlist_artists_list)
 
 
+@celery.task(name='followed_users')
 def get_user_followed(spotipy):
-    """
+    '''
     return a set with artists followed by artist.
-    """
+    '''
     followed = spotipy.current_user_followed_artists()
     for artist in followed['artists']['items']:
         artists = {artist['name'] for artist in followed['artists']['items']}
@@ -83,29 +130,29 @@ def get_user_followed(spotipy):
 
 
 def create_playlist(spotipy, user_id, name_playlist):
-    """
+    '''
     Function that will create a playlist por a user
     with name provided
     user_id = current_user['id']
-    """
+    '''
     spotipy.user_playlist_create(user_id, name_playlist, public=True)
     print 'playlist created'
 
 
 def add_songs_to_playlist(spotipy, user_id, playlist_id, id_songs):
-    """
+    '''
     add songs to a playlist providing user, id playlist
     and a list of songs
-    """
+    '''
     spotipy.user_playlist_add_tracks(user_id, playlist_id, id_songs)
     print 'track added to playlist'
 
 
 def get_id_from_playlist(spotipy, user_id, name_playlist):
-    """
+    '''
     function that return the id of a playlist
     providing the id
-    """
+    '''
     offset = 0
     playlists = spotipy.user_playlists(user_id)
     user_playlists = {}  # This will stored the users playlists
@@ -147,15 +194,17 @@ def seed_playlist(catalog):
     return pl
 
 
-def get_songs_id(spotipy, playlist):
-    """
+@celery.task(name='song_ids')
+def get_songs_id(spotipy, playlist, offset):
+    '''
     get a list of sgons names and return list of songs ids
-    """
+    '''
     songs_id = []
-    for i, item in enumerate(playlist):
-        title = item.title.encode('utf-8')
-        artist_name = item.artist_name.encode('utf-8')
-        q = "track:{} artist:{}".format(title, artist_name)
+
+    for item in playlist[offset:offset+10]:
+        q = "track:{} artist:{}".format(item.title.encode('utf-8'),
+                                        item.artist_name.encode('utf-8'))
+
         result = spotipy.search(q, type='track', limit=1)
         if not result['tracks'].get('items'):
             continue

@@ -1,10 +1,13 @@
+
 from library.app import app, login_manager
+from library.app import app, celery, login_manager
 from config import BaseConfig
 
 from flask.ext.login import login_user
 from flask.ext.login import UserMixin
 from flask import render_template, request, redirect, url_for
 from flask import session
+import redis
 import spotipy
 import spotipy.util as util
 import base64
@@ -105,6 +108,7 @@ def home(config=BaseConfig, scope='user-library-read'):
 
     render home.html
     '''
+
     if request.method == 'GET':
         if not 'code' in request.args:
             auth_url = login()
@@ -119,6 +123,7 @@ def home(config=BaseConfig, scope='user-library-read'):
                 new_user = User(user_id, token, response['refresh_token'])
                 login_user(new_user)
             current_user = User.users[session.get('user_id')].access
+
             s = spotipy.Spotify(auth=current_user)
             offset = 0
             albums = s.current_user_saved_tracks(limit=50, offset=offset)
@@ -128,15 +133,19 @@ def home(config=BaseConfig, scope='user-library-read'):
         current_user = User.users[session.get('user_id')].access
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
+
         try:
-            artists = helpers.get_user_preferences(s)
+            artists = helper.get_user_preferences(s)
             enough_data = True
         except:
             artists = helpers.suggested_artists
             enough_data = False
+
+        artists = helpers.get_user_preferences(s)
         catalog = helpers.random_catalog(artists)
         playlist = helpers.seed_playlist(catalog)
-        songs_id = helpers.get_songs_id(s, playlist)
+        songs_id = helpers.process_spotify_ids(50, 10, helper_args=[s, playlist])
+
         helpers.create_playlist(s, user_id, 'Festify Test')
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
         helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
