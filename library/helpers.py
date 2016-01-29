@@ -142,6 +142,7 @@ def random_catalog(artists, limit=15):
 
 def seed_playlist(catalog):
     pl = playlist.static(type='artist-radio', seed_catalog=catalog, results=50)
+    print 'songs in playslist', len(pl)
     catalog.delete()
     return pl
 
@@ -151,10 +152,9 @@ def get_songs_id(spotipy, playlist):
     get a list of sgons names and return list of songs ids
     """
     songs_id = []
-    for item in playlist:
+    for i, item in enumerate(playlist):
         title = item.title.encode('utf-8')
-        artist_name = item.title.encode('utf-8')
-        # unicode(item.title), unicode(item.artist_name
+        artist_name = item.artist_name.encode('utf-8')
         q = "track:{} artist:{}".format(title, artist_name)
         result = spotipy.search(q, type='track', limit=1)
         if not result['tracks'].get('items'):

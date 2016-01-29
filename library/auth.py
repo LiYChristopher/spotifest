@@ -1,6 +1,4 @@
 from library.app import app, login_manager
-from library.helpers import get_user_preferences, suggested_artists
-from library.helpers import random_catalog, seed_playlist
 from config import BaseConfig
 
 from flask.ext.login import login_user
@@ -131,15 +129,13 @@ def home(config=BaseConfig, scope='user-library-read'):
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
         try:
-            get_user_preferences(s)
-            print (get_user_preferences(s))
-            artists = get_user_preferences(s)
+            artists = helpers.get_user_preferences(s)
             enough_data = True
         except:
-            artists = suggested_artists
+            artists = helpers.suggested_artists
             enough_data = False
-        catalog = random_catalog(artists)
-        playlist = seed_playlist(catalog)
+        catalog = helpers.random_catalog(artists)
+        playlist = helpers.seed_playlist(catalog)
         songs_id = helpers.get_songs_id(s, playlist)
         helpers.create_playlist(s, user_id, 'Festify Test')
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
