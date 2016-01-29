@@ -41,7 +41,7 @@ pip-delete-this-directory.txt
 credentials.txt
 
 # redis
-.rdb
+*.rdb
 
 # Unit test / coverage reports
 htmlcov/
