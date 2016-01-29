@@ -1,4 +1,3 @@
-
 from library.app import app, login_manager
 from library.app import app, celery, login_manager
 from config import BaseConfig
@@ -150,5 +149,6 @@ def home(config=BaseConfig, scope='user-library-read'):
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
         helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
         playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
+        helpers.save_to_database(user_id, id_playlist, playlist_url,  catalog.id)
         return render_template('results.html', playlist_url=playlist_url,
                                 enough_data=enough_data)

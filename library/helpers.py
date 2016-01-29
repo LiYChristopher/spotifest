@@ -5,7 +5,8 @@ import spotipy.util as util
 from pyechonest import config
 from pyechonest import playlist
 from pyechonest.catalog import Catalog
-from library.app import celery
+from library.app import celery, mysql
+
 
 
 config.ECHO_NEST_API_KEY = "SNRNTTK9UXTWYCMBH"
@@ -211,3 +212,12 @@ def get_songs_id(spotipy, playlist, offset):
         spotify_id = spotipy.search(q, type='track', limit=1)['tracks']['items'][0]['id']
         songs_id.append(spotify_id)
     return songs_id
+
+
+def save_to_database(userId, playlistId, playlistURL, catalogId):
+    connection = mysql.get_db()
+    cursor = connection.cursor()
+    query = 'INSERT INTO sessions (userId, playlistId, playlistURL, catalogId) VALUES (\'' + userId + '\', \'' + playlistId + '\', \'' + playlistURL + '\', \'' + catalogId + '\');'
+    cursor.execute(query)
+    connection.commit()
+    print 'saved to database'
