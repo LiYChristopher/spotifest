@@ -132,6 +132,13 @@ def home(config=BaseConfig, scope='user-library-read'):
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
 
+        try:
+            artists = helper.get_user_preferences(s)
+            enough_data = True
+        except:
+            artists = helpers.suggested_artists
+            enough_data = False
+
         artists = helpers.get_user_preferences(s)
         catalog = helpers.random_catalog(artists)
         playlist = helpers.seed_playlist(catalog)
@@ -141,4 +148,5 @@ def home(config=BaseConfig, scope='user-library-read'):
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
         helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
         playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
-        return render_template('results.html', playlist_url=playlist_url)
+        return render_template('results.html', playlist_url=playlist_url,
+                                enough_data=enough_data)

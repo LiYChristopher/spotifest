@@ -10,6 +10,10 @@ from library.app import celery
 
 config.ECHO_NEST_API_KEY = "SNRNTTK9UXTWYCMBH"
 
+suggested_artists = set(['Radiohead', 'Nirvana', 'The Beatles', 'David Bowie',
+                        'Aretha Franklin', 'Mogwai', 'Eels', 'Glass Animals',
+                        'Grimes', 'Sungrazer', 'Queens of the Stone Age'])
+
 
 def process_spotify_ids(total_items, chunk_size, helper_args=[]):
     '''
