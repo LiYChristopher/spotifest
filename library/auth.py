@@ -1,5 +1,5 @@
 from library.app import app, login_manager
-from library.helpers import get_user_preferences
+from library.helpers import get_user_preferences, suggested_artists
 from library.helpers import random_catalog, seed_playlist
 from config import BaseConfig
 
@@ -113,7 +113,7 @@ def home(config=BaseConfig, scope='user-library-read'):
             return render_template('home.html', login=False, oauth=auth_url)
         else:
             if not User.users or not session.get('user_id'):
-                 # log user to session (Flask-Login)
+                # log user to session (Flask-Login)
                 response = oauth.get_access_token(request.args['code'])
                 token = response['access_token']
                 s = spotipy.Spotify(auth=token)
@@ -130,7 +130,14 @@ def home(config=BaseConfig, scope='user-library-read'):
         current_user = User.users[session.get('user_id')].access
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
-        artists = get_user_preferences(s)
+        try:
+            get_user_preferences(s)
+            print (get_user_preferences(s))
+            artists = get_user_preferences(s)
+            enough_data = True
+        except:
+            artists = suggested_artists
+            enough_data = False
         catalog = random_catalog(artists)
         playlist = seed_playlist(catalog)
         songs_id = helpers.get_songs_id(s, playlist)
@@ -138,4 +145,5 @@ def home(config=BaseConfig, scope='user-library-read'):
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
         helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
         playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
-        return render_template('results.html', playlist_url=playlist_url)
+        return render_template('results.html', playlist_url=playlist_url,
+                                enough_data=enough_data)

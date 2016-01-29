@@ -9,6 +9,10 @@ import random
 
 config.ECHO_NEST_API_KEY = "SNRNTTK9UXTWYCMBH"
 
+suggested_artists = set(['Radiohead', 'Nirvana', 'The Beatles', 'David Bowie',
+                        'Aretha Franklin', 'Mogwai', 'Eels', 'Glass Animals',
+                        'Grimes', 'Sungrazer', 'Queens of the Stone Age'])
+
 
 def get_user_preferences(spotipy):
     """
@@ -148,7 +152,10 @@ def get_songs_id(spotipy, playlist):
     """
     songs_id = []
     for item in playlist:
-        q = "track:{} artist:{}".format(unicode(item.title), unicode(item.artist_name))
+        title = item.title.encode('utf-8')
+        artist_name = item.title.encode('utf-8')
+        # unicode(item.title), unicode(item.artist_name
+        q = "track:{} artist:{}".format(title, artist_name)
         result = spotipy.search(q, type='track', limit=1)
         if not result['tracks'].get('items'):
             continue
