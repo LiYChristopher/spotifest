@@ -4,32 +4,23 @@ import spotipy.util as util
 from pyechonest import config
 from pyechonest import playlist
 from pyechonest.catalog import Catalog
+from library.app import celery
+
 
 import random
 
 config.ECHO_NEST_API_KEY = "SNRNTTK9UXTWYCMBH"
 
 
-def get_user_preferences(spotipy):
-    """
-    wrapper for all the user preference helper functions,
-    returning a single set with all artists listened to from a user.
-    """
-    # artists from saved tracks
-    from_saved_tracks = get_user_saved_tracks(spotipy)
-    # artists form user playlists (public)
-    from_user_playlists = get_user_playlists(spotipy)
-    # artists from followed artists
-    from_followed_artists = get_user_followed(spotipy)
-    return from_saved_tracks | from_user_playlists | from_followed_artists
 
 
+
+@celery.task(name='saved_tracks')
 def get_user_saved_tracks(spotipy):
-    """
+    '''
     return a set with the saved tracks.
     for now it will return a set with only the artists
-
-    """
+    '''
     offset = 0  # this set will be deleted if later we returns tracks instead of artists
     while True:
         albums = spotipy.current_user_saved_tracks(limit=50, offset=offset)
@@ -41,15 +32,16 @@ def get_user_saved_tracks(spotipy):
     return artists
 
 
+@celery.task(name='saved_playlists')
 def get_user_playlists(spotipy):
-    """
+    '''
     return a set with users tracks on playlist
     for now it will return a set with only the artists
-    """
+    '''
     def show_tracks(results):
-        """
+        '''
         helper function for get_user_playlists()
-        """
+        '''
         for i, item in enumerate(tracks['items']):
             track = item['track']
             playlist_artists_list.append(track['artists'][0]['name'])
@@ -68,10 +60,11 @@ def get_user_playlists(spotipy):
     return set(playlist_artists_list)
 
 
+@celery.task(name='followed_users')
 def get_user_followed(spotipy):
-    """
+    '''
     return a set with artists followed by artist.
-    """
+    '''
     followed = spotipy.current_user_followed_artists()
     for artist in followed['artists']['items']:
         artists = {artist['name'] for artist in followed['artists']['items']}
@@ -79,29 +72,29 @@ def get_user_followed(spotipy):
 
 
 def create_playlist(spotipy, user_id, name_playlist):
-    """
+    '''
     Function that will create a playlist por a user
     with name provided
     user_id = current_user['id']
-    """
+    '''
     spotipy.user_playlist_create(user_id, name_playlist, public=True)
     print 'playlist created'
 
 
 def add_songs_to_playlist(spotipy, user_id, playlist_id, id_songs):
-    """
+    '''
     add songs to a playlist providing user, id playlist
     and a list of songs
-    """
+    '''
     spotipy.user_playlist_add_tracks(user_id, playlist_id, id_songs)
     print 'track added to playlist'
 
 
 def get_id_from_playlist(spotipy, user_id, name_playlist):
-    """
+    '''
     function that return the id of a playlist
     providing the id
-    """
+    '''
     offset = 0
     playlists = spotipy.user_playlists(user_id)
     user_playlists = {}  # This will stored the users playlists
@@ -142,10 +135,11 @@ def seed_playlist(catalog):
     return pl
 
 
+@celery.task(name='song_ids')
 def get_songs_id(spotipy, playlist, offset):
-    """
+    '''
     get a list of sgons names and return list of songs ids
-    """
+    '''
     songs_id = []
     for item in playlist[offset:offset+10]:
         q = "track:{} artist:{}".format(item.title.encode('utf-8'),

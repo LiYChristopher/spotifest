@@ -1,6 +1,4 @@
 from library.app import app, celery, login_manager
-from library.helpers import get_user_preferences
-from library.helpers import random_catalog, seed_playlist
 from config import BaseConfig
 
 from flask.ext.login import login_user
@@ -31,11 +29,62 @@ scope = ['user-library-read', 'playlist-read-collaborative',
 
 oauth = oauth_prep(BaseConfig, scope)
 
-@celery.task
-def convert_to_spotify(s, playlist, offset):
-    #with app.test_request_context('/home'):
-    print 'running task ...'
-    return helpers.get_songs_id(s, playlist, offset)
+
+def process_spotify_ids(total_items, chunk_size, helper_args=[]):
+    '''
+    Wrapper function that will start/run concurrent conversions of
+    artist/song names to spotify IDs via celery. Returns list of
+    all song_ids
+    '''
+    if not helper_args:
+        return "stop"
+    task_ids = []
+    limit = total_items + chunk_size
+    for chunk in xrange(0, limit, chunk_size):
+        async_args = helper_args + [chunk]
+        task = helpers.get_songs_id.apply_async(args=async_args)
+        #print "adding {} to queue.".format(task.task_id)
+        task_ids.append(task.task_id)
+    songs_id = []
+    while task_ids:
+        for t in task_ids:
+            cur_task = helpers.get_songs_id.AsyncResult(t)
+            if cur_task.state == 'SUCCESS':
+                result = helpers.get_songs_id.AsyncResult(t).result
+                task_ids.remove(t)
+                songs_id += result
+            else:
+                continue
+    return songs_id
+
+def get_user_preferences(spotipy):
+    '''
+    wrapper for all the user preference helper functions,
+    returning a single set with all artists listened to from a user.
+    '''
+    tasks = []
+    preferences = set()
+    # artists from saved tracks
+    st = helpers.get_user_saved_tracks.apply_async(args=[spotipy])
+    st_results = helpers.get_user_saved_tracks.AsyncResult(st.task_id)
+    tasks.append(st_results)
+    # artists form user playlists (public)
+    up = helpers.get_user_playlists.apply_async(args=[spotipy])
+    up_results = helpers.get_user_playlists.AsyncResult(up.task_id)
+    tasks.append(up_results)
+    # artists from followed artists
+    fa = helpers.get_user_followed.apply_async(args=[spotipy])
+    fa_results = helpers.get_user_followed.AsyncResult(fa.task_id)
+    tasks.append(fa_results)
+    while tasks:
+        for t in tasks:
+            if t.state == 'SUCCESS':
+                result = t.result
+                tasks.remove(t)
+                preferences = preferences | set(result)
+            else:
+                continue
+    return preferences
 
 
 class User(UserMixin):
@@ -139,27 +188,11 @@ def home(config=BaseConfig, scope='user-library-read'):
         current_user = User.users[session.get('user_id')].access
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
-        artists = get_user_preferences(s)
-        catalog = random_catalog(artists)
-        playlist = seed_playlist(catalog)
 
-        # testing task queue
-        task_ids = []
-        for set_of_ids in xrange(0, 60, 10):
-            task = convert_to_spotify.apply_async(args=[s, playlist, set_of_ids])
-            print "adding {} to queue.".format(task.task_id)
-            task_ids.append(task.task_id)
-        songs_id = []
-        while task_ids:
-            for t in task_ids:
-                cur_task = convert_to_spotify.AsyncResult(t)
-                if cur_task.state == 'SUCCESS':
-                    print "TASK RESULT", convert_to_spotify.AsyncResult(t).result
-                    result = convert_to_spotify.AsyncResult(t).result
-                    task_ids.remove(t)
-                    songs_id += result
-                else:
-                    continue
+        artists = get_user_preferences(s)
+        catalog = helpers.random_catalog(artists)
+        playlist = helpers.seed_playlist(catalog)
+        songs_id = process_spotify_ids(50, 10, helper_args=[s, playlist])
 
         helpers.create_playlist(s, user_id, 'Festify Test')
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
