@@ -2,7 +2,7 @@ from library.app import app, login_manager
 from library.app import app, celery, login_manager
 from config import BaseConfig
 
-from flask.ext.login import login_user
+from flask.ext.login import login_user, logout_user
 from flask.ext.login import UserMixin
 from flask import render_template, request, redirect, url_for
 from flask import session
@@ -80,6 +80,8 @@ def refresh():
 @app.before_request
 def before_request():
     refresh()
+    if session.get('user_id') and not User.users:
+        logout_user()
     return
 
 
