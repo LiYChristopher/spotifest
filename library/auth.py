@@ -1,9 +1,8 @@
-
 from library.app import app, login_manager
 from library.app import app, celery, login_manager
 from config import BaseConfig
 
-from flask.ext.login import login_user
+from flask.ext.login import login_user, logout_user
 from flask.ext.login import UserMixin
 from flask import render_template, request, redirect, url_for
 from flask import session
@@ -13,6 +12,7 @@ import spotipy.util as util
 import base64
 import requests
 import helpers
+import db
 
 
 def oauth_prep(config=None, scope=['user-library-read']):
@@ -80,6 +80,8 @@ def refresh():
 @app.before_request
 def before_request():
     refresh()
+    if session.get('user_id') and not User.users:
+        logout_user()
     return
 
 
@@ -108,29 +110,30 @@ def home(config=BaseConfig, scope='user-library-read'):
 
     render home.html
     '''
-
+    code = request.args.get('code')
+    active_user = session.get('user_id')
     if request.method == 'GET':
-        if not 'code' in request.args:
+        if not code and not active_user:
             auth_url = login()
             return render_template('home.html', login=False, oauth=auth_url)
         else:
-            if not User.users or not session.get('user_id'):
-                # log user to session (Flask-Login)
-                response = oauth.get_access_token(request.args['code'])
+            if code and not active_user:
+                response = oauth.get_access_token(code)
                 token = response['access_token']
                 s = spotipy.Spotify(auth=token)
                 user_id = s.me()['id']
                 new_user = User(user_id, token, response['refresh_token'])
                 login_user(new_user)
-            current_user = User.users[session.get('user_id')].access
 
+            active_user = session.get('user_id')
+            current_user = User.users[active_user].access
             s = spotipy.Spotify(auth=current_user)
             offset = 0
             albums = s.current_user_saved_tracks(limit=50, offset=offset)
             return render_template('home.html', albums=albums['items'],
                                     login=True)
     if request.method == 'POST':
-        current_user = User.users[session.get('user_id')].access
+        current_user = User.users[active_user].access
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
 
@@ -150,5 +153,6 @@ def home(config=BaseConfig, scope='user-library-read'):
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
         helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
         playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
+        db.save_to_database(user_id, id_playlist, playlist_url, catalog.id)
         return render_template('results.html', playlist_url=playlist_url,
                                 enough_data=enough_data)

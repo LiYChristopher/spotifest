@@ -28,7 +28,7 @@ def process_spotify_ids(total_items, chunk_size, helper_args=[]):
     for chunk in xrange(0, limit, chunk_size):
         async_args = helper_args + [chunk]
         task = get_songs_id.apply_async(args=async_args)
-        #print "adding {} to queue.".format(task.task_id)
+        # print "adding {} to queue.".format(task.task_id)
         task_ids.append(task.task_id)
     songs_id = []
     while task_ids:
@@ -201,7 +201,7 @@ def get_songs_id(spotipy, playlist, offset):
     '''
     songs_id = []
 
-    for item in playlist[offset:offset+10]:
+    for item in playlist[offset:offset + 10]:
         q = "track:{} artist:{}".format(item.title.encode('utf-8'),
                                         item.artist_name.encode('utf-8'))
 
