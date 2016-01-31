@@ -1,17 +1,19 @@
-from library.app import mysql
+from library.app import app, mysql, celery
 
 
+@celery.task(name='save_to_database')
 def save_to_database(userId, playlistId, playlistURL, catalogId):
     '''
     saves infromation the data base.
     festivalId will be created automatically
     '''
-    connection = mysql.get_db()
-    cursor = connection.cursor()
-    query = 'INSERT INTO sessions (userId, playlistId, playlistURL, catalogId) VALUES (\'' + userId + '\', \'' + playlistId + '\', \'' + playlistURL + '\', \'' + catalogId + '\');'
-    cursor.execute(query)
-    connection.commit()
-    print 'saved to database'
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+        query = 'INSERT INTO sessions (userId, playlistId, playlistURL, catalogId) VALUES (\'' + userId + '\', \'' + playlistId + '\', \'' + playlistURL + '\', \'' + catalogId + '\');'
+        cursor.execute(query)
+        connection.commit()
+        print 'saved to database'
     return
 
 
