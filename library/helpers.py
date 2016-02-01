@@ -3,6 +3,7 @@ import spotipy.util as util
 
 from pyechonest import config
 from pyechonest import playlist
+from pyechonest import artist
 from pyechonest.catalog import Catalog
 
 import random
@@ -27,6 +28,16 @@ def get_user_preferences(spotipy):
     from_followed_artists = get_user_followed(spotipy)
     return from_saved_tracks | from_user_playlists | from_followed_artists
 
+def search_artist_echonest(name):
+
+    #add validation via echonest here
+    results = artist.search(name=name)
+    if results is False:
+        return results
+    else:
+        sorted_results = sorted([art.name for art in results])
+        int_results = [(x, sorted_results[x]) for x in xrange(1,len(sorted_results))]
+    return int_results
 
 def get_user_saved_tracks(spotipy):
     """

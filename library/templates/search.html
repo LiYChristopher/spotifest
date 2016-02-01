@@ -1,0 +1,57 @@
+<!-- search.html-->
+
+{% extends 'base.html' %}
+
+
+    {% block login %}
+
+    {% for artist in artists %}
+        <li>
+        {{ artist }}
+        </li>
+    {% endfor %}
+
+    <form method="POST" action="/search">
+        {{ searchform.hidden_tag() }}
+        {{ searchform.artist_search(size=20)}}
+        {{ searchform.submit }}
+
+    </form>
+
+
+    {% if art_select.artist_display.choices %}
+        <form method="POST" action="/search">
+
+            {{ art_select.hidden_tag() }}
+            {{ art_select.artist_display }}
+            {{ art_select.confirm_button }}
+
+        </form>
+
+    {% elif s_results == false %}
+        <p class="lead">No artists found with that name!</p>
+    {% endif %}
+
+    <form method="POST" action="/search">
+
+        {{ suggest_pl_but.hidden_tag() }}
+        {{ suggest_pl_but.add_button }}
+
+    </form>
+
+
+
+        {% if searchform.errors %}
+            {{ searchform.errors }}
+        {% endif %}
+
+        {% if art_select.errors %}
+            {{ art_select.errors }}
+        {% endif %}
+
+        {% if suggest_pl_but.errors %}
+            {{ suggest_pl_but.errors }}
+        {% endif %}
+
+
+    {% endblock %}

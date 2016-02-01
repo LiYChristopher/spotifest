@@ -1,12 +1,14 @@
 from library.app import app, login_manager
 from library.helpers import get_user_preferences, suggested_artists
 from library.helpers import random_catalog, seed_playlist
+from library import frontend_helpers
 from config import BaseConfig
 
 from flask.ext.login import login_user
 from flask.ext.login import UserMixin
-from flask import render_template, request, redirect, url_for
-from flask import session
+from flask.ext.wtf import Form
+from flask import render_template, request, redirect, url_for, session
+
 import spotipy
 import spotipy.util as util
 import base64
@@ -35,11 +37,14 @@ class User(UserMixin):
 
     users = {}
 
-    def __init__(self, spotify_id, access_token, refresh_token):
+    def __init__(self, spotify_id, access_token, refresh_token, artists=set(),
+                search_results=None):
         self.id = unicode(spotify_id)
         self.access = access_token
         self.refresh = refresh_token
         self.users[self.id] = self
+        self.artists = artists
+        self.search_results = search_results
 
     @classmethod
     def get(cls, user_id):
@@ -48,7 +53,6 @@ class User(UserMixin):
                 return cls.users[user_id]
         else:
             return None
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -94,9 +98,11 @@ def login(config=BaseConfig, oauth=oauth):
     return r.url
 
 
+
+
 @app.route('/', methods=['POST', 'GET'])
 @app.route('/home', methods=['POST', 'GET'])
-def home(config=BaseConfig, scope='user-library-read'):
+def home(config=BaseConfig):
     '''
     If no temporary code in request arguments, attempt to login user
     through Oauth.
@@ -107,12 +113,21 @@ def home(config=BaseConfig, scope='user-library-read'):
 
     render home.html
     '''
+
+    new = None
+    new_artist = None
+    searchform = frontend_helpers.SearchForm()
+    suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
+    art_select = frontend_helpers.ArtistSelect(request.form)
+
     if request.method == 'GET':
         if not 'code' in request.args:
             auth_url = login()
             return render_template('home.html', login=False, oauth=auth_url)
         else:
+
             if not User.users or not session.get('user_id'):
+
                 # log user to session (Flask-Login)
                 response = oauth.get_access_token(request.args['code'])
                 token = response['access_token']
@@ -122,10 +137,58 @@ def home(config=BaseConfig, scope='user-library-read'):
                 login_user(new_user)
             current_user = User.users[session.get('user_id')].access
             s = spotipy.Spotify(auth=current_user)
-            offset = 0
-            albums = s.current_user_saved_tracks(limit=50, offset=offset)
-            return render_template('home.html', albums=albums['items'],
-                                    login=True)
+            try:
+                get_user_preferences(s)
+                print (get_user_preferences(s))
+                User.artists = get_user_preferences(s)
+            except:
+                User.artists = set()
+            artists = User.artists
+
+    else:
+        if searchform.validate_on_submit():
+            new_artist = searchform.artist_search.data
+            User.search_results = helpers.search_artist_echonest(new_artist)
+            art_select.artist_display.choices = User.search_results
+            if not User.search_results:
+                new = -1
+
+        if art_select.artist_display.data:
+            if art_select.is_submitted():
+                option_n = int(art_select.artist_display.data) + 1
+                chosen_art = User.search_results[option_n][1]
+                if chosen_art not in User.artists:
+                    User.artists.update([chosen_art])
+                    new_artist = chosen_art
+                    new = 1
+                else:
+                    new = 0
+
+
+        elif suggested_pl_butt.validate_on_submit():
+            if request.form.get("add_button"):
+                new_artist = ', '.join(suggested_artists)
+                User.artists.update(suggested_artists)
+                artists = User.artists
+                new = True
+
+    return render_template('home.html', login=True, searchform=searchform,
+                            art_select=art_select,
+                            suggested_pl_butt=suggested_pl_butt,
+                            artists=User.artists,
+                            new=new, new_artist=new_artist)
+
+
+
+
+@app.route('/setlist_prep', methods=['POST', 'GET'])
+def set_prep():
+    pass
+
+
+
+@app.route('/results', methods=['POST', 'GET'])
+def results():
     if request.method == 'POST':
         current_user = User.users[session.get('user_id')].access
         s = spotipy.Spotify(auth=current_user)
@@ -133,17 +196,19 @@ def home(config=BaseConfig, scope='user-library-read'):
         try:
             get_user_preferences(s)
             print (get_user_preferences(s))
-            artists = get_user_preferences(s)
+            User.artists = get_user_preferences(s)
             enough_data = True
         except:
-            artists = suggested_artists
+            User.artists = suggested_artists
             enough_data = False
-        catalog = random_catalog(artists)
+        catalog = random_catalog(User.artists)
         playlist = seed_playlist(catalog)
         songs_id = helpers.get_songs_id(s, playlist)
         helpers.create_playlist(s, user_id, 'Festify Test')
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
         helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
-        playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
+        uid = str(user_id)
+        plid = str(playlist_id)
+        playlist_url = 'https://embed.spotify.com/?uri=spotify:user:{}:playlist:{}'.format(uid, plid)
         return render_template('results.html', playlist_url=playlist_url,
                                 enough_data=enough_data)
