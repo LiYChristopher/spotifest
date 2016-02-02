@@ -1,8 +1,9 @@
-#creates the app and can include a config.py
+# creates the app and can include a config.py
 from flask import Flask
 from celery import Celery
 from flask.ext.login import LoginManager
 from flask.ext.mysql import MySQL
+
 
 def create_app(config=None, app_name=None, blueprints=None):
     app = Flask(__name__)
