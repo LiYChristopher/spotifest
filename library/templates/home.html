@@ -14,12 +14,23 @@
              </p>
     </div>
    	{% else %}
+
 	<div class="inner cover">
 	    <h1 class="cover-heading">Let's see the set list!</h1>
 	    <br>
 	    <p class="lead">
 	      <form action="{{ url_for('home') }}" method="post">
+            <fieldset>
+            {{ form.danceability.label }}
+            {{ form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ form.hotttnesss.label}}
+            {{ form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ form.energy.label }}
+            {{ form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ form.variety.label }}
+            {{ form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
 	        <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
+            </fieldset>
 	      </form>
 	    </p>
 	</div>

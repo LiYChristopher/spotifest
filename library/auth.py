@@ -13,6 +13,8 @@ import base64
 import requests
 import helpers
 import db
+from wtforms import Form, validators
+from wtforms.fields.html5 import DecimalRangeField
 
 
 def oauth_prep(config=None, scope=['user-library-read']):
@@ -30,6 +32,21 @@ scope = ['user-library-read', 'playlist-read-collaborative',
          'user-follow-read', 'playlist-modify-public']
 
 oauth = oauth_prep(BaseConfig, scope)
+
+
+class ParamsForm(Form):
+    danceability = DecimalRangeField('danceability',
+                   [validators.NumberRange(min=0, max=1)],
+                   default=0.5)
+    hotttnesss = DecimalRangeField('hotttnesss',
+                   [validators.NumberRange(min=0, max=1)],
+                   default=0.5)
+    energy = DecimalRangeField('energy',
+                   [validators.NumberRange(min=0, max=1)],
+                   default=0.5)    
+    variety = DecimalRangeField('variety',
+                   [validators.NumberRange(min=0, max=1)],
+                   default=0.5)
 
 
 class User(UserMixin):
@@ -125,14 +142,19 @@ def home(config=BaseConfig, scope='user-library-read'):
                 new_user = User(user_id, token, response['refresh_token'])
                 login_user(new_user)
 
+            form = ParamsForm(csrf_enabled=False)                                                                   
             active_user = session.get('user_id')
             current_user = User.users[active_user].access
             s = spotipy.Spotify(auth=current_user)
             offset = 0
             albums = s.current_user_saved_tracks(limit=50, offset=offset)
-            return render_template('home.html', albums=albums['items'],
+            return render_template('home.html', albums=albums['items'], form=form,
                                     login=True)
     if request.method == 'POST':
+        h = request.form.get('hotttnesss')
+        d = request.form.get('danceability')
+        e = request.form.get('energy')
+        v = request.form.get('variety')
         current_user = User.users[active_user].access
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
@@ -146,7 +168,8 @@ def home(config=BaseConfig, scope='user-library-read'):
 
         artists = helpers.get_user_preferences(s)
         catalog = helpers.random_catalog(artists)
-        playlist = helpers.seed_playlist(catalog)
+        playlist = helpers.seed_playlist(catalog=catalog, hotttnesss=h,
+                                         danceability=d, energy=e, variety=v)
         songs_id = helpers.process_spotify_ids(50, 10, helper_args=[s, playlist])
 
         helpers.create_playlist(s, user_id, 'Festify Test')

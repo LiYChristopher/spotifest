@@ -187,11 +187,29 @@ def random_catalog(artists, limit=15):
     return catalog
 
 
-def seed_playlist(catalog):
-    pl = playlist.static(type='artist-radio', seed_catalog=catalog, results=50)
-    print 'songs in playslist', len(pl)
-    catalog.delete()
-    return pl
+def seed_playlist(catalog, danceability=0.5, hotttnesss=0.5,
+                  energy=0.5, variety=0.5, results=50):
+        ''' Allow user to adjust:
+        - style
+        - mood
+        - variety
+        - loudness
+        - familiarity
+        - hotttnesss
+        - energy
+        - danceability
+        - distribution (open mic vs. long sets)
+    '''
+    # write a wrapper around playlist.static() spotify obj, so extra params
+    # can be set before instantiating the playlist.
+
+        pl = playlist.static(type='artist-radio', seed_catalog=catalog,
+                             min_danceability=danceability, artist_min_hotttnesss=hotttnesss,
+                             min_energy=energy, variety=variety, distribution='focused',
+                             results=results)
+        print 'songs in playslist', len(pl)
+        catalog.delete()
+        return pl
 
 
 @celery.task(name='song_ids')
