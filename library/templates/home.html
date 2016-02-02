@@ -9,9 +9,19 @@
             <p class="lead">Festify will create the perfect festival base on the musical taste of the awesome people that will
                 enjoy this musical experience.</p>
             <br>
-            <p class="lead">
-            <a href="{{ oauth }}" class="btn btn-success btn-lg">Login</a>
-             </p>
+
+                <a href="{{ oauth }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
+                        <nav>
+                            <ul>
+                                <li id="login">
+                                    <a class="btn btn-success btn-lg" href="#" margin-right="40px" type="button">Join Festival  </a>
+                                        <form id="login-form" action="{{ oauth }}" method="post">
+                                            <p><input id="festi-text" class="text" type="text" name="Festival ID" placeholder="Festival ID" /></p>
+                                            <p><input class="btn btn-primary btn-lg" type="submit" value="Submit" /></p>
+                                        </form>
+                                </li>
+                            </ul>
+                        </nav>
     </div>
    	{% else %}
 	<div class="inner cover">
