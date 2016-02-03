@@ -27,3 +27,5 @@ DATABASE
 - Run script mysqlScript.sql on your database :
   mysql -uroot -p < mysqlScript.sql
   This will create the database
+-
+-- pip install flask-mysql
