@@ -192,12 +192,6 @@ def home(config=BaseConfig, scope='user-library-read'):
                                          danceability=d, energy=e, variety=v)
         songs_id = processor.process_spotify_ids(50, 10, s, playlist)
 
-        helpers.create_playlist(s, user_id, 'Festify Test')
-        id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
-        helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
-        playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
-        if app.config['IS_ASYNC'] is True:
-            db.save_to_database.apply_async(args=[user_id, id_playlist, playlist_url, catalog.id])
         global festival_id
         if festival_id is not None and did_user_sel_parameters:
             '''
@@ -205,7 +199,20 @@ def home(config=BaseConfig, scope='user-library-read'):
             to update the catalog instead of creating one
             or just add this playlist to existent playlist
             '''
+            festival_information = db.get_info_from_database(festival_id)
             print 'festival id entered : ' + festival_id
-            return '<h1>Here I will show the join playlist</h1>'
-        return render_template('results.html', playlist_url=playlist_url,
-                                enough_data=enough_data)
+            playlist_url = festival_information[3]
+            id_playlist = festival_information[2]
+            helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
+            return render_template('results.html', playlist_url=playlist_url, enough_data=enough_data)
+        else:
+            helpers.create_playlist(s, user_id, 'Festify Test')
+            id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
+            helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
+            playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
+            if app.config['IS_ASYNC'] is True:
+                db.save_to_database.apply_async(args=[user_id, id_playlist, playlist_url, catalog.id])
+            else:
+                db.save_to_database(user_id,id_playlist, playlist_url, catalog.id)
+            return render_template('results.html', playlist_url=playlist_url,
+                                    enough_data=enough_data)
