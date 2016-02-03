@@ -6,6 +6,9 @@ from flask.ext.login import login_user, logout_user
 from flask.ext.login import UserMixin
 from flask import render_template, request, redirect, url_for
 from flask import session
+from wtforms import Form, validators
+from wtforms.fields.html5 import DecimalRangeField
+
 import redis
 import spotipy
 import spotipy.util as util
@@ -13,8 +16,6 @@ import base64
 import requests
 import helpers
 import db
-from wtforms import Form, validators
-from wtforms.fields.html5 import DecimalRangeField
 
 
 def oauth_prep(config=None, scope=['user-library-read']):
@@ -141,16 +142,14 @@ def home(config=BaseConfig, scope='user-library-read'):
                 user_id = s.me()['id']
                 new_user = User(user_id, token, response['refresh_token'])
                 login_user(new_user)
-
-            form = ParamsForm(csrf_enabled=False)                                                                   
+            # parameter form
+            form = ParamsForm(csrf_enabled=False)
             active_user = session.get('user_id')
             current_user = User.users[active_user].access
-            s = spotipy.Spotify(auth=current_user)
-            offset = 0
-            albums = s.current_user_saved_tracks(limit=50, offset=offset)
-            return render_template('home.html', albums=albums['items'], form=form,
-                                    login=True)
+            return render_template('home.html', form=form, login=True)
+
     if request.method == 'POST':
+        # parameters
         h = request.form.get('hotttnesss')
         d = request.form.get('danceability')
         e = request.form.get('energy')
@@ -166,16 +165,18 @@ def home(config=BaseConfig, scope='user-library-read'):
             artists = helpers.suggested_artists
             enough_data = False
 
-        artists = helpers.get_user_preferences(s)
+        processor = helpers.AsyncAdapter(app)
+        artists = processor.get_user_preferences(s)
         catalog = helpers.random_catalog(artists)
         playlist = helpers.seed_playlist(catalog=catalog, hotttnesss=h,
                                          danceability=d, energy=e, variety=v)
-        songs_id = helpers.process_spotify_ids(50, 10, helper_args=[s, playlist])
+        songs_id = processor.process_spotify_ids(50, 10, s, playlist)
 
         helpers.create_playlist(s, user_id, 'Festify Test')
         id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
         helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
         playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
-        db.save_to_database.apply_async(args=[user_id, id_playlist, playlist_url, catalog.id])
+        if app.config['IS_ASYNC'] is True:
+            db.save_to_database.apply_async(args=[user_id, id_playlist, playlist_url, catalog.id])
         return render_template('results.html', playlist_url=playlist_url,
                                 enough_data=enough_data)
