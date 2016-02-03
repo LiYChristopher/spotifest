@@ -7,11 +7,15 @@ def save_to_database(userId, playlistId, playlistURL, catalogId):
     saves infromation the data base.
     festivalId will be created automatically
     '''
+    userId = str(userId)
+    playlistId = str(playlistId)
+    playlistURL = str(playlistURL)
+    catalogId = str(catalogId)
+    values = (userId, playlistId, playlistURL, catalogId)
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
-        query = 'INSERT INTO sessions (userId, playlistId, playlistURL, catalogId) VALUES (\'' + userId + '\', \'' + playlistId + '\', \'' + playlistURL + '\', \'' + catalogId + '\');'
-        cursor.execute(query)
+        cursor.execute("INSERT INTO sessions (userId, playlistId, playlistURL, catalogId) VALUES (%s, %s, %s, %s)", values)
         connection.commit()
         print 'saved to database'
     return
@@ -24,8 +28,7 @@ def get_info_from_database(festivalId):
     '''
     connection = mysql.get_db()
     cursor = connection.cursor()
-    query = 'SELECT * FROM sessions WHERE festivalId = ' + str(festivalId) + ';'
-    cursor.execute(query)
+    cursor.execute("SELECT * FROM sessions WHERE festivalId = %s", (festivalId,))
     data = cursor.fetchall()
     festivalId = int(data[0][0])
     userId = str(data[0][1])
