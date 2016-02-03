@@ -18,6 +18,10 @@ import helpers
 import db
 
 
+festival_id = None
+did_user_sel_parameters = False
+
+
 def oauth_prep(config=None, scope=['user-library-read']):
     ''' Connect to Spotify using spotipy & our app config credentials.
     'scope' should be a list. Multiple scopes will be processed below. '''
@@ -149,8 +153,24 @@ def home(config=BaseConfig, scope='user-library-read'):
             return render_template('home.html', form=form, login=True)
 
     if request.method == 'POST':
+        # Did user click on join festival ?
+        try:
+            if request.form['festival_id']:
+                print 'User selected join'
+                auth_url = login()
+                global festival_id
+                festival_id = request.form['festival_id']
+                return redirect(auth_url)
+        except:
+            if festival_id is None:
+                print 'User did not click on join and selected parameter'
+            else:
+                print 'User selected parameters'
+
         # parameters
         h = request.form.get('hotttnesss')
+        global did_user_sel_parameters
+        did_user_sel_parameters = True
         d = request.form.get('danceability')
         e = request.form.get('energy')
         v = request.form.get('variety')
@@ -178,5 +198,14 @@ def home(config=BaseConfig, scope='user-library-read'):
         playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
         if app.config['IS_ASYNC'] is True:
             db.save_to_database.apply_async(args=[user_id, id_playlist, playlist_url, catalog.id])
+        global festival_id
+        if festival_id is not None and did_user_sel_parameters:
+            '''
+            This will need to be above and we will need
+            to update the catalog instead of creating one
+            or just add this playlist to existent playlist
+            '''
+            print 'festival id entered : ' + festival_id
+            return '<h1>Here I will show the join playlist</h1>'
         return render_template('results.html', playlist_url=playlist_url,
                                 enough_data=enough_data)
