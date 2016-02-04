@@ -9,9 +9,19 @@
             <p class="lead">Festify will create the perfect festival base on the musical taste of the awesome people that will
                 enjoy this musical experience.</p>
             <br>
-            <p class="lead">
-            <a href="{{ oauth }}" class="btn btn-success btn-lg">Login</a>
-             </p>
+
+                <a href="{{ oauth }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
+                        <nav>
+                            <ul>
+                                <li id="login">
+                                    <a class="btn btn-success btn-lg" href="#" margin-right="40px" type="button">Join Festival  </a>
+                                        <form id="login-form" action="{{ url_for('results') }}" method="post">
+                                            <p><input id="festi-text" class="text" type="text" name="festival_id" placeholder="Festival ID" /></p>
+                                            <p><input class="btn btn-primary btn-lg" type="submit" value="Submit" /></p>
+                                        </form>
+                                </li>
+                            </ul>
+                        </nav>
     </div>
    	{% else %}
         <div class="inner cover">
@@ -73,9 +83,23 @@
 
 
 	    <br>
+	<div class="inner cover">
+	    <h1 class="cover-heading">Let's see the set list!</h1>
+	    <br>
 	    <p class="lead">
 	      <form action="{{ url_for('results') }}" method="post">
-	        <input class="btn btn-success btn-lg" type="submit" value="Generate Setlist"></input>
+            <fieldset>
+            {{ form.danceability.label }}
+            {{ form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ form.hotttnesss.label}}
+            {{ form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ form.energy.label }}
+            {{ form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ form.variety.label }}
+            {{ form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
+	        <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
+
+            </fieldset>
 	      </form>
 	    </p>
 	</div>

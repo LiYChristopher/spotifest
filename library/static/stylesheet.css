@@ -1,12 +1,56 @@
 /*
  * Globals
  */
+nav {
+    text-align: start;
+    margin-left: 32%;
+    margin-top: 5%;
+}
+
+#login {
+    list-style: none;
+    height: 40px;
+
+}
+
+#login a {
+    text-decoration: none;
+    color: white;
+    background-color: #5CB85C;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    padding: 10px 20px;
+}
+
+#login-form  {
+    position: absolute;
+    margin-top: 9px;
+    display: none;
+    float: left;
+    clear: both;
+    background-color: transparent;
+    padding: 0 2% 2% 2%;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+#login-form .text {
+    width: 100%;
+    float: right;
+    margin-bottom: 2%;
+}
+
+#login-form .submit {
+    float: right;
+}
 
 /* Links */
 a,
 a:focus,
 a:hover {
-  color: #fff;
+color: #fff;
 }
 
 /* Custom default button */
@@ -164,3 +208,12 @@ body {
   }
 }
 
+form.login-buttons {
+    display: inline;
+}
+
+.lead-buttons {
+    position: absolute;
+    left: 50%;
+    top:50%;
+}
