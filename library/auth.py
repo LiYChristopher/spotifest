@@ -227,6 +227,7 @@ def results():
         d = request.form.get('danceability')
         e = request.form.get('energy')
         v = request.form.get('variety')
+        active_user = session.get('user_id')
         current_user = User.users[active_user].access
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
