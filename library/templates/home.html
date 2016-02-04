@@ -26,9 +26,9 @@
    	{% else %}
         <div class="inner cover">
 
-        {% if not artists %}
-            <h3> We haven't been able to find any artists yet! <br>
-        {% endif %}
+            {% if not artists %}
+                <h3> We haven't been able to find any artists yet! <br>
+            {% endif %}
 
             <form action="{{ url_for('home')}}" method="POST">
                 {{ suggested_pl_butt.hidden_tag() }}
@@ -37,72 +37,68 @@
 
 
 
-        <p class="lead">Would you like to invite more artists?</p>
+            <p class="lead">Would you like to invite more artists?</p>
 
 
 
-        <form action="{{ url_for('home') }}" method="POST">
-            {{ searchform.hidden_tag() }}
-            {{ searchform.artist_search(size=20)}}
-            {{ searchform.submit }}
-        </form>
+            <form action="{{ url_for('home') }}" method="POST">
+                {{ searchform.hidden_tag() }}
+                {{ searchform.artist_search(size=20)}}
+                {{ searchform.submit }}
+            </form>
 
 
-    {% if art_select.artist_display.choices %}
-        <form action="{{ url_for('home') }}" method="POST">
+            {% if art_select.artist_display.choices %}
+                <form action="{{ url_for('home') }}" method="POST">
 
-            {{ art_select.hidden_tag() }}
-            {{ art_select.artist_display }}
-            {{ art_select.confirm_button }}
+                    {{ art_select.hidden_tag() }}
+                    {{ art_select.artist_display }}
+                    {{ art_select.confirm_button }}
 
-        </form>
+                </form>
 
-    {% elif s_results == false %}
-        <p class="lead">No artists found with that name!</p>
-    {% endif %}
-
-
-        {% if new  == 1 %}
-            <h6 color="green" border=1>{{ new_artist }} added!</h6>
-        {% elif new == 0 %}
-            <h6 color="red"  border=1>{{ new_artist }} is already here.</h6>
-        {% elif new == -1 %}
-            <h6 color="red"  border=1>That artist will be born in the near future.</h6>
-        {% endif %}
+            {% elif s_results == false %}
+                <p class="lead">No artists found with that name!</p>
+            {% endif %}
 
 
-        {% if artists %}
-            <h3>These artists grace you with their presence:</h3>
-            {% for artist in artists %}
-                <li>
-                    {{ artist }}
-                </li>
-            {% endfor %}
-        {% endif %}
+            {% if new  == 1 %}
+                <h6 color="green" border=1>{{ new_artist }} added!</h6>
+            {% elif new == 0 %}
+                <h6 color="red"  border=1>{{ new_artist }} is already here.</h6>
+            {% elif new == -1 %}
+                <h6 color="red"  border=1>That artist will be born in the near future.</h6>
+            {% endif %}
 
 
+            {% if artists %}
+                <h3>These artists grace you with their presence:</h3>
+                {% for artist in artists %}
+                    <li>
+                        {{ artist }}
+                    </li>
+                {% endfor %}
+            {% endif %}
 
-	    <br>
-	<div class="inner cover">
-	    <h1 class="cover-heading">Let's see the set list!</h1>
-	    <br>
-	    <p class="lead">
-	      <form action="{{ url_for('results') }}" method="post">
-            <fieldset>
-            {{ params_form.danceability.label }}
-            {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
-            {{ params_form.hotttnesss.label}}
-            {{ params_form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
-            {{ params_form.energy.label }}
-            {{ params_form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
-            {{ params_form.variety.label }}
-            {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
-	        <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
 
-            </fieldset>
-	      </form>
-	    </p>
-	</div>
+    	    <br>
+    	    <p class="lead">
+    	      <form action="{{ url_for('results') }}" method="post">
+                <fieldset>
+                {{ params_form.danceability.label }}
+                {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
+                {{ params_form.hotttnesss.label}}
+                {{ params_form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
+                {{ params_form.energy.label }}
+                {{ params_form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
+                {{ params_form.variety.label }}
+                {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
+    	        <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
+
+                </fieldset>
+    	      </form>
+    	    </p>
+	   </div>
 
 
     {% endif %}
