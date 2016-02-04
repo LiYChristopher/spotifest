@@ -1,8 +1,9 @@
 import base64
+import datetime
 from library.app import app, mysql, celery
 
 
-@celery.task(name='save_to_database')
+@celery.task(name='save_festival')
 def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId):
     '''
     saves infromation the data base.
@@ -13,7 +14,7 @@ def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId):
     playlistId = str(playlistId)
     playlistURL = str(playlistURL)
     catalogId = str(catalogId)
-    url_slug = str(base64.b64encode(userId + playlistURL))[:7]
+    url_slug = str(base64.b64encode(userId + festivalName +str(datetime.datetime.now())))[:7]
     values = (festivalName, userId, playlistId, playlistURL, catalogId, url_slug)
     with app.app_context():
         connection = mysql.connect()
@@ -23,6 +24,9 @@ def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId):
         print 'saved to database'
     return
 
+@celery.task(name='update_festival')
+def update_festival(festivalName, userId, playlistId, playlistURL, catalogId):
+    return
 
 def get_info_from_database(festivalId):
     '''
