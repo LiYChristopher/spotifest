@@ -66,7 +66,5 @@ def get_contributors(festivalId):
     cursor = connection.cursor()
     cursor.execute("SELECT userId FROM contributors WHERE festivalId = %s", (festivalId,))
     data = cursor.fetchall()
-    users = []
-    for user in data:
-        users.append(user[0].encode('utf-8'))
+    users = [user[0].encode('utf-8') for user in data]
     return  users
