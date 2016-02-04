@@ -224,6 +224,7 @@ def results():
             return redirect(url_for('home'))
 
         # parameters
+        enough_data = True
         name = request.form.get('name')
         h = request.form.get('hotttnesss')
         global did_user_sel_parameters

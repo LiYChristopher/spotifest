@@ -22,6 +22,8 @@ class ArtistSelect(Form):
 
 
 class ParamsForm(Form):
+    name = StringField('name', [validators.DataRequired()],
+                   default='Festify 2016')
     danceability = DecimalRangeField('danceability',
                    [validators.NumberRange(min=0, max=1)],
                    default=0.5)

@@ -13,7 +13,7 @@ def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId):
     playlistId = str(playlistId)
     playlistURL = str(playlistURL)
     catalogId = str(catalogId)
-    url_slug = str(base64.b64encode(festivalName + catalogId))[:7]
+    url_slug = str(base64.b64encode(festivalName + playlistURL))[:7]
     values = (festivalName, userId, playlistId, playlistURL, catalogId, url_slug)
     with app.app_context():
         connection = mysql.connect()
