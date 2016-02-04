@@ -49,10 +49,10 @@ class User(UserMixin):
                 search_results=None):
         self.id = unicode(spotify_id)
         self.access = access_token
-        self.refresh = refresh_token
-        self.users[self.id] = self
+        self.refresh = refresh_token      
         self.artists = artists
         self.search_results = search_results
+        self.users[self.id] = self
 
     @classmethod
     def get(cls, user_id):
@@ -192,8 +192,6 @@ def home(config=BaseConfig):
                             artists=User.artists,
                             params_form=params_form,
                             new=new, new_artist=new_artist)
-
-
 
 
 @app.route('/setlist_prep', methods=['POST', 'GET'])
