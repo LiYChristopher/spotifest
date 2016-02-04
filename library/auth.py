@@ -126,14 +126,6 @@ def home(config=BaseConfig):
     render home.html
     '''
 
-    new = None
-    new_artist = None
-    searchform = frontend_helpers.SearchForm()
-    suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
-    art_select = frontend_helpers.ArtistSelect(request.form)
-    params_form = frontend_helpers.ParamsForm()
-
-
     code = request.args.get('code')
     active_user = session.get('user_id')
     if request.method == 'GET':
@@ -151,49 +143,13 @@ def home(config=BaseConfig):
                 user_id = s.me()['id']
                 new_user = User(user_id, token, response['refresh_token'])
                 login_user(new_user)
+            # at this point, user is logged in, so if you click "Create"
 
             current_user = User.users[session.get('user_id')].access
             s = spotipy.Spotify(auth=current_user)
-            try:
-                processor = helpers.AsyncAdapter(app)
-                artists = processor.get_user_preferences(s)
-                print (artists)
-                User.artists = artists
-            except:
-                print ("No artists followed found in the user's Spotify account.")
-                User.artists = set()
-    else:
-        if searchform.validate_on_submit():
-            new_artist = searchform.artist_search.data
-            User.search_results = helpers.search_artist_echonest(new_artist)
-            art_select.artist_display.choices = User.search_results
-            if not User.search_results:
-                new = -1
-
-        if art_select.artist_display.data:
-            if art_select.is_submitted():
-                option_n = int(art_select.artist_display.data) -1
-                chosen_art = User.search_results[option_n][1]
-                if chosen_art not in User.artists:
-                    User.artists.update([chosen_art])
-                    new_artist = chosen_art
-                    new = 1
-                else:
-                    new = 0
 
 
-        elif suggested_pl_butt.validate_on_submit():
-            if request.form.get("add_button"):
-                new_artist = ', '.join(suggested_artists)
-                User.artists.update(suggested_artists)
-                new = True
-
-    return render_template('home.html', login=True, searchform=searchform,
-                            art_select=art_select,
-                            suggested_pl_butt=suggested_pl_butt,
-                            artists=User.artists,
-                            params_form=params_form,
-                            new=new, new_artist=new_artist)
+    return render_template('home.html', login=True)
 
 
 @app.route('/setlist_prep', methods=['POST', 'GET'])
@@ -269,7 +225,59 @@ def results():
                                     enough_data=enough_data)
 
 
+@app.route('/festival/create_new')
+def new():
+    new = None
+    new_artist = None
+    searchform = frontend_helpers.SearchForm()
+    suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
+    art_select = frontend_helpers.ArtistSelect(request.form)
+    params_form = frontend_helpers.ParamsForm()
+
+    current_user = User.users[session.get('user_id')].access
+    s = spotipy.Spotify(auth=current_user)    
+    try:
+        processor = helpers.AsyncAdapter(app)
+        artists = processor.get_user_preferences(s)
+        print (artists)
+        User.artists = artists
+    except:
+        print ("No artists followed found in the user's Spotify account.")
+        User.artists = set()
+    else:
+        if searchform.validate_on_submit():
+            new_artist = searchform.artist_search.data
+            User.search_results = helpers.search_artist_echonest(new_artist)
+            art_select.artist_display.choices = User.search_results
+            if not User.search_results:
+                new = -1
+
+        if art_select.artist_display.data:
+            if art_select.is_submitted():
+                option_n = int(art_select.artist_display.data) -1
+                chosen_art = User.search_results[option_n][1]
+                if chosen_art not in User.artists:
+                    User.artists.update([chosen_art])
+                    new_artist = chosen_art
+                    new = 1
+                else:
+                    new = 0
+
+
+        elif suggested_pl_butt.validate_on_submit():
+            if request.form.get("add_button"):
+                new_artist = ', '.join(suggested_artists)
+                User.artists.update(suggested_artists)
+                new = True    
+    return render_template('festival.html', searchform=searchform,
+                            art_select=art_select,
+                            suggested_pl_butt=suggested_pl_butt,
+                            artists=User.artists,
+                            params_form=params_form,
+                            new=new, new_artist=new_artist)
+
 @app.route('/festival/<url_slug>')
 def festival(url_slug):
+
     return
 
