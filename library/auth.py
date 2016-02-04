@@ -170,7 +170,7 @@ def home(config=BaseConfig):
 
         if art_select.artist_display.data:
             if art_select.is_submitted():
-                option_n = int(art_select.artist_display.data) + 1
+                option_n = int(art_select.artist_display.data) -1
                 chosen_art = User.search_results[option_n][1]
                 if chosen_art not in User.artists:
                     User.artists.update([chosen_art])
