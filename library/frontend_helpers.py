@@ -1,6 +1,7 @@
 #Frontend helpers
 from flask_wtf import Form
-from wtforms import StringField, SubmitField, SelectField, validators
+from wtforms import (StringField, SubmitField, SelectField,
+                    validators, DecimalRangeField)
 from wtforms.widgets import Select
 from pyechonest import artist
 from pyechonest import config
