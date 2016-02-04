@@ -18,6 +18,22 @@ class ArtistSelect(Form):
                                 option_widget=Select(multiple=False))
     confirm_button = SubmitField("Add!")
 
+
+class ParamsForm(Form):
+    danceability = DecimalRangeField('danceability',
+                   [validators.NumberRange(min=0, max=1)],
+                   default=0.5)
+    hotttnesss = DecimalRangeField('hotttnesss',
+                   [validators.NumberRange(min=0, max=1)],
+                   default=0.5)
+    energy = DecimalRangeField('energy',
+                   [validators.NumberRange(min=0, max=1)],
+                   default=0.5)
+    variety = DecimalRangeField('variety',
+                   [validators.NumberRange(min=0, max=1)],
+                   default=0.5)
+
 class SuggestedPlaylistButton(Form):
     add_button = SubmitField("Add the Festify team's favorites!")
     confirm_button = SubmitField("Accept our suggestions?")
+

@@ -89,14 +89,14 @@
 	    <p class="lead">
 	      <form action="{{ url_for('results') }}" method="post">
             <fieldset>
-            {{ form.danceability.label }}
-            {{ form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
-            {{ form.hotttnesss.label}}
-            {{ form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
-            {{ form.energy.label }}
-            {{ form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
-            {{ form.variety.label }}
-            {{ form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ params_form.danceability.label }}
+            {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ params_form.hotttnesss.label}}
+            {{ params_form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ params_form.energy.label }}
+            {{ params_form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ params_form.variety.label }}
+            {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
 	        <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
 
             </fieldset>

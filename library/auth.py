@@ -41,21 +41,6 @@ scope = ['user-library-read', 'playlist-read-collaborative',
 oauth = oauth_prep(BaseConfig, scope)
 
 
-class ParamsForm(Form):
-    danceability = DecimalRangeField('danceability',
-                   [validators.NumberRange(min=0, max=1)],
-                   default=0.5)
-    hotttnesss = DecimalRangeField('hotttnesss',
-                   [validators.NumberRange(min=0, max=1)],
-                   default=0.5)
-    energy = DecimalRangeField('energy',
-                   [validators.NumberRange(min=0, max=1)],
-                   default=0.5)
-    variety = DecimalRangeField('variety',
-                   [validators.NumberRange(min=0, max=1)],
-                   default=0.5)
-
-
 class User(UserMixin):
 
     users = {}
@@ -144,6 +129,8 @@ def home(config=BaseConfig):
     searchform = frontend_helpers.SearchForm()
     suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
     art_select = frontend_helpers.ArtistSelect(request.form)
+    params_form = frontend_helpers.ParamsForm()
+
 
     code = request.args.get('code')
     active_user = session.get('user_id')
