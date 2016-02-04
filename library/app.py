@@ -15,9 +15,6 @@ app.config.from_object('config')
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
-
-
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -26,5 +23,6 @@ mysql = MySQL()
 # mysql configurations
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_DB'] = 'festify'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'uberschall'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)

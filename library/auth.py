@@ -4,12 +4,14 @@ from library import frontend_helpers
 from library.app import app, celery, login_manager
 from config import BaseConfig
 
+from flask.ext.login import login_user, logout_user
+from flask.ext.login import UserMixin
+from flask import render_template, request, redirect, url_for
+from flask import session
+
 from flask.ext.login import login_user, logout_user, UserMixin
 from flask.ext.wtf import Form
 from flask import render_template, request, redirect, url_for, session, flash
-
-from wtforms import Form, validators
-from wtforms.fields.html5 import DecimalRangeField
 
 import redis
 import spotipy
@@ -49,10 +51,10 @@ class User(UserMixin):
                 search_results=None):
         self.id = unicode(spotify_id)
         self.access = access_token
-        self.refresh = refresh_token
-        self.users[self.id] = self
+        self.refresh = refresh_token      
         self.artists = artists
         self.search_results = search_results
+        self.users[self.id] = self
 
     @classmethod
     def get(cls, user_id):
@@ -194,8 +196,6 @@ def home(config=BaseConfig):
                             new=new, new_artist=new_artist)
 
 
-
-
 @app.route('/setlist_prep', methods=['POST', 'GET'])
 def set_prep():
     pass
@@ -224,6 +224,8 @@ def results():
             return redirect(url_for('home'))
 
         # parameters
+        enough_data = True
+        name = request.form.get('name')
         h = request.form.get('hotttnesss')
         global did_user_sel_parameters
         did_user_sel_parameters = True
@@ -255,12 +257,19 @@ def results():
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
             return render_template('results.html', playlist_url=playlist_url, enough_data=enough_data)
         else:
-            helpers.create_playlist(s, user_id, 'Festify Test')
-            id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
+            helpers.create_playlist(s, user_id, name)
+            id_playlist = helpers.get_id_from_playlist(s, user_id, name)
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
             playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
             if app.config['IS_ASYNC'] is True:
-                db.save_to_database.apply_async(args=[user_id, id_playlist, playlist_url, catalog.id])
+                db.save_to_database.apply_async(args=[name, user_id, id_playlist, playlist_url, catalog.id])
             else:
-                db.save_to_database(user_id,id_playlist, playlist_url, catalog.id)
-            return render_template('results.html', playlist_url=playlist_url)
+                db.save_to_database(name, user_id,id_playlist, playlist_url, catalog.id)
+            return render_template('results.html', playlist_url=playlist_url,
+                                    enough_data=enough_data)
+
+
+@app.route('/festival/<url_slug>')
+def festival(url_slug):
+    return
+

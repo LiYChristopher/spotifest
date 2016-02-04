@@ -26,8 +26,6 @@
    	{% else %}
         <div class="inner cover">
 
-
-
             <form action="{{ url_for('home')}}" method="POST">
                 {{ suggested_pl_butt.hidden_tag() }}
                 {{ suggested_pl_butt.add_button }}
@@ -68,14 +66,14 @@
                 <h6 color="red"  border=1>That artist will be born in the near future.</h6>
             {% endif %}
 
-
-
-
-
+    	<div class="inner cover">
+    	    <h1 class="cover-heading">Let's see the set list!</h1>
     	    <br>
     	    <p class="lead">
     	      <form action="{{ url_for('results') }}" method="post">
                 <fieldset>
+                {{ params_form.name.label }} <br>
+                {{ params_form.name }} <br>
                 {{ params_form.danceability.label }}
                 {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
                 {{ params_form.hotttnesss.label}}
@@ -85,24 +83,26 @@
                 {{ params_form.variety.label }}
                 {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
     	        <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
-
                 </fieldset>
     	      </form>
     	    </p>
+    	</div>
 
             {% if artists %}
                 <h3>These artists grace you with their presence:</h3>
+                <!--
                 {% for artist in artists %}
                     <li>
                         {{ artist }}
                     </li>
                 {% endfor %}
+                -->
             {% else %}
                 <h3> We haven't been able to find any artists yet! <br>
             {% endif %}
 
-
 	   </div>
+
 
 
     {% endif %}
