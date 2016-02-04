@@ -6,7 +6,7 @@ from flask.ext.login import login_user, logout_user
 from flask.ext.login import UserMixin
 from flask import render_template, request, redirect, url_for
 from flask import session
-from wtforms import Form, validators
+from wtforms import Form, StringField, validators
 from wtforms.fields.html5 import DecimalRangeField
 
 import redis
@@ -40,6 +40,9 @@ oauth = oauth_prep(BaseConfig, scope)
 
 
 class ParamsForm(Form):
+    name = StringField('name',
+                       [validators.DataRequired()],
+                        default='Festify Test')
     danceability = DecimalRangeField('danceability',
                    [validators.NumberRange(min=0, max=1)],
                    default=0.5)
@@ -168,6 +171,7 @@ def home(config=BaseConfig, scope='user-library-read'):
                 print 'User selected parameters'
 
         # parameters
+        name = request.form.get('name')
         h = request.form.get('hotttnesss')
         global did_user_sel_parameters
         did_user_sel_parameters = True
@@ -206,13 +210,18 @@ def home(config=BaseConfig, scope='user-library-read'):
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
             return render_template('results.html', playlist_url=playlist_url, enough_data=enough_data)
         else:
-            helpers.create_playlist(s, user_id, 'Festify Test')
-            id_playlist = helpers.get_id_from_playlist(s, user_id, 'Festify Test')
+            helpers.create_playlist(s, user_id, name)
+            id_playlist = helpers.get_id_from_playlist(s, user_id, name)
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
             playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
             if app.config['IS_ASYNC'] is True:
-                db.save_to_database.apply_async(args=[user_id, id_playlist, playlist_url, catalog.id])
+                db.save_to_database.apply_async(args=[name, user_id, id_playlist, playlist_url, catalog.id])
             else:
-                db.save_to_database(user_id,id_playlist, playlist_url, catalog.id)
+                db.save_to_database(name, user_id,id_playlist, playlist_url, catalog.id)
             return render_template('results.html', playlist_url=playlist_url,
                                     enough_data=enough_data)
+
+
+@app.route('/festival/<url_slug>')
+def festival(url_slug):
+    return

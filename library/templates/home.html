@@ -31,6 +31,8 @@
 	    <p class="lead">
 	      <form action="{{ url_for('home') }}" method="post">
             <fieldset>
+            {{ form.name.label }} <br>
+            {{ form.name }} <br>
             {{ form.danceability.label }}
             {{ form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
             {{ form.hotttnesss.label}}
