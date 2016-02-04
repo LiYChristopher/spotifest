@@ -83,18 +83,6 @@ class AsyncAdapter(object):
         return st | up | fa
 
 
-def search_artist_echonest(name):
-
-    #add validation via echonest here
-    results = artist.search(name=name)
-    if results is False:
-        return results
-    else:
-        sorted_results = sorted([art.name for art in results])
-        int_results = [(x, sorted_results[x]) for x in xrange(1,len(sorted_results))]
-    return int_results
-
-
     def async_get_user_preferences(self, spotipy):
         tasks = []
         preferences = set()
@@ -121,6 +109,8 @@ def search_artist_echonest(name):
                 else:
                     continue
         return preferences
+
+
 
 
 @celery.task(name='saved_tracks')
@@ -178,6 +168,18 @@ def get_user_followed(spotipy):
     for artist in followed['artists']['items']:
         artists = {artist['name'] for artist in followed['artists']['items']}
     return artists
+
+
+def search_artist_echonest(name):
+
+    #add validation via echonest here
+    results = artist.search(name=name)
+    if results is False:
+        return results
+    else:
+        sorted_results = sorted([art.name for art in results])
+        int_results = [(x, sorted_results[x]) for x in xrange(1,len(sorted_results))]
+    return int_results
 
 
 def create_playlist(spotipy, user_id, name_playlist):

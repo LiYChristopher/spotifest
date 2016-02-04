@@ -153,13 +153,13 @@ def home(config=BaseConfig):
             current_user = User.users[session.get('user_id')].access
             s = spotipy.Spotify(auth=current_user)
             try:
-                artists = helper.get_user_preferences(s)
+                processor = helpers.AsyncAdapter(app)
+                artists = processor.get_user_preferences(s)
                 print (artists)
                 User.artists = artists
             except:
+                print ("No artists followed found in the user's Spotify account.")
                 User.artists = set()
-            artists = User.artists
-
     else:
         if searchform.validate_on_submit():
             new_artist = searchform.artist_search.data
@@ -184,7 +184,6 @@ def home(config=BaseConfig):
             if request.form.get("add_button"):
                 new_artist = ', '.join(suggested_artists)
                 User.artists.update(suggested_artists)
-                artists = User.artists
                 new = True
 
     return render_template('home.html', login=True, searchform=searchform,
@@ -237,8 +236,7 @@ def results():
         user_id = s.me()['id']
 
         processor = helpers.AsyncAdapter(app)
-        artists = processor.get_user_preferences(s)
-        catalog = helpers.random_catalog(artists)
+        catalog = helpers.random_catalog(User.artists)
         playlist = helpers.seed_playlist(catalog=catalog, hotttnesss=h,
                                          danceability=d, energy=e, variety=v)
         songs_id = processor.process_spotify_ids(50, 10, s, playlist)

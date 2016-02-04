@@ -26,9 +26,7 @@
    	{% else %}
         <div class="inner cover">
 
-            {% if not artists %}
-                <h3> We haven't been able to find any artists yet! <br>
-            {% endif %}
+
 
             <form action="{{ url_for('home')}}" method="POST">
                 {{ suggested_pl_butt.hidden_tag() }}
@@ -78,6 +76,8 @@
                         {{ artist }}
                     </li>
                 {% endfor %}
+            {% else %}
+                <h3> We haven't been able to find any artists yet! <br>
             {% endif %}
 
 
