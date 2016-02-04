@@ -191,6 +191,7 @@ def home(config=BaseConfig):
                             art_select=art_select,
                             suggested_pl_butt=suggested_pl_butt,
                             artists=User.artists,
+                            params_form=params_form,
                             new=new, new_artist=new_artist)
 
 
