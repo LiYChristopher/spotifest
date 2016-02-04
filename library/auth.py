@@ -6,7 +6,7 @@ from config import BaseConfig
 
 from flask.ext.login import login_user, logout_user, UserMixin
 from flask.ext.wtf import Form
-from flask import render_template, request, redirect, url_for, session
+from flask import render_template, request, redirect, url_for, session, flash
 
 from wtforms import Form, validators
 from wtforms.fields.html5 import DecimalRangeField
@@ -155,7 +155,7 @@ def home(config=BaseConfig):
             try:
                 artists = helper.get_user_preferences(s)
                 print (artists)
-                User.artists = get_user_preferences(s)
+                User.artists = artists
             except:
                 User.artists = set()
             artists = User.artists
@@ -220,6 +220,10 @@ def results():
             else:
                 print 'User selected parameters'
 
+        if not User.artists:
+            flash('You really should add some artists! Maybe you can use our suggestions..')
+            return redirect(url_for('home'))
+
         # parameters
         h = request.form.get('hotttnesss')
         global did_user_sel_parameters
@@ -232,14 +236,6 @@ def results():
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
 
-        try:
-            artists = helper.get_user_preferences(s)
-            print (artists)
-            User.artists = artists
-            enough_data = True
-        except:
-            User.artists = suggested_artists
-            enough_data = False
         processor = helpers.AsyncAdapter(app)
         artists = processor.get_user_preferences(s)
         catalog = helpers.random_catalog(artists)
@@ -269,5 +265,4 @@ def results():
                 db.save_to_database.apply_async(args=[user_id, id_playlist, playlist_url, catalog.id])
             else:
                 db.save_to_database(user_id,id_playlist, playlist_url, catalog.id)
-            return render_template('results.html', playlist_url=playlist_url,
-                                    enough_data=enough_data)
+            return render_template('results.html', playlist_url=playlist_url)
