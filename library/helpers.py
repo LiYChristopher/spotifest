@@ -5,6 +5,7 @@ import spotipy.util as util
 from flask import Flask
 from pyechonest import config
 from pyechonest import playlist
+from pyechonest import artist
 from pyechonest.catalog import Catalog
 from library.app import celery
 
@@ -75,13 +76,12 @@ class AsyncAdapter(object):
     def non_async_get_user_preferences(self, spotipy):
         # artists from saved tracks
         st = get_user_saved_tracks(spotipy)
-
         # artists form user playlists (public)
         up = get_user_playlists(spotipy)
-
         # artists from followed artists
         fa = get_user_followed(spotipy)
         return st | up | fa
+
 
     def async_get_user_preferences(self, spotipy):
         tasks = []
@@ -109,6 +109,8 @@ class AsyncAdapter(object):
                 else:
                     continue
         return preferences
+
+
 
 
 @celery.task(name='saved_tracks')
@@ -166,6 +168,18 @@ def get_user_followed(spotipy):
     for artist in followed['artists']['items']:
         artists = {artist['name'] for artist in followed['artists']['items']}
     return artists
+
+
+def search_artist_echonest(name):
+
+    #add validation via echonest here
+    results = artist.search(name=name)
+    if results is False:
+        return results
+    else:
+        sorted_results = sorted([art.name for art in results])
+        int_results = [(x, sorted_results[x]) for x in xrange(1,len(sorted_results))]
+    return int_results
 
 
 def create_playlist(spotipy, user_id, name_playlist):

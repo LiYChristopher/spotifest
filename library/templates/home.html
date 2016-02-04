@@ -15,7 +15,7 @@
                             <ul>
                                 <li id="login">
                                     <a class="btn btn-success btn-lg" href="#" margin-right="40px" type="button">Join Festival  </a>
-                                        <form id="login-form" action="{{ url_for('home') }}" method="post">
+                                        <form id="login-form" action="{{ url_for('results') }}" method="post">
                                             <p><input id="festi-text" class="text" type="text" name="festival_id" placeholder="Festival ID" /></p>
                                             <p><input class="btn btn-primary btn-lg" type="submit" value="Submit" /></p>
                                         </form>
@@ -24,6 +24,8 @@
                         </nav>
     </div>
    	{% else %}
+        <div class="inner cover">
+
 
 	<div class="inner cover">
 	    <h1 class="cover-heading">Let's see the set list!</h1>
@@ -48,7 +50,68 @@
 	</div>
 
 
+            <form action="{{ url_for('home')}}" method="POST">
+                {{ suggested_pl_butt.hidden_tag() }}
+                {{ suggested_pl_butt.add_button }}
+            </form>
+
+
+
+            <p class="lead">Would you like to invite more artists?</p>
+
+
+
+            <form action="{{ url_for('home') }}" method="POST">
+                {{ searchform.hidden_tag() }}
+                {{ searchform.artist_search(size=20)}}
+                {{ searchform.submit }}
+            </form>
+
+
+            {% if art_select.artist_display.choices %}
+                <form action="{{ url_for('home') }}" method="POST">
+
+                    {{ art_select.hidden_tag() }}
+                    {{ art_select.artist_display }}
+                    {{ art_select.confirm_button }}
+
+                </form>
+
+            {% elif s_results == false %}
+                <p class="lead">No artists found with that name!</p>
+            {% endif %}
+
+
+            {% if new  == 1 %}
+                <h6 color="green" border=1>{{ new_artist }} added!</h6>
+            {% elif new == 0 %}
+                <h6 color="red"  border=1>{{ new_artist }} is already here.</h6>
+            {% elif new == -1 %}
+                <h6 color="red"  border=1>That artist will be born in the near future.</h6>
+            {% endif %}
+
+
+
+            {% if artists %}
+                <h3>These artists grace you with their presence:</h3>
+                <!--
+                {% for artist in artists %}
+                    <li>
+                        {{ artist }}
+                    </li>
+                {% endfor %}
+                -->
+            {% else %}
+                <h3> We haven't been able to find any artists yet! <br>
+            {% endif %}
+
+
+	   </div>
+
+
+
     {% endif %}
+
 {% endblock %}
 
 

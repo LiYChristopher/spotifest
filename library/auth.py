@@ -1,4 +1,6 @@
 from library.app import app, login_manager
+from library.helpers import (suggested_artists, random_catalog, seed_playlist)
+from library import frontend_helpers
 from library.app import app, celery, login_manager
 from config import BaseConfig
 
@@ -6,8 +8,10 @@ from flask.ext.login import login_user, logout_user
 from flask.ext.login import UserMixin
 from flask import render_template, request, redirect, url_for
 from flask import session
-from wtforms import Form, StringField, validators
-from wtforms.fields.html5 import DecimalRangeField
+
+from flask.ext.login import login_user, logout_user, UserMixin
+from flask.ext.wtf import Form
+from flask import render_template, request, redirect, url_for, session, flash
 
 import redis
 import spotipy
@@ -39,32 +43,17 @@ scope = ['user-library-read', 'playlist-read-collaborative',
 oauth = oauth_prep(BaseConfig, scope)
 
 
-class ParamsForm(Form):
-    name = StringField('name',
-                       [validators.DataRequired()],
-                        default='Festify Test')
-    danceability = DecimalRangeField('danceability',
-                   [validators.NumberRange(min=0, max=1)],
-                   default=0.5)
-    hotttnesss = DecimalRangeField('hotttnesss',
-                   [validators.NumberRange(min=0, max=1)],
-                   default=0.5)
-    energy = DecimalRangeField('energy',
-                   [validators.NumberRange(min=0, max=1)],
-                   default=0.5)    
-    variety = DecimalRangeField('variety',
-                   [validators.NumberRange(min=0, max=1)],
-                   default=0.5)
-
-
 class User(UserMixin):
 
     users = {}
 
-    def __init__(self, spotify_id, access_token, refresh_token):
+    def __init__(self, spotify_id, access_token, refresh_token, artists=set(),
+                search_results=None):
         self.id = unicode(spotify_id)
         self.access = access_token
-        self.refresh = refresh_token
+        self.refresh = refresh_token      
+        self.artists = artists
+        self.search_results = search_results
         self.users[self.id] = self
 
     @classmethod
@@ -74,7 +63,6 @@ class User(UserMixin):
                 return cls.users[user_id]
         else:
             return None
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -122,9 +110,11 @@ def login(config=BaseConfig, oauth=oauth):
     return r.url
 
 
+
+
 @app.route('/', methods=['POST', 'GET'])
 @app.route('/home', methods=['POST', 'GET'])
-def home(config=BaseConfig, scope='user-library-read'):
+def home(config=BaseConfig):
     '''
     If no temporary code in request arguments, attempt to login user
     through Oauth.
@@ -135,6 +125,15 @@ def home(config=BaseConfig, scope='user-library-read'):
 
     render home.html
     '''
+
+    new = None
+    new_artist = None
+    searchform = frontend_helpers.SearchForm()
+    suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
+    art_select = frontend_helpers.ArtistSelect(request.form)
+    params_form = frontend_helpers.ParamsForm()
+
+
     code = request.args.get('code')
     active_user = session.get('user_id')
     if request.method == 'GET':
@@ -142,19 +141,69 @@ def home(config=BaseConfig, scope='user-library-read'):
             auth_url = login()
             return render_template('home.html', login=False, oauth=auth_url)
         else:
-            if code and not active_user:
-                response = oauth.get_access_token(code)
+
+            if not User.users or not session.get('user_id'):
+
+                # log user to session (Flask-Login)
+                response = oauth.get_access_token(request.args['code'])
                 token = response['access_token']
                 s = spotipy.Spotify(auth=token)
                 user_id = s.me()['id']
                 new_user = User(user_id, token, response['refresh_token'])
                 login_user(new_user)
-            # parameter form
-            form = ParamsForm(csrf_enabled=False)
-            active_user = session.get('user_id')
-            current_user = User.users[active_user].access
-            return render_template('home.html', form=form, login=True)
 
+            current_user = User.users[session.get('user_id')].access
+            s = spotipy.Spotify(auth=current_user)
+            try:
+                processor = helpers.AsyncAdapter(app)
+                artists = processor.get_user_preferences(s)
+                print (artists)
+                User.artists = artists
+            except:
+                print ("No artists followed found in the user's Spotify account.")
+                User.artists = set()
+    else:
+        if searchform.validate_on_submit():
+            new_artist = searchform.artist_search.data
+            User.search_results = helpers.search_artist_echonest(new_artist)
+            art_select.artist_display.choices = User.search_results
+            if not User.search_results:
+                new = -1
+
+        if art_select.artist_display.data:
+            if art_select.is_submitted():
+                option_n = int(art_select.artist_display.data) -1
+                chosen_art = User.search_results[option_n][1]
+                if chosen_art not in User.artists:
+                    User.artists.update([chosen_art])
+                    new_artist = chosen_art
+                    new = 1
+                else:
+                    new = 0
+
+
+        elif suggested_pl_butt.validate_on_submit():
+            if request.form.get("add_button"):
+                new_artist = ', '.join(suggested_artists)
+                User.artists.update(suggested_artists)
+                new = True
+
+    return render_template('home.html', login=True, searchform=searchform,
+                            art_select=art_select,
+                            suggested_pl_butt=suggested_pl_butt,
+                            artists=User.artists,
+                            params_form=params_form,
+                            new=new, new_artist=new_artist)
+
+
+@app.route('/setlist_prep', methods=['POST', 'GET'])
+def set_prep():
+    pass
+
+
+
+@app.route('/results', methods=['POST', 'GET'])
+def results():
     if request.method == 'POST':
         # Did user click on join festival ?
         try:
@@ -170,6 +219,10 @@ def home(config=BaseConfig, scope='user-library-read'):
             else:
                 print 'User selected parameters'
 
+        if not User.artists:
+            flash('You really should add some artists! Maybe you can use our suggestions..')
+            return redirect(url_for('home'))
+
         # parameters
         name = request.form.get('name')
         h = request.form.get('hotttnesss')
@@ -178,20 +231,13 @@ def home(config=BaseConfig, scope='user-library-read'):
         d = request.form.get('danceability')
         e = request.form.get('energy')
         v = request.form.get('variety')
+        active_user = session.get('user_id')
         current_user = User.users[active_user].access
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
 
-        try:
-            artists = helper.get_user_preferences(s)
-            enough_data = True
-        except:
-            artists = helpers.suggested_artists
-            enough_data = False
-
         processor = helpers.AsyncAdapter(app)
-        artists = processor.get_user_preferences(s)
-        catalog = helpers.random_catalog(artists)
+        catalog = helpers.random_catalog(User.artists)
         playlist = helpers.seed_playlist(catalog=catalog, hotttnesss=h,
                                          danceability=d, energy=e, variety=v)
         songs_id = processor.process_spotify_ids(50, 10, s, playlist)
@@ -225,3 +271,4 @@ def home(config=BaseConfig, scope='user-library-read'):
 @app.route('/festival/<url_slug>')
 def festival(url_slug):
     return
+
