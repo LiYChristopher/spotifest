@@ -264,7 +264,7 @@ def results():
             if app.config['IS_ASYNC'] is True:
                 db.save_to_database.apply_async(args=[name, user_id, id_playlist, playlist_url, catalog.id])
             else:
-                db.save_to_database(name, user_id,id_playlist, playlist_url, catalog.id)
+                db.save_to_database(name, user_id, id_playlist, playlist_url, catalog.id)
             return render_template('results.html', playlist_url=playlist_url,
                                     enough_data=enough_data)
 
@@ -272,4 +272,3 @@ def results():
 @app.route('/festival/<url_slug>')
 def festival(url_slug):
     return
-

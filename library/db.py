@@ -24,6 +24,20 @@ def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId):
     return
 
 
+def save_contributor(festivalId, userId):
+    festivalId = int(festivalId)
+    userId = str(userId)
+    values = (festivalId, userId)
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO contributors VALUES (%s, %s)", values)
+        connection.commit()
+        print 'saved to database'
+    return
+
+
+
 def get_info_from_database(festivalId):
     '''
     return a list with all the information from the
@@ -40,3 +54,19 @@ def get_info_from_database(festivalId):
     catalogId = str(data[0][4])
     values = [festivalId, userId, playlistId, playlistURL, catalogId]
     return values
+
+
+def get_contributors(festivalId):
+    '''
+    return a list with all the contributors id of
+    the festival
+    '''
+    print type(festivalId)
+    connection = mysql.get_db()
+    cursor = connection.cursor()
+    cursor.execute("SELECT userId FROM contributors WHERE festivalId = %s", (festivalId,))
+    data = cursor.fetchall()
+    users = []
+    for user in data:
+        users.append(user[0].encode('utf-8'))
+    return  users
