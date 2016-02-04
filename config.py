@@ -3,7 +3,7 @@ SECRET_KEY = 'this_is_a_secret'
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_TASK_RESULT_EXPIRES = 3600
-IS_ASYNC = True
+IS_ASYNC = False
 
 class BaseConfig(object):
 
