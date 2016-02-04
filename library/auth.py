@@ -1,6 +1,5 @@
 from library.app import app, login_manager
-from library.helpers import (get_user_preferences, suggested_artists,
-                            random_catalog, seed_playlist)
+from library.helpers import (suggested_artists, random_catalog, seed_playlist)
 from library import frontend_helpers
 from library.app import app, celery, login_manager
 from config import BaseConfig
@@ -167,8 +166,8 @@ def home(config=BaseConfig):
             current_user = User.users[session.get('user_id')].access
             s = spotipy.Spotify(auth=current_user)
             try:
-                get_user_preferences(s)
-                print (get_user_preferences(s))
+                artists = helper.get_user_preferences(s)
+                print (artists)
                 User.artists = get_user_preferences(s)
             except:
                 User.artists = set()
@@ -245,9 +244,9 @@ def results():
         user_id = s.me()['id']
 
         try:
-            get_user_preferences(s)
-            print (get_user_preferences(s))
-            User.artists = get_user_preferences(s)
+            artists = helper.get_user_preferences(s)
+            print (artists)
+            User.artists = artists
             enough_data = True
         except:
             User.artists = suggested_artists
