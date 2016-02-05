@@ -7,7 +7,7 @@ from config import BaseConfig
 from flask.ext.login import login_user, logout_user
 from flask.ext.login import UserMixin
 from flask import render_template, request, redirect, url_for
-from flask import session
+from flask import session, flash
 
 from flask.ext.login import login_user, logout_user, UserMixin
 from flask.ext.wtf import Form
@@ -184,6 +184,8 @@ def festival(url_slug):
         return redirect(url_for('home'))
     _user = session.get('user_id')
 
+    print 'Current User....', _user
+    print 'CURRENT FESTIVAL', current_festival
     if owner != _user:
         try:
             db.save_contributor(current_festival[0], _user)
