@@ -37,7 +37,6 @@ def save_contributor(festivalId, userId):
     return
 
 
-
 def get_info_from_database(festivalId):
     '''
     return a list with all the information from the
@@ -67,4 +66,4 @@ def get_contributors(festivalId):
     cursor.execute("SELECT userId FROM contributors WHERE festivalId = %s", (festivalId,))
     data = cursor.fetchall()
     users = [user[0].encode('utf-8') for user in data]
-    return  users
+    return users

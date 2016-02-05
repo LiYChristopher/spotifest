@@ -51,7 +51,7 @@ class User(UserMixin):
                 search_results=None):
         self.id = unicode(spotify_id)
         self.access = access_token
-        self.refresh = refresh_token      
+        self.refresh = refresh_token
         self.artists = artists
         self.search_results = search_results
         self.users[self.id] = self
@@ -63,6 +63,7 @@ class User(UserMixin):
                 return cls.users[user_id]
         else:
             return None
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -110,8 +111,6 @@ def login(config=BaseConfig, oauth=oauth):
     return r.url
 
 
-
-
 @app.route('/', methods=['POST', 'GET'])
 @app.route('/home', methods=['POST', 'GET'])
 def home(config=BaseConfig):
@@ -132,7 +131,6 @@ def home(config=BaseConfig):
     suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
     art_select = frontend_helpers.ArtistSelect(request.form)
     params_form = frontend_helpers.ParamsForm()
-
 
     code = request.args.get('code')
     active_user = session.get('user_id')
@@ -172,7 +170,7 @@ def home(config=BaseConfig):
 
         if art_select.artist_display.data:
             if art_select.is_submitted():
-                option_n = int(art_select.artist_display.data) -1
+                option_n = int(art_select.artist_display.data) - 1
                 chosen_art = User.search_results[option_n][1]
                 if chosen_art not in User.artists:
                     User.artists.update([chosen_art])
@@ -180,7 +178,6 @@ def home(config=BaseConfig):
                     new = 1
                 else:
                     new = 0
-
 
         elif suggested_pl_butt.validate_on_submit():
             if request.form.get("add_button"):
@@ -199,7 +196,6 @@ def home(config=BaseConfig):
 @app.route('/setlist_prep', methods=['POST', 'GET'])
 def set_prep():
     pass
-
 
 
 @app.route('/results', methods=['POST', 'GET'])

@@ -46,7 +46,6 @@ class AsyncAdapter(object):
         else:
             return self.async_get_user_preferences(spotipy)
 
-
     def non_async_process_spotify_ids(self, spotipy, playlist):
 
         songs_id = get_songs_id(spotipy, playlist, None)
@@ -82,7 +81,6 @@ class AsyncAdapter(object):
         fa = get_user_followed(spotipy)
         return st | up | fa
 
-
     def async_get_user_preferences(self, spotipy):
         tasks = []
         preferences = set()
@@ -109,8 +107,6 @@ class AsyncAdapter(object):
                 else:
                     continue
         return preferences
-
-
 
 
 @celery.task(name='saved_tracks')
@@ -172,13 +168,13 @@ def get_user_followed(spotipy):
 
 def search_artist_echonest(name):
 
-    #add validation via echonest here
+    # add validation via echonest here
     results = artist.search(name=name)
     if results is False:
         return results
     else:
         sorted_results = sorted([art.name for art in results])
-        int_results = [(x, sorted_results[x]) for x in xrange(1,len(sorted_results))]
+        int_results = [(x, sorted_results[x]) for x in xrange(1, len(sorted_results))]
     return int_results
 
 
