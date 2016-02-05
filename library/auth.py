@@ -175,7 +175,7 @@ def new():
     return redirect(url_for('festival', url_slug=new_url_slug))
 
 
-@app.route('/festival/<url_slug>')
+@app.route('/festival/<url_slug>', methods=['GET', 'POST'])
 def festival(url_slug):
     print 'url_slug....', url_slug
     current_festival = db.get_info_from_database(url_slug)

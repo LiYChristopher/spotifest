@@ -15,7 +15,7 @@
 
 
 
-            <form action="{{ url_for('home') }}" method="POST">
+            <form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
                 {{ searchform.hidden_tag() }}
                 {{ searchform.artist_search(size=20)}}
                 {{ searchform.submit }}
@@ -23,7 +23,7 @@
 
 
             {% if art_select.artist_display.choices %}
-                <form action="{{ url_for('home') }}" method="POST">
+                <form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
 
                     {{ art_select.hidden_tag() }}
                     {{ art_select.artist_display }}
