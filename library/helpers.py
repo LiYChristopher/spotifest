@@ -227,8 +227,11 @@ def process_to_item(artist):
     return item
 
 
-def random_catalog(artists, limit=15):
-    catalog = Catalog('your_catalog', 'general')
+def random_catalog(artists, limit=15, catalog_id=None):
+    if catalog_id:
+        catalog = Catalog(catalog_id)
+    else:
+        catalog = Catalog('your_catalog', 'general')
     artists = list(artists)
     for _ in xrange(limit):
         choice = random.choice(artists)
@@ -257,7 +260,7 @@ def seed_playlist(catalog, danceability=0.5, hotttnesss=0.5,
                              min_energy=energy, variety=variety, distribution='focused',
                              results=results)
         print 'songs in playslist', len(pl)
-        catalog.delete()
+        #catalog.delete()
         return pl
 
 

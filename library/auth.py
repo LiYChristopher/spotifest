@@ -16,7 +16,10 @@ from flask import render_template, request, redirect, url_for, session, flash
 import redis
 import spotipy
 import spotipy.util as util
+import os
 import base64
+import hashlib
+import datetime
 import requests
 import helpers
 import db
@@ -125,13 +128,6 @@ def home(config=BaseConfig):
     render home.html
     '''
 
-    new = None
-    new_artist = None
-    searchform = frontend_helpers.SearchForm()
-    suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
-    art_select = frontend_helpers.ArtistSelect(request.form)
-    params_form = frontend_helpers.ParamsForm()
-
     code = request.args.get('code')
     active_user = session.get('user_id')
     if request.method == 'GET':
@@ -149,17 +145,57 @@ def home(config=BaseConfig):
                 user_id = s.me()['id']
                 new_user = User(user_id, token, response['refresh_token'])
                 login_user(new_user)
+            # at this point, user is logged in, so if you click "Create"
 
             current_user = User.users[session.get('user_id')].access
             s = spotipy.Spotify(auth=current_user)
-            try:
-                processor = helpers.AsyncAdapter(app)
-                artists = processor.get_user_preferences(s)
-                print (artists)
-                User.artists = artists
-            except:
-                print ("No artists followed found in the user's Spotify account.")
-                User.artists = set()
+
+    if request.method == 'POST':
+        url_slug = request.form['festival_id']
+        return redirect(url_for('festival', url_slug=url_slug))
+    return render_template('home.html', login=True)
+
+
+@app.route('/setlist_prep', methods=['POST', 'GET'])
+def set_prep():
+    pass
+
+
+@app.route('/festival/create_new', methods=['GET'])
+def new():
+    current_user = session.get('user_id')
+    unique = base64.b64encode(os.urandom(3))
+    slug_hash = hashlib.md5(current_user + str(datetime.datetime.now()) + unique)
+    new_url_slug = slug_hash.hexdigest()[:7]
+    new_catalog = helpers.Catalog('your-catalog', 'general')
+    db.save_to_database(None, current_user, None, None, new_catalog.id, new_url_slug)
+    print 'saving to db....'
+    return redirect(url_for('festival', url_slug=new_url_slug))
+
+
+@app.route('/festival/<url_slug>', methods=['GET', 'POST'])
+def festival(url_slug):
+    print 'url_slug....', url_slug
+    current_festival = db.get_info_from_database(url_slug)
+    if not current_festival:
+        return redirect(url_for('home'))
+    new = None
+    new_artist = None
+    searchform = frontend_helpers.SearchForm()
+    suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
+    art_select = frontend_helpers.ArtistSelect(request.form)
+    params_form = frontend_helpers.ParamsForm()
+
+    current_user = load_user(session.get('user_id')).access
+    s = spotipy.Spotify(auth=current_user)
+    try:
+        processor = helpers.AsyncAdapter(app)
+        artists = processor.get_user_preferences(s)
+        print (artists)
+        User.artists = artists
+    except:
+        print ("No artists followed found in the user's Spotify account.")
+        User.artists = set()
     else:
         if searchform.validate_on_submit():
             new_artist = searchform.artist_search.data
@@ -183,9 +219,8 @@ def home(config=BaseConfig):
             if request.form.get("add_button"):
                 new_artist = ', '.join(suggested_artists)
                 User.artists.update(suggested_artists)
-                new = True
-
-    return render_template('home.html', login=True, searchform=searchform,
+                new = True    
+    return render_template('festival.html', url_slug=url_slug, searchform=searchform,
                             art_select=art_select,
                             suggested_pl_butt=suggested_pl_butt,
                             artists=User.artists,
@@ -193,13 +228,13 @@ def home(config=BaseConfig):
                             new=new, new_artist=new_artist)
 
 
-@app.route('/setlist_prep', methods=['POST', 'GET'])
-def set_prep():
-    pass
+@app.route('/festival/<url_slug>/results', methods=['POST', 'GET'])
+def results(url_slug):
+    current_festival = db.get_info_from_database(url_slug)
+    festival_catalog = current_festival[4]
+    print 'CURRENT FESTIVAL', current_festival
+    print "CATALOG IS...", festival_catalog
 
-
-@app.route('/results', methods=['POST', 'GET'])
-def results():
     if request.method == 'POST':
         # Did user click on join festival ?
         try:
@@ -234,7 +269,7 @@ def results():
         user_id = s.me()['id']
 
         processor = helpers.AsyncAdapter(app)
-        catalog = helpers.random_catalog(User.artists)
+        catalog = helpers.random_catalog(User.artists, catalog_id=festival_catalog)
         playlist = helpers.seed_playlist(catalog=catalog, hotttnesss=h,
                                          danceability=d, energy=e, variety=v)
         songs_id = processor.process_spotify_ids(50, 10, s, playlist)
@@ -258,13 +293,8 @@ def results():
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
             playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
             if app.config['IS_ASYNC'] is True:
-                db.save_to_database.apply_async(args=[name, user_id, id_playlist, playlist_url, catalog.id])
+                db.update_festival.apply_async(args=[name, id_playlist, playlist_url, url_slug])
             else:
-                db.save_to_database(name, user_id, id_playlist, playlist_url, catalog.id)
+                db.update_festival(name, id_playlist, playlist_url, url_slug)
             return render_template('results.html', playlist_url=playlist_url,
                                     enough_data=enough_data)
-
-
-@app.route('/festival/<url_slug>')
-def festival(url_slug):
-    return
