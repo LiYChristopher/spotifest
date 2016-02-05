@@ -5,6 +5,7 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_TASK_RESULT_EXPIRES = 3600
 IS_ASYNC = False
 
+
 class BaseConfig(object):
 
 	with open('credentials.txt', 'r') as cred:
