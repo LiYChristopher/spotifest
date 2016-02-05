@@ -15,7 +15,8 @@ CREATE table contributors (
     userId varchar(30) NOT NULL,
     ready boolean DEFAULT 0 NOT NULL,
     CONSTRAINT FOREIGN KEY (festivalId) REFERENCES sessions(festivalId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT festival_user UNIQUE (festivalId, userId)
 );
 CREATE table parameters (
     festivalId int (10) NOT NULL,
@@ -26,5 +27,6 @@ CREATE table parameters (
     variety decimal(4,3),
     genre varchar(30),
     CONSTRAINT FOREIGN KEY (festivalId) REFERENCES contributors (festivalId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT festival_user UNIQUE (festivalId, userId)
 );
