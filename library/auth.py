@@ -147,7 +147,7 @@ def home(config=BaseConfig):
                 login_user(new_user)
             # at this point, user is logged in, so if you click "Create"
 
-            current_user = User.users[session.get('user_id')].access
+            current_user = load_user(session.get('user_id')).access
             s = spotipy.Spotify(auth=current_user)
 
     if request.method == 'POST':
@@ -169,16 +169,23 @@ def new():
     new_url_slug = slug_hash.hexdigest()[:7]
     new_catalog = helpers.Catalog('your-catalog', 'general')
     db.save_to_database(None, current_user, None, None, new_catalog.id, new_url_slug)
-    print 'saving to db....'
     return redirect(url_for('festival', url_slug=new_url_slug))
 
 
 @app.route('/festival/<url_slug>', methods=['GET', 'POST'])
 def festival(url_slug):
-    print 'url_slug....', url_slug
     current_festival = db.get_info_from_database(url_slug)
+    owner = current_festival[1]
     if not current_festival:
         return redirect(url_for('home'))
+    _user = session.get('user_id')
+
+    if owner != _user:
+        try:
+            db.save_contributor(current_festival[0], _user)
+        except:
+            print "Contributor already in database."
+
     new = None
     new_artist = None
     searchform = frontend_helpers.SearchForm()
@@ -263,8 +270,7 @@ def results(url_slug):
         d = request.form.get('danceability')
         e = request.form.get('energy')
         v = request.form.get('variety')
-        active_user = session.get('user_id')
-        current_user = User.users[active_user].access
+        current_user = load_user(session.get('user_id')).access
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
 
