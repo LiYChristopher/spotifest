@@ -13,6 +13,18 @@ CREATE TABLE sessions (
 CREATE table contributors (
     festivalId int (10) NOT NULL,
     userId varchar(30) NOT NULL,
+    ready boolean DEFAULT 0 NOT NULL,
     CONSTRAINT FOREIGN KEY (festivalId) REFERENCES sessions(festivalId)
+        ON DELETE CASCADE
 );
-
+CREATE table parameters (
+    festivalId int (10) NOT NULL,
+    userId varchar(30) NOT NULL,
+    hotness decimal(4,3),
+    danceability decimal(4,3),
+    energy decimal(4,3),
+    variety decimal(4,3),
+    genre varchar(30),
+    CONSTRAINT FOREIGN KEY (festivalId) REFERENCES contributors (festivalId)
+        ON DELETE CASCADE
+);
