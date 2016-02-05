@@ -48,13 +48,15 @@ class User(UserMixin):
     users = {}
 
     def __init__(self, spotify_id, access_token, refresh_token, artists=set(),
-                search_results=None):
+                search_results=None, joined_festivals=list()):
         self.id = unicode(spotify_id)
         self.access = access_token
-        self.refresh = refresh_token      
+        self.refresh = refresh_token
         self.artists = artists
         self.search_results = search_results
+        self.joined_festivals = joined_festivals
         self.users[self.id] = self
+
 
     @classmethod
     def get(cls, user_id):
@@ -161,8 +163,25 @@ def home(config=BaseConfig):
                 User.artists = artists
             except:
                 print ("No artists followed found in the user's Spotify account.")
-                User.artists = set()
-    else:
+
+    elif request.method == 'POST':
+
+
+# Did user click on join festival ?
+        try:
+            if request.form['festival_id']:
+                print 'User selected join'
+                auth_url = login()
+                global festival_id
+                User.joined_festivals = request.form['festival_id']
+                return redirect(auth_url)
+        except:
+            if festival_id is None:
+                print 'User did not click on join and selected parameter'
+            else:
+                print 'User selected parameters'
+
+
         if searchform.validate_on_submit():
             new_artist = searchform.artist_search.data
             User.search_results = helpers.search_artist_echonest(new_artist)
@@ -200,31 +219,32 @@ def home(config=BaseConfig):
 def set_prep():
     pass
 
-
+@app.route('/join_festival', methods=['POST', 'GET'])
+def join_festival():
+    try:
+        if request.form['festival_id']:
+            print 'User selected join'
+            auth_url = login()
+            User.joined_festivals = request.form['festival_id']
+            return redirect(auth_url)
+    except:
+        if festival_id is None:
+            print 'User did not click on join and selected parameter'
+            flash('Please enter a festival_id!')
+            return redirect(url_for('home'))
+        else:
+            print 'User selected parameters'
+            return redirect(url_for('home'))
 
 @app.route('/results', methods=['POST', 'GET'])
 def results():
     if request.method == 'POST':
-        # Did user click on join festival ?
-        try:
-            if request.form['festival_id']:
-                print 'User selected join'
-                auth_url = login()
-                global festival_id
-                festival_id = request.form['festival_id']
-                return redirect(auth_url)
-        except:
-            if festival_id is None:
-                print 'User did not click on join and selected parameter'
-            else:
-                print 'User selected parameters'
 
         if not User.artists:
             flash('You really should add some artists! Maybe you can use our suggestions..')
             return redirect(url_for('home'))
 
         # parameters
-        enough_data = True
         name = request.form.get('name')
         h = request.form.get('hotttnesss')
         global did_user_sel_parameters
@@ -255,18 +275,30 @@ def results():
             playlist_url = festival_information[3]
             id_playlist = festival_information[2]
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
-            return render_template('results.html', playlist_url=playlist_url, enough_data=enough_data)
+
         else:
             helpers.create_playlist(s, user_id, name)
             id_playlist = helpers.get_id_from_playlist(s, user_id, name)
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
-            playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
+            playlist_url = ('https://embed.spotify.com/?uri=spotify:user:{}:'
+                            'playlist:{}'.format(str(user_id),str(id_playlist)))
             if app.config['IS_ASYNC'] is True:
-                db.save_to_database.apply_async(args=[name, user_id, id_playlist, playlist_url, catalog.id])
+                db.save_to_database.apply_async(args=[name, user_id,
+                                        id_playlist, playlist_url, catalog.id])
             else:
-                db.save_to_database(name, user_id,id_playlist, playlist_url, catalog.id)
-            return render_template('results.html', playlist_url=playlist_url,
-                                    enough_data=enough_data)
+                db.save_to_database(name, user_id,id_playlist,
+                                    playlist_url, catalog.id)
+
+        share_txt = ("Listen to the festival playlist I made using Festify, "
+                    "based on my Spotify taste!".replace(' ', '%20'))
+        fb_url = ("http://www.facebook.com/sharer.php?u={}&t={}"
+                    .format(playlist_url, share_text))
+        tw_url = ("http://twitter.com/home?status={}%20{}"
+                    .format(share_text, playlist_url))
+        gp_url = "https://plus.google.com/share?url={}".format(playlist_url)
+
+        return render_template('results.html', playlist_url=playlist_url,
+                                fb_url=fb_url, tw_url=tw_url, gp_url=gp_url)
 
 
 @app.route('/festival/<url_slug>')

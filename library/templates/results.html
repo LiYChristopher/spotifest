@@ -1,22 +1,21 @@
 {% extends 'base.html'%}
 
-    {% if enough_data == false %}
+    {% block login %}
 
-        <h1 style="color:white;" class="cover-heading">
-            You don't have that many saved artists yet.. let us help you!
-        </h1>
-        <br>
-
-    {% else %}
 
         <h1 style="color:white;" class="cover-heading">Enjoy the show!</h1>
         <br>
+        <a href="{{ fb_url }}" target="_blank"><img src="https://s3.amazonaws.com/wfo/images/facebook_32.png" alt="Share on Facebook" /></a>
+    <a href="{{ tw_url }}" target="_blank"><img src="https://s3.amazonaws.com/wfo/images/twitter_32.png" alt="Share on Twitter" /></a> <a href="{{ gp_url }}" target="_blank"><img src="https://s3.amazonaws.com/wfo/images/delicious_32.png" alt="Share on Delicious" /></a> <a href="{{ gp_url }}" target="_blank"><img src="" alt="Share on Google Plus" /></a> <div class="g-plus" data-action="share"></div>
 
-    {% endif %}
+    {% endblock %}
 
-	{% block lists %}
+    {% block lists %}
 
 
-	    <iframe src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>
+        <iframe src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>
 
-	{% endblock %} 
+
+
+
+    {% endblock %}

@@ -5,13 +5,21 @@
 
     <!--Here we have the basic bootstrap CSS and out own stylesheet -->
      <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+    crossorigin="anonymous">
 
     <!-- Latest compiled and minified JavaScript -->
 
     <!-- Custom styles for this template -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheet.css')}}">
-
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',
+                                                filename='stylesheet.css')}}">
+    <!-- just for the google plus share button -->
+    <script src="https://apis.google.com/js/platform.js" async defer>
+  {lang: 'en'}</script>
+    <meta property="og:title" content="My Festify !"/>
+    <meta property="og:image" content="http://cdn.embed.ly/providers/logos/spotify.png"/>
+    <meta property="og:description" content="Listen to the festival playlist I
+                            made using Festify, based on my Spotify taste!"/>
 
 
   </head>
