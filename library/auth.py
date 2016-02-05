@@ -168,7 +168,11 @@ def new():
     slug_hash = hashlib.md5(current_user + str(datetime.datetime.now()) + unique)
     new_url_slug = slug_hash.hexdigest()[:7]
     new_catalog = helpers.Catalog('your-catalog', 'general')
-    db.save_to_database(None, current_user, None, None, new_catalog.id, new_url_slug)
+    if app.config['IS_ASYNC'] is True:
+        processor = helpers.AsyncAdapter(app)
+        db.save_to_database.apply_async(args=[None, current_user, None, None, new_catalog.id, new_url_slug])
+    else:
+        db.save_to_database(None, current_user, None, None, new_catalog.id, new_url_slug)
     return redirect(url_for('festival', url_slug=new_url_slug))
 
 
@@ -183,6 +187,7 @@ def festival(url_slug):
     if owner != _user:
         try:
             db.save_contributor(current_festival[0], _user)
+            helpers.AsyncAdapter('')
         except:
             print "Contributor already in database."
 
