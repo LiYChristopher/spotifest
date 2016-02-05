@@ -54,7 +54,7 @@ class User(UserMixin):
                 search_results=None):
         self.id = unicode(spotify_id)
         self.access = access_token
-        self.refresh = refresh_token      
+        self.refresh = refresh_token
         self.artists = artists
         self.search_results = search_results
         self.users[self.id] = self
@@ -112,8 +112,6 @@ def login(config=BaseConfig, oauth=oauth):
                 'scope': oauth.scope}
     r = requests.get(oauth.OAUTH_AUTHORIZE_URL, params=payload)
     return r.url
-
-
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -189,7 +187,7 @@ def festival(url_slug):
     params_form = frontend_helpers.ParamsForm()
 
     current_user = load_user(session.get('user_id')).access
-    s = spotipy.Spotify(auth=current_user)   
+    s = spotipy.Spotify(auth=current_user)
     try:
         processor = helpers.AsyncAdapter(app)
         artists = processor.get_user_preferences(s)
@@ -208,7 +206,7 @@ def festival(url_slug):
 
         if art_select.artist_display.data:
             if art_select.is_submitted():
-                option_n = int(art_select.artist_display.data) -1
+                option_n = int(art_select.artist_display.data) - 1
                 chosen_art = User.search_results[option_n][1]
                 if chosen_art not in User.artists:
                     User.artists.update([chosen_art])
@@ -236,6 +234,7 @@ def results(url_slug):
     festival_catalog = current_festival[4]
     print 'CURRENT FESTIVAL', current_festival
     print "CATALOG IS...", festival_catalog
+
     if request.method == 'POST':
         # Did user click on join festival ?
         try:

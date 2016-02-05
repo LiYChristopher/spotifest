@@ -23,6 +23,7 @@ def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId, u
         print 'saved to database'
     return
 
+
 @celery.task(name='update_festival')
 def update_festival(festivalName, playlistId, playlistURL, urlSlug):
     values = (festivalName, playlistId, playlistURL, urlSlug)
@@ -35,6 +36,7 @@ def update_festival(festivalName, playlistId, playlistURL, urlSlug):
         print 'saved to database'
     return
 
+
 def save_contributor(festivalId, userId):
     festivalId = int(festivalId)
     userId = str(userId)
@@ -46,7 +48,6 @@ def save_contributor(festivalId, userId):
         connection.commit()
         print 'saved to database'
     return
-
 
 
 def get_info_from_database(urlSlug):
@@ -82,4 +83,4 @@ def get_contributors(festivalId):
     cursor.execute("SELECT userId FROM contributors WHERE festivalId = %s", (festivalId,))
     data = cursor.fetchall()
     users = [user[0].encode('utf-8') for user in data]
-    return  users
+    return users

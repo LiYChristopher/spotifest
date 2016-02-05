@@ -5,6 +5,7 @@ from flask.ext.login import LoginManager
 import os
 from flask.ext.mysql import MySQL
 
+
 def create_app(config=None, app_name=None, blueprints=None):
     app = Flask(__name__)
     return app
@@ -23,5 +24,6 @@ mysql = MySQL()
 # mysql configurations
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_DB'] = 'festify'
+app.config['MYSQL_DATABASE_PASSWORD'] = ''
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
