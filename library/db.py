@@ -4,7 +4,7 @@ from library.app import app, mysql, celery
 
 
 @celery.task(name='save_festival')
-def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId):
+def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId, urlSlug):
     '''
     saves infromation the data base.
     festivalId will be created automatically
@@ -14,8 +14,7 @@ def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId):
     playlistId = str(playlistId)
     playlistURL = str(playlistURL)
     catalogId = str(catalogId)
-    url_slug = str(base64.b64encode(userId + festivalName +str(datetime.datetime.now())))[:7]
-    values = (festivalName, userId, playlistId, playlistURL, catalogId, url_slug)
+    values = (festivalName, userId, playlistId, playlistURL, catalogId, urlSlug)
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
@@ -25,7 +24,15 @@ def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId):
     return
 
 @celery.task(name='update_festival')
-def update_festival(festivalName, userId, playlistId, playlistURL, catalogId):
+def update_festival(festivalName, playlistId, playlistURL, urlSlug):
+    values = (festivalName, playlistId, playlistURL, urlSlug)
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+        cursor.execute("UPDATE sessions SET festivalName=%s, playlistId=%s, playlistURL=%s WHERE urlSlug=%s",
+                        (festivalName, playlistId, playlistURL, urlSlug))
+        connection.commit()
+        print 'saved to database'
     return
 
 def save_contributor(festivalId, userId):
@@ -42,20 +49,24 @@ def save_contributor(festivalId, userId):
 
 
 
-def get_info_from_database(festivalId):
+def get_info_from_database(urlSlug):
     '''
     return a list with all the information from the
     database for a certain festival id
     '''
     connection = mysql.get_db()
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM sessions WHERE festivalId = %s", (festivalId,))
+    cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
     data = cursor.fetchall()
+    if not data:
+        return None
+    print 'DATA', data
     festivalId = int(data[0][0])
-    userId = str(data[0][1])
-    playlistId = str(data[0][2])
-    playlistURL = str(data[0][3])
-    catalogId = str(data[0][4])
+    festivalName = str(data[0][1])
+    userId = str(data[0][2])
+    playlistId = str(data[0][3])
+    playlistURL = str(data[0][4])
+    catalogId = str(data[0][5])
     values = [festivalId, userId, playlistId, playlistURL, catalogId]
     return values
 
