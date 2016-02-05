@@ -40,11 +40,11 @@ def update_festival(festivalName, playlistId, playlistURL, urlSlug):
 def save_contributor(festivalId, userId):
     festivalId = int(festivalId)
     userId = str(userId)
-    values = (festivalId, userId)
+    values = (festivalId, userId, 0)
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO contributors VALUES (%s, %s)", values)
+        cursor.execute("INSERT INTO contributors VALUES (%s, %s, %s)", values)
         connection.commit()
         print 'saved to database'
     return
