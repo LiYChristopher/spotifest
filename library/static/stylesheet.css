@@ -46,6 +46,12 @@ nav {
     float: right;
 }
 
+
+#flash {
+    color: red;
+}
+
+
 /* Links */
 a,
 a:focus,
