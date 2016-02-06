@@ -79,6 +79,7 @@ class UserCache():
         self.adventurousness = adventurousness
         self.organizer = organizer
         self.search_results = search_results
+user_cache = UserCache()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -212,7 +213,7 @@ def festival(url_slug):
     owner = current_festival[2]
     _user = session.get('user_id')
     is_owner = True
-    user_cache = UserCache()
+    
 
     # save contributor if new
     if owner != _user:
