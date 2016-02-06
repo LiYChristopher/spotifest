@@ -116,14 +116,15 @@ def get_user_saved_tracks(spotipy):
     for now it will return a set with only the artists
     '''
     offset = 0  # this set will be deleted if later we returns tracks instead of artists
-    artists = {}
+    artists = set()
     while True:
         albums = spotipy.current_user_saved_tracks(limit=50, offset=offset)
         if not albums['items']:
             break
-        batch = {item['track']['artists'][0]['name'] 
+        batch = {item['track']['artists'][0]['name']
                     for item in albums['items']}
         artists.update(batch)
+
         offset += len(albums['items'])
     return artists
 
