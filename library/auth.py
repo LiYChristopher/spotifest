@@ -177,7 +177,7 @@ def new():
         db.save_to_database.apply_async(args=[None, current_user.id,
                                               None, None, new_catalog.id, new_url_slug])
     else:
-        db.save_to_database(None, current_user, None, None, new_catalog.id, new_url_slug)
+        db.save_to_database(None, current_user.id, None, None, new_catalog.id, new_url_slug)
     return redirect(url_for('festival', url_slug=new_url_slug))
 
 
