@@ -78,13 +78,14 @@ def get_contributors(festivalId):
         cursor = connection.cursor()
         cursor.execute("SELECT userId FROM contributors WHERE (festivalId = %s AND organizer = 0)", (festivalId,))
         data2 = cursor.fetchall()
+        print ("contributors: {}".format(data2))
     except:
         print ("Database can't be reached..")
         return None
     if data2:
         contributors = [user[0].encode('utf-8') for user in data2]
-        all_users.append(contributors)
-        
+        all_users += contributors
+
     print ('contributors retrieved from database: {}'.format(all_users))
     return all_users
 

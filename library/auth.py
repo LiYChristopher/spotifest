@@ -309,7 +309,7 @@ def results(url_slug):
             else:
                 print 'User selected parameters'
 
-        if not UserCache.artists:
+        if not user_cache.artists:
             flash('You really should add some artists! Maybe you can use our suggestions..')
             return redirect(url_for('home'))
 
