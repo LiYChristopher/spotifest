@@ -21,11 +21,11 @@ CREATE table contributors (
 CREATE table parameters (
     festivalId int (10) NOT NULL,
     userId varchar(30) NOT NULL,
-    hotness decimal(4,3),
     danceability decimal(4,3),
+    hotness decimal(4,3),
     energy decimal(4,3),
     variety decimal(4,3),
-    genre varchar(30),
+    adventurousness decimal(4,3),
     CONSTRAINT FOREIGN KEY (festivalId) REFERENCES contributors (festivalId)
         ON DELETE CASCADE,
     CONSTRAINT festival_user UNIQUE (festivalId, userId)

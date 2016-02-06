@@ -163,14 +163,18 @@ def set_prep():
 
 @app.route('/festival/create_new', methods=['GET'])
 def new():
-    current_user = session.get('user_id')
+    current_user = load_user(session.get('user_id'))
     unique = base64.b64encode(os.urandom(3))
-    slug_hash = hashlib.md5(current_user + str(datetime.datetime.now()) + unique)
+    slug_hash = hashlib.md5(current_user.id + str(datetime.datetime.now()) + unique)
     new_url_slug = slug_hash.hexdigest()[:7]
     new_catalog = helpers.Catalog('your-catalog', 'general')
+    s = spotipy.Spotify(auth=current_user.access)
     if app.config['IS_ASYNC'] is True:
         processor = helpers.AsyncAdapter(app)
-        db.save_to_database.apply_async(args=[None, current_user, None, None, new_catalog.id, new_url_slug])
+        artists = processor.get_user_preferences(s)
+        helpers.random_catalog(artists, catalog_id=new_catalog.id)
+        db.save_to_database.apply_async(args=[None, current_user.id,
+                                              None, None, new_catalog.id, new_url_slug])
     else:
         db.save_to_database(None, current_user, None, None, new_catalog.id, new_url_slug)
     return redirect(url_for('festival', url_slug=new_url_slug))
@@ -184,8 +188,6 @@ def festival(url_slug):
         return redirect(url_for('home'))
     _user = session.get('user_id')
 
-    print 'Current User....', _user
-    print 'CURRENT FESTIVAL', current_festival
     if owner != _user:
         try:
             db.save_contributor(current_festival[0], _user)
@@ -233,7 +235,8 @@ def festival(url_slug):
             if request.form.get("add_button"):
                 new_artist = ', '.join(suggested_artists)
                 User.artists.update(suggested_artists)
-                new = True    
+                new = True
+
     return render_template('festival.html', url_slug=url_slug, searchform=searchform,
                             art_select=art_select,
                             suggested_pl_butt=suggested_pl_butt,
@@ -246,8 +249,6 @@ def festival(url_slug):
 def results(url_slug):
     current_festival = db.get_info_from_database(url_slug)
     festival_catalog = current_festival[4]
-    print 'CURRENT FESTIVAL', current_festival
-    print "CATALOG IS...", festival_catalog
 
     if request.method == 'POST':
         # Did user click on join festival ?
@@ -277,14 +278,15 @@ def results(url_slug):
         d = request.form.get('danceability')
         e = request.form.get('energy')
         v = request.form.get('variety')
+        a = request.form.get('adventurousness')
         current_user = load_user(session.get('user_id')).access
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
 
         processor = helpers.AsyncAdapter(app)
-        catalog = helpers.random_catalog(User.artists, catalog_id=festival_catalog)
-        playlist = helpers.seed_playlist(catalog=catalog, hotttnesss=h,
-                                         danceability=d, energy=e, variety=v)
+        playlist = helpers.seed_playlist(catalog=festival_catalog, hotttnesss=h,
+                                         danceability=d, energy=e, variety=v,
+                                         adventurousness=a)
         songs_id = processor.process_spotify_ids(50, 10, s, playlist)
 
         global festival_id
