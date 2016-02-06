@@ -67,6 +67,18 @@ class User(UserMixin):
         else:
             return None
 
+class UserCache():
+    def __init__(self, artists=set(), hotness=None, danceability=None, enery=None,
+                energy=None, variety=None, adventurousness=None, organizer=0,
+                search_results=list()):
+        self.artists = artists
+        self.hotness = hotness
+        self.danceability = danceability
+        self.energy = energy
+        self.variety = variety
+        self.adventurousness = adventurousness
+        self.organizer = organizer
+        self.search_results = search_results
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -156,11 +168,6 @@ def home(config=BaseConfig):
     return render_template('home.html', login=True)
 
 
-@app.route('/setlist_prep', methods=['POST', 'GET'])
-def set_prep():
-    pass
-
-
 @app.route('/festival/create_new', methods=['GET'])
 @login_required
 def new():
@@ -168,16 +175,25 @@ def new():
     unique = base64.b64encode(os.urandom(3))
     slug_hash = hashlib.md5(current_user.id + str(datetime.datetime.now()) + unique)
     new_url_slug = slug_hash.hexdigest()[:7]
-    new_catalog = helpers.Catalog('your-catalog', 'general')
+    new_catalog = helpers.Catalog(new_url_slug, 'general')
     s = spotipy.Spotify(auth=current_user.access)
     if app.config['IS_ASYNC'] is True:
         processor = helpers.AsyncAdapter(app)
         artists = processor.get_user_preferences(s)
         helpers.random_catalog(artists, catalog_id=new_catalog.id)
-        db.save_to_database.apply_async(args=[None, current_user.id,
-                                              None, None, new_catalog.id, new_url_slug])
+        save_task = db.save_to_database.apply_async(args=[None, current_user.id, 
+                                    None, None, new_catalog.id, new_url_slug])
+        while True:
+            if save_task.state == 'SUCCESS':
+                break
     else:
-        db.save_to_database(None, current_user.id, None, None, new_catalog.id, new_url_slug)
+        db.save_to_database(None, current_user.id, None, None, 
+                            new_catalog.id, new_url_slug)
+
+    current_festival = db.get_info_from_database(urlSlug=new_url_slug)
+    festivalId = current_festival[0]
+    userId = current_festival[2]
+    db.save_contributor(festivalId, userId, organizer=1)
     return redirect(url_for('festival', url_slug=new_url_slug))
 
 
@@ -186,19 +202,35 @@ def new():
 def festival(url_slug):
     current_festival = db.get_info_from_database(url_slug)
     if not current_festival:
-        flash("Festival '%s' does not exist! Please try again." % url_slug)
+        flash(("Festival '{}' does not exist! Please check"
+                "the code and try again.").format(url_slug))
         return redirect(url_for('home'))
-    owner = current_festival[1]
+    owner = current_festival[2]
     _user = session.get('user_id')
     is_owner = True
+    user_cache = UserCache()
 
+    # save contributor if new
     if owner != _user:
         is_owner = False
+        festival_name = current_festival[1]
         try:
             db.save_contributor(current_festival[0], _user)
-            helpers.AsyncAdapter('')
         except:
-            print "Contributor already in database."
+            print ("Contributor {} is already in the database.".format(_user))
+    elif owner == _user:
+        is_owner = True
+        festival_name = None
+
+    #fetch contributors: the 0th term = the main organizer!
+    try:
+        contributors = db.get_contributors(current_festival[0])
+        organizer = contributors.pop(0)
+    except:
+        flash(("Festival '{}' is having problems.. please check with the organizer."
+                "Try the code and try again.").format(url_slug))
+        return redirect(url_for('home'))
+
 
     new = None
     new_artist = None
@@ -207,30 +239,29 @@ def festival(url_slug):
     art_select = frontend_helpers.ArtistSelect(request.form)
     params_form = frontend_helpers.ParamsForm()
 
+
     current_user = load_user(session.get('user_id')).access
     s = spotipy.Spotify(auth=current_user)
     try:
         processor = helpers.AsyncAdapter(app)
         artists = processor.get_user_preferences(s)
         print (artists)
-        User.artists = artists
+        user_cache.artists = artists
     except:
         print ("No artists followed found in the user's Spotify account.")
-        User.artists = set()
 
     if searchform.validate_on_submit():
-        new_artist = searchform.artist_search.data
-        User.search_results = helpers.search_artist_echonest(new_artist)
-        art_select.artist_display.choices = User.search_results
-        if not User.search_results:
-            new = -1
+        s_artist = searchform.artist_search.data
+        user_cache.search_results = helpers.search_artist_echonest(s_artist)
+        art_select.artist_display.choices = user_cache.search_results
+
 
     if art_select.artist_display.data:
         if art_select.is_submitted():
             option_n = int(art_select.artist_display.data) - 1
-            chosen_art = User.search_results[option_n][1]
-            if chosen_art not in User.artists:
-                User.artists.update([chosen_art])
+            chosen_art = user_cache.search_results[option_n][1]
+            if chosen_art not in user_cache.artists:
+                user_cache.artists.update(set(chosen_art))
                 new_artist = chosen_art
                 new = 1
             else:
@@ -239,14 +270,18 @@ def festival(url_slug):
     elif suggested_pl_butt.validate_on_submit():
         if request.form.get("add_button"):
             new_artist = ', '.join(suggested_artists)
-            User.artists.update(suggested_artists)
+            user_cache.artists.update(set(suggested_artists))
             new = True    
 
-    return render_template('festival.html', url_slug=url_slug, searchform=searchform,
-                            art_select=art_select,
+    return render_template('festival.html', url_slug=url_slug, 
+                            s_results=user_cache.search_results,
+                            art_select=art_select, searchform=searchform, 
                             suggested_pl_butt=suggested_pl_butt,
-                            artists=User.artists,
+                            artists=user_cache.artists,
                             params_form=params_form,
+                            organizer=organizer,
+                            contributors=contributors,
+                            festival_name=festival_name,
                             new=new, new_artist=new_artist, is_owner=is_owner)
 
 
@@ -270,7 +305,7 @@ def results(url_slug):
             else:
                 print 'User selected parameters'
 
-        if not User.artists:
+        if not UserCache.artists:
             flash('You really should add some artists! Maybe you can use our suggestions..')
             return redirect(url_for('home'))
 
