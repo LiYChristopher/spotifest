@@ -212,30 +212,30 @@ def festival(url_slug):
     except:
         print ("No artists followed found in the user's Spotify account.")
         User.artists = set()
-    else:
-        if searchform.validate_on_submit():
-            new_artist = searchform.artist_search.data
-            User.search_results = helpers.search_artist_echonest(new_artist)
-            art_select.artist_display.choices = User.search_results
-            if not User.search_results:
-                new = -1
 
-        if art_select.artist_display.data:
-            if art_select.is_submitted():
-                option_n = int(art_select.artist_display.data) - 1
-                chosen_art = User.search_results[option_n][1]
-                if chosen_art not in User.artists:
-                    User.artists.update([chosen_art])
-                    new_artist = chosen_art
-                    new = 1
-                else:
-                    new = 0
+    if searchform.validate_on_submit():
+        new_artist = searchform.artist_search.data
+        User.search_results = helpers.search_artist_echonest(new_artist)
+        art_select.artist_display.choices = User.search_results
+        if not User.search_results:
+            new = -1
 
-        elif suggested_pl_butt.validate_on_submit():
-            if request.form.get("add_button"):
-                new_artist = ', '.join(suggested_artists)
-                User.artists.update(suggested_artists)
-                new = True
+    if art_select.artist_display.data:
+        if art_select.is_submitted():
+            option_n = int(art_select.artist_display.data) - 1
+            chosen_art = User.search_results[option_n][1]
+            if chosen_art not in User.artists:
+                User.artists.update([chosen_art])
+                new_artist = chosen_art
+                new = 1
+            else:
+                new = 0
+
+    elif suggested_pl_butt.validate_on_submit():
+        if request.form.get("add_button"):
+            new_artist = ', '.join(suggested_artists)
+            User.artists.update(suggested_artists)
+            new = True    
 
     return render_template('festival.html', url_slug=url_slug, searchform=searchform,
                             art_select=art_select,

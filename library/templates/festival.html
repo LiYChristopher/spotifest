@@ -4,7 +4,7 @@
 
        <div class="inner cover">
 
-            <form action="{{ url_for('home')}}" method="POST">
+            <form action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
                 {{ suggested_pl_butt.hidden_tag() }}
                 {{ suggested_pl_butt.add_button }}
             </form>
@@ -44,11 +44,11 @@
                 <h6 color="red"  border=1>That artist will be born in the near future.</h6>
             {% endif %}
 
-    	<div class="inner cover">
-    	    <h1 class="cover-heading">Let's see the set list!</h1>
-    	    <br>
-    	    <p class="lead">
-    	      <form action="{{ url_for('results', url_slug=url_slug) }}" method="post">
+        <div class="inner cover">
+            <h1 class="cover-heading">Let's see the set list!</h1>
+            <br>
+            <p class="lead">
+              <form action="{{ url_for('results', url_slug=url_slug) }}" method="post">
                 <fieldset>
                 {{ params_form.name.label }} <br>
                 {{ params_form.name }} <br>
@@ -62,11 +62,12 @@
                 {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
                 {{ params_form.adventurousness.label }}
                 {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)")}}                
-    	        <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
+
+                <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
                 </fieldset>
-    	      </form>
-    	    </p>
-    	</div>
+              </form>
+            </p>
+        </div>
 
             {% if artists %}
                 <h3>These artists grace you with their presence:</h3>
@@ -81,6 +82,6 @@
                 <h3> We haven't been able to find any artists yet! <br>
             {% endif %}
 
-	   </div>
-	   
+       </div>
+       
 {% endblock %}
