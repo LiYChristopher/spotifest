@@ -193,13 +193,17 @@ def new():
     current_festival = db.get_info_from_database(urlSlug=new_url_slug)
     festivalId = current_festival[0]
     userId = current_festival[2]
-    db.save_contributor(festivalId, userId, organizer=1)
+    try:
+        db.save_contributor(festivalId, userId, organizer=1)
+    except:
+        print ("SAVING CONTRIBUTOR FAILED!")
     return redirect(url_for('festival', url_slug=new_url_slug))
 
 
 @app.route('/festival/<url_slug>', methods=['GET', 'POST'])
 @login_required
 def festival(url_slug):
+
     current_festival = db.get_info_from_database(url_slug)
     if not current_festival:
         flash(("Festival '{}' does not exist! Please check"

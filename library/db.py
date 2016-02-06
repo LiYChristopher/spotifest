@@ -59,25 +59,34 @@ def get_contributors(festivalId):
     the festival
     '''
     print type(festivalId)
-    with app.app_context():
-        connection = mysql.get_db()
+    print (festivalId)
+    connection = mysql.get_db()
+    cursor = connection.cursor()
+    try:
+        cursor.execute("SELECT userId FROM contributors WHERE (festivalId = %s AND organizer = 1)", (festivalId,))
+    except:
+        print ("Database can't be reached")
+        return None
+    data1 = cursor.fetchall()
+    if data1:
+        all_users = [user[0].encode('utf-8') for user in data1]
+    else:
+        print ("There is no organizer assigned.")
+        return None
+
+    try:
         cursor = connection.cursor()
-        try:
-            cursor.execute("SELECT userId FROM contributors WHERE (festivalId = {} AND organizer = 1)".format((festivalId,)))
-            data1 = cursor.fetchall()
-            organizer = [user[0].encode('utf-8') for user in data1]
-        except:
-            return None
-        try:
-            cursor = connection.cursor()
-            cursor.execute("SELECT userId FROM contributors WHERE (festivalId = {} AND organizer = 0)".format((festivalId,)))
-            data2 = cursor.fetchall()
-        except:
-            print ('No contributors at the moment.')
+        cursor.execute("SELECT userId FROM contributors WHERE (festivalId = %s AND organizer = 0)", (festivalId,))
+        data2 = cursor.fetchall()
+    except:
+        print ("Database can't be reached..")
+        return None
+    if data2:
         contributors = [user[0].encode('utf-8') for user in data2]
-        all_users = organizer.append(contributors)
-        print ('contributors retrieved from database: {}'.format(all_users))
-        return all_users
+        all_users.append(contributors)
+        
+    print ('contributors retrieved from database: {}'.format(all_users))
+    return all_users
 
 def get_info_from_database(urlSlug):
     '''
