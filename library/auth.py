@@ -9,7 +9,7 @@ from flask.ext.login import UserMixin
 from flask import render_template, request, redirect, url_for
 from flask import session, flash
 
-from flask.ext.login import login_user, logout_user, UserMixin
+from flask.ext.login import login_user, logout_user, login_required, UserMixin
 from flask.ext.wtf import Form
 from flask import render_template, request, redirect, url_for, session, flash
 
@@ -162,6 +162,7 @@ def set_prep():
 
 
 @app.route('/festival/create_new', methods=['GET'])
+@login_required
 def new():
     current_user = load_user(session.get('user_id'))
     unique = base64.b64encode(os.urandom(3))
@@ -176,19 +177,23 @@ def new():
         db.save_to_database.apply_async(args=[None, current_user.id,
                                               None, None, new_catalog.id, new_url_slug])
     else:
-        db.save_to_database(None, current_user, None, None, new_catalog.id, new_url_slug)
+        db.save_to_database(None, current_user.id, None, None, new_catalog.id, new_url_slug)
     return redirect(url_for('festival', url_slug=new_url_slug))
 
 
 @app.route('/festival/<url_slug>', methods=['GET', 'POST'])
+@login_required
 def festival(url_slug):
     current_festival = db.get_info_from_database(url_slug)
-    owner = current_festival[1]
     if not current_festival:
+        flash("Festival '%s' does not exist! Please try again." % url_slug)
         return redirect(url_for('home'))
+    owner = current_festival[1]
     _user = session.get('user_id')
+    is_owner = True
 
     if owner != _user:
+        is_owner = False
         try:
             db.save_contributor(current_festival[0], _user)
             helpers.AsyncAdapter('')
@@ -242,7 +247,7 @@ def festival(url_slug):
                             suggested_pl_butt=suggested_pl_butt,
                             artists=User.artists,
                             params_form=params_form,
-                            new=new, new_artist=new_artist)
+                            new=new, new_artist=new_artist, is_owner=is_owner)
 
 
 @app.route('/festival/<url_slug>/results', methods=['POST', 'GET'])
@@ -313,3 +318,13 @@ def results(url_slug):
                 db.update_festival(name, id_playlist, playlist_url, url_slug)
             return render_template('results.html', playlist_url=playlist_url,
                                     enough_data=enough_data)
+
+
+@app.errorhandler(401)
+def access_blocked(error):
+    auth_url = login()
+    flash('Please login with your Spotify account before continuing!')
+    return render_template('home.html', login=False, oauth=auth_url)
+
+
+

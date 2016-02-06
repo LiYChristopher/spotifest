@@ -62,8 +62,13 @@
                 {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
                 {{ params_form.adventurousness.label }}
                 {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)")}}                
-
-                <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
+                {% if is_owner %}
+	                <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
+	            {% else %}
+	            <a href="#">
+	                <input class="btn btn-success btn-lg" type="submit" value="Save Parameters"></input>
+	            </a>
+	            {% endif %}     	
                 </fieldset>
               </form>
             </p>

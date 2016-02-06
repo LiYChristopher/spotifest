@@ -29,13 +29,18 @@
                             <h3 class="masthead-brand">Festify!</h3>
                             <nav>
                             <ul class="nav masthead-nav">
-                                <li class="active"><a href="#">Home</a></li>
+                                <li class="active"><a href="{{ url_for('home') }}">Home</a></li>
                                 <li><a href="#">Features</a></li>
                                 <li><a href="#">About</a></li>
                             </ul>
                             </nav>
                         </div>
                     </div>
+
+                {% block flash %}
+
+                {% endblock %}
+
                 {% block login %}
 
                 {% endblock %}
