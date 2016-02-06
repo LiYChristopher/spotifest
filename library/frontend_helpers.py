@@ -36,6 +36,9 @@ class ParamsForm(Form):
     variety = DecimalRangeField('variety',
                    [validators.NumberRange(min=0, max=1)],
                    default=0.5)
+    adventurousness = DecimalRangeField('adventurousness',
+                   [validators.NumberRange(min=0, max=1)],
+                   default=0.5)   
 
 class SuggestedPlaylistButton(Form):
     add_button = SubmitField("Add the Festify team's favorites!")
