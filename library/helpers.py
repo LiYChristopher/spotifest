@@ -116,12 +116,14 @@ def get_user_saved_tracks(spotipy):
     for now it will return a set with only the artists
     '''
     offset = 0  # this set will be deleted if later we returns tracks instead of artists
+    artists = {}
     while True:
         albums = spotipy.current_user_saved_tracks(limit=50, offset=offset)
         if not albums['items']:
             break
-        artists = {item['track']['artists'][0]['name']
+        batch = {item['track']['artists'][0]['name'] 
                     for item in albums['items']}
+        artists.update(batch)
         offset += len(albums['items'])
     return artists
 
@@ -161,8 +163,7 @@ def get_user_followed(spotipy):
     return a set with artists followed by artist.
     '''
     followed = spotipy.current_user_followed_artists()
-    for artist in followed['artists']['items']:
-        artists = {artist['name'] for artist in followed['artists']['items']}
+    artists = {artist['name'] for artist in followed['artists']['items']}
     return artists
 
 
