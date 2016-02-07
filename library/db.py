@@ -4,7 +4,8 @@ from library.app import app, mysql, celery
 
 
 @celery.task(name='save_festival')
-def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId, urlSlug):
+def save_to_database(festivalName, userId, playlistId,
+                     playlistURL, catalogId, urlSlug):
     '''
     saves infromation the data base.
     festivalId will be created automatically
@@ -18,7 +19,8 @@ def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId, u
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO sessions (festivalName, userId, playlistId, playlistURL, catalogId, urlSlug) VALUES (%s, %s, %s, %s, %s, %s)", values)
+        cursor.execute("INSERT INTO sessions (festivalName, userId, playlistId, playlistURL, catalogId, urlSlug)\
+                        VALUES (%s, %s, %s, %s, %s, %s)", values)
         connection.commit()
         print 'saved to database'
     return
@@ -30,29 +32,31 @@ def update_festival(festivalName, playlistId, playlistURL, urlSlug):
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
-        cursor.execute("UPDATE sessions SET festivalName=%s, playlistId=%s, playlistURL=%s WHERE urlSlug=%s",
+        cursor.execute("UPDATE sessions SET festivalName=%s, playlistId=%s,\
+                        playlistURL=%s WHERE urlSlug=%s",
                         (festivalName, playlistId, playlistURL, urlSlug))
         connection.commit()
         print 'saved to database'
     return
 
 
-def save_contributor(festivalId, userId, ready=0, hotness=None, 
-                    danceability=None, energy=None, variety=None, advent=None,
-                    organizer=0):
+def save_contributor(festivalId, userId, ready=0, hotness=None,
+                     danceability=None, energy=None, variety=None, advent=None,
+                     organizer=0):
     '''
-    requires festivalId and userId, 
+    requires festivalId and userId,
     saves whatever else you also put in it in the contributor table
-    ''' 
+    '''
     festivalId = int(festivalId)
     userId = str(userId)
-    values = (festivalId, userId, ready, hotness, 
-                danceability, energy, variety, advent, organizer)
+    values = (festivalId, userId, ready, hotness,
+              danceability, energy, variety, advent, organizer)
     print ("Saving contributor {} to festival {}".format(userId, festivalId))
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO contributors VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", values)
+        cursor.execute("INSERT INTO contributors VALUES\
+                       (%s, %s, %s, %s, %s, %s, %s, %s, %s)", values)
         connection.commit()
         print 'saved to database'
     return
@@ -67,7 +71,8 @@ def get_contributors(festivalId):
     connection = mysql.get_db()
     cursor = connection.cursor()
     try:
-        cursor.execute("SELECT userId FROM contributors WHERE (festivalId = %s AND organizer = 1)", (festivalId,))
+        cursor.execute("SELECT userId FROM contributors WHERE\
+                       (festivalId = %s AND organizer = 1)", (festivalId,))
     except:
         print ("Database can't be reached")
         return None
@@ -81,7 +86,8 @@ def get_contributors(festivalId):
     try:
         connection = mysql.get_db()
         cursor = connection.cursor()
-        cursor.execute("SELECT userId FROM contributors WHERE (festivalId = %s AND organizer = 0)", (festivalId,))
+        cursor.execute("SELECT userId FROM contributors WHERE\
+                       (festivalId = %s AND organizer = 0)", (festivalId,))
         data2 = cursor.fetchall()
         print ("contributors: {}".format(data2))
     except:
@@ -104,10 +110,9 @@ def get_info_from_database(urlSlug):
     with app.app_context():
         connection = mysql.get_db()
         cursor = connection.cursor()
-        try:
-             cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
-             data = cursor.fetchall()
-        except:
+        cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
+        data = cursor.fetchall()
+        if not data:
             return None
         print 'DATA', data
         festivalId = int(data[0][0])
@@ -116,5 +121,6 @@ def get_info_from_database(urlSlug):
         playlistId = str(data[0][3])
         playlistURL = str(data[0][4])
         catalogId = str(data[0][5])
-        values = [festivalId, festivalName, userId, playlistId, playlistURL, catalogId]
+        values = [festivalId, festivalName, userId,
+                  playlistId, playlistURL, catalogId]
         return values
