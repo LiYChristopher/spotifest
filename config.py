@@ -1,8 +1,16 @@
 # config.py
+from datetime import timedelta
+
 SECRET_KEY = 'this_is_a_secret'
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_TASK_RESULT_EXPIRES = 3600
+CELERYBEAT_SCHEDULE = {
+    'add-every-hour': {
+        'task': 'routine_deletion_expired',
+        'schedule': timedelta(minutes=60)
+    },
+}
 IS_ASYNC = True
 
 

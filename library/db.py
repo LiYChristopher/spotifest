@@ -215,12 +215,17 @@ def delete_session(urlSlug):
         print "deletion now complete"
     return
 
+
 @celery.task(name='routine_deletion_expired')
 def delete_expired_session():
     with app.app_context():
         time_now = datetime.datetime.now()
         connection = mysql.connect()
         cursor = connection.cursor()
-        cursor.execute("SELECT createTime, urlSlug FROM sessions WHERE")
-        all_sessions = ""
+        cursor.execute("SELECT urlSlug, createTime FROM sessions WHERE\
+                        TIMESTAMPDIFF(HOUR, createTime, CURRENT_TIMESTAMP()) > 48;")
+        all_sessions = cursor.fetchall()
+        for session in all_sessions:
+            delete_session(session[0])
+        print "{} sessions have been deleted.".format(len(all_sessions))
     return

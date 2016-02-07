@@ -8,7 +8,12 @@ Install redis onto your computer. Prior to running, in the command-line:
 redis-server
 
 and then another tab
+
 celery worker -A library.app.celery -I config -c 3 --loglevel=info
+
+and another tab for scheduled deletion of sessions:
+
+celery beat —-app library.app.celery
 
 -A - Points to app/celery location
 -I - Imports modules (this is where config links for redis are)

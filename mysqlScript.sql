@@ -3,12 +3,12 @@ use festify;
 CREATE TABLE sessions (
     festivalId int(10) NOT NULL AUTO_INCREMENT,
     festivalName varchar(100) NOT NULL,
-    createTime DATETIME DEFAULT CURRENT_TIMESTAMP,    
     userId varchar(30) NOT NULL,
     playlistId varchar(30) NOT NULL,
     playlistURL varchar(512) NOT NULL,
     catalogId varchar(30) NOT NULL,
     urlSlug varchar (512) NOT NULL,
+    createTime DATETIME DEFAULT CURRENT_TIMESTAMP,    
     PRIMARY KEY (festivalId)
 );
 CREATE table contributors (
