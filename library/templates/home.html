@@ -21,21 +21,12 @@
             <p class="lead">Festify will create the perfect festival base on the musical taste of the awesome people that will
                 enjoy this musical experience.</p>
             <br>
+                <p class="lead">Log in to create a festival, or join a friend's festival organization!
+                <a href="{{ oauth }}"><input name="submit" class="btn btn-success btn-lg" value="Log in!" type="button"></input></a>
 
-                <a href="{{ oauth }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
-                        <nav>
-                            <ul>
-                                <li id="login">
-                                    <a class="btn btn-success btn-lg" href="{{ oauth }}" margin-right="40px" type="button">Join Festival  </a>
-                                        <form id="login-form" action="{{ url_for('home', ) }}" method="post">
-                                            <p><input id="festi-text" class="text" type="text" name="festival_id" placeholder="Festival ID" /></p>
-                                            <p><input class="btn btn-primary btn-lg" id="festivalSubmit" type="submit" value="Submit" /></p>
-                                        </form>
-                                </li>
-                            </ul>
-                        </nav>
+                <br><br>** insert flashy screenshots of a made festival or something **
     </div>
-   	{% else %}
+    {% else %}
 
     <div class="inner cover">
             <h1 class="cover-heading">Let's start your ideal Festival</h1>
@@ -60,5 +51,3 @@
     {% endif %}
 
 {% endblock %}
-
-

@@ -5,7 +5,8 @@ from pyechonest.catalog import Catalog
 
 
 @celery.task(name='save_festival')
-def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId, urlSlug):
+def save_to_database(festivalName, userId, playlistId,
+                     playlistURL, catalogId, urlSlug):
     '''
     saves infromation the data base.
     festivalId will be created automatically
@@ -19,7 +20,8 @@ def save_to_database(festivalName, userId, playlistId, playlistURL, catalogId, u
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO sessions (festivalName, userId, playlistId, playlistURL, catalogId, urlSlug) VALUES (%s, %s, %s, %s, %s, %s)", values)
+        cursor.execute("INSERT INTO sessions (festivalName, userId, playlistId, playlistURL, catalogId, urlSlug)\
+                        VALUES (%s, %s, %s, %s, %s, %s)", values)
         connection.commit()
         print 'saved to database'
     return
@@ -31,7 +33,8 @@ def update_festival(festivalName, playlistId, playlistURL, urlSlug):
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
-        cursor.execute("UPDATE sessions SET festivalName=%s, playlistId=%s, playlistURL=%s WHERE urlSlug=%s",
+        cursor.execute("UPDATE sessions SET festivalName=%s, playlistId=%s,\
+                        playlistURL=%s WHERE urlSlug=%s",
                         (festivalName, playlistId, playlistURL, urlSlug))
         connection.commit()
         print 'saved to database'
@@ -69,12 +72,14 @@ def save_contributor(festivalId, userId, ready=0, hotness=None,
     festivalId = int(festivalId)
     userId = str(userId)
     values = (festivalId, userId, ready, hotness,
-                danceability, energy, variety, advent, organizer)
+              danceability, energy, variety, advent, organizer)
+
     print ("Saving contributor {} to festival {}".format(userId, festivalId))
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO contributors VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", values)
+        cursor.execute("INSERT INTO contributors VALUES\
+                       (%s, %s, %s, %s, %s, %s, %s, %s, %s)", values)
         connection.commit()
         print 'saved to database'
     return
@@ -85,35 +90,60 @@ def get_contributors(festivalId):
     return a list with all the contributors id of
     the festival. THE FIRST contributor == organizer
     '''
+
     print type(festivalId)
     print (festivalId)
     connection = mysql.get_db()
     cursor = connection.cursor()
     try:
-        cursor.execute("SELECT userId FROM contributors WHERE (festivalId = %s AND organizer = 1)", (festivalId,))
+        cursor.execute("SELECT * FROM contributors WHERE\
+                       (festivalId = %s AND organizer = 1)", (festivalId,))
+        d1 = cursor.fetchall()
     except:
         print ("Database can't be reached")
         return None
-    data1 = cursor.fetchall()
-    if data1:
-        all_users = [user[0].encode('utf-8') for user in data1]
     else:
-        print ("There is no organizer assigned.")
-        return None
+        print (d1)
+        if d1:
+            print ("going into the if now")
+            all_users = {'organizer': {'userId': str(d1[0][1]), 
+                                   'ready': int(d1[0][2]), 
+                                   'hotness': (d1[0][3]), 
+                                   'danceability': (d1[0][4]),
+                                   'energy': (d1[0][5]), 
+                                   'variety': (d1[0][6]),
+                                   'adventurousness': (d1[0][7])}}
+            print ("going out of the if now")
+        else:
+            print ("There is no organizer assigned.")
+            return None
+        print (all_users)
 
     try:
-        connection = mysql.get_db()
-        cursor = connection.cursor()
-        cursor.execute("SELECT userId FROM contributors WHERE (festivalId = %s AND organizer = 0)", (festivalId,))
-        data2 = cursor.fetchall()
-        print ("contributors: {}".format(data2))
+        cursor.execute("SELECT * FROM contributors WHERE\
+                       (festivalId = %s AND organizer = 0)", (festivalId,))
+        d2 = cursor.fetchall()
     except:
         print ("Database can't be reached..")
         return None
-    if data2:
-        contributors = [user[0].encode('utf-8') for user in data2]
-        all_users += contributors
-
+    else:
+        print (d2)
+        if d2:
+            contributors = {str(u[1]): {'ready': int(u[2]), 
+                                        'hotness': u[3], 
+                                        'danceability': u[4],
+                                        'energy': u[5], 
+                                        'variety': u[6],
+                                        'adventurousness': u[7]} for u in d2}
+            print (contributors)
+            all_ready = 1
+            for contributor in contributors:
+                if contributors[contributor]['ready'] == 0:
+                    all_ready = 0
+                    print ("a contributor isn't ready")
+                    break
+            all_users.update({'contributors': contributors, 'all_ready': all_ready})
+            print (all_users)
     print ('contributors retrieved from database: {}'.format(all_users))
     return all_users
 
@@ -138,8 +168,10 @@ def get_info_from_database(urlSlug):
         playlistId = str(data[0][3])
         playlistURL = str(data[0][4])
         catalogId = str(data[0][5])
-        values = [festivalId, festivalName, userId, playlistId, playlistURL, catalogId]
+        values = [festivalId, festivalName, userId,
+                  playlistId, playlistURL, catalogId]
         return values
+
 
 
 def get_average_parameters(festivalId):
@@ -150,14 +182,16 @@ def get_average_parameters(festivalId):
         connection = mysql.get_db()
         cursor = connection.cursor()
         try:
-            cursor.execute("SELECT AVG(hotness), AVG(danceability), AVG(energy), AVG(variety),\
-                            AVG(adventurousness) from contributors where festivalId = %s", (festivalId,))
+            cursor.execute("SELECT AVG(hotness), AVG(danceability), \
+                            AVG(energy), AVG(variety), AVG(adventurousness) \
+                            from contributors where festivalId = %s", (festivalId,))
             data = cursor.fetchall()
         except:
             print 'error getting average parameters from the DB'
             return None
-        average_parameters = [float(data[0][0]), float(data[0][1]), float(data[0][2]),
-                              float(data[0][3]), float(data[0][4])]
+        average_parameters = [float(data[0][0]), float(data[0][1]), 
+                              float(data[0][2]), float(data[0][3]), 
+                              float(data[0][4])]
         print 'Average Parameter : ' + str(average_parameters)
         return average_parameters
 
@@ -188,5 +222,5 @@ def delete_expired_session():
         connection = mysql.connect()
         cursor = connection.cursor()
         cursor.execute("SELECT createTime, urlSlug FROM sessions WHERE")
-        all_sessions =    
+        all_sessions = ""
     return
