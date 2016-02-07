@@ -71,14 +71,17 @@ def get_contributors(festivalId):
     connection = mysql.get_db()
     cursor = connection.cursor()
     try:
-        cursor.execute("SELECT userId FROM contributors WHERE\
+        cursor.execute("SELECT * FROM contributors WHERE\
                        (festivalId = %s AND organizer = 1)", (festivalId,))
     except:
         print ("Database can't be reached")
         return None
-    data1 = cursor.fetchall()
-    if data1:
-        all_users = [user[0].encode('utf-8') for user in data1]
+    d1 = cursor.fetchall()
+    if d1:
+        all_users = {'owner': {'userId': str(d1[0][1]), 'ready': int(d1[0][2]), 
+                                'hotness': float(d1[0][3]), 'danceability': float(d1[0][4]),
+                                'energy': float(d1[0][5]), 'variety': float(d1[0][6]),
+                                'variety': float(d1[0][7]), 'adventurousness': float(d1[0][8])}}
     else:
         print ("There is no organizer assigned.")
         return None
@@ -88,14 +91,26 @@ def get_contributors(festivalId):
         cursor = connection.cursor()
         cursor.execute("SELECT userId FROM contributors WHERE\
                        (festivalId = %s AND organizer = 0)", (festivalId,))
-        data2 = cursor.fetchall()
-        print ("contributors: {}".format(data2))
+        d2 = cursor.fetchall()
+        print ("contributors: {}".format(d2))
     except:
         print ("Database can't be reached..")
         return None
-    if data2:
-        contributors = [user[0].encode('utf-8') for user in data2]
-        all_users += contributors
+    if d2:
+        contributors = {{str(u[0][1]): {'ready': int(u[0][2]), 
+                        'hotness': float(u[0][3]), 
+                        'danceability': float(u[0][4]),
+                        'energy': float(u[0][5]), 
+                        'variety': float(u[0][6]),
+                        'variety': float(u[0][7]), 
+                        'adventurousness': float(u[0][8])}} for u in d2}
+        all_ready = 1
+        for contributor in contributors:
+            if contributor['ready'] == 0:
+                all_ready = 0
+                break
+
+        all_users.update({'contributors': contributors, 'all_ready': all_ready})
 
     print ('contributors retrieved from database: {}'.format(all_users))
     return all_users

@@ -230,7 +230,7 @@ def new():
 def festival(url_slug):
     current_festival = db.get_info_from_database(url_slug)
     if not current_festival:
-        flash(("Festival '{}' does not exist! Please check" +
+        flash(("Festival '{}' does not exist! Please check"
                "the code and try again.").format(url_slug))
         return redirect(url_for('home'))
     owner = current_festival[2]
@@ -245,31 +245,34 @@ def festival(url_slug):
         festival_name = None
     #fetch contributors: the 0th term = the main organizer!
     try:
-        contributors = db.get_contributors(current_festival[0])
-        organizer = contributors.pop(0)
+        all_users = db.get_contributors(current_festival[0])
     except:
-        flash(("Festival '{}' is having problems. Please check with the organizer."
-               "Try again later.").format(url_slug))
+        flash(("Festival '{}' is having problems. Please check with the "
+                "organizer. Try again later.").format(url_slug))
         return redirect(url_for('home'))
-
-    print ("contributors: {}".format(contributors))
-    print ("organizer: {}".format(organizer))
+    all_contributors = [contributor['userId'] for contributor in all_users['contributors']]
+    print ("contributors: {}".format(all_contributors))
+    print ("organizer: {}".format(all_users['organizer']['userId']))
+    
     new = None
     new_artist = None
-    searchform = frontend_helpers.SearchForm()
-    suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
-    art_select = frontend_helpers.ArtistSelect(request.form)
-    params_form = frontend_helpers.ParamsForm()
+
+
 
     current_user = load_user(session.get('user_id')).access
     s = spotipy.Spotify(auth=current_user)
     try:
         processor = helpers.AsyncAdapter(app)
-        artists = processor.get_user_preferences(s)
-        print (artists)
-        user_cache.artists = artists
+        user_cache.artists = processor.get_user_preferences(s)
+        print (user_cache.artists)
     except:
         print ("No artists followed found in the user's Spotify account.")
+    
+    # prep forms
+    searchform = frontend_helpers.SearchForm()
+    suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
+    art_select = frontend_helpers.ArtistSelect(request.form)
+    params_form = frontend_helpers.ParamsForm()
 
     if searchform.validate_on_submit():
         s_artist = searchform.artist_search.data
@@ -294,15 +297,15 @@ def festival(url_slug):
             new = True
 
     return render_template('festival.html', url_slug=url_slug,
-                            s_results=user_cache.search_results,
-                            art_select=art_select, searchform=searchform,
-                            suggested_pl_butt=suggested_pl_butt,
-                            artists=user_cache.artists,
-                            params_form=params_form,
-                            organizer=organizer,
-                            contributors=contributors,
-                            festival_name=festival_name,
-                            new=new, new_artist=new_artist, is_owner=is_owner)
+                           s_results=user_cache.search_results,
+                           art_select=art_select, searchform=searchform,
+                           suggested_pl_butt=suggested_pl_butt,
+                           artists=user_cache.artists,
+                           params_form=params_form,
+                           all_users=all_users,
+                           festival_name=festival_name,
+                           user=_user,
+                           new=new, new_artist=new_artist, is_owner=is_owner)
 
 
 @app.route('/festival/<url_slug>/results', methods=['POST', 'GET'])
@@ -326,7 +329,8 @@ def results(url_slug):
                 print 'User selected parameters'
 
         if not user_cache.artists:
-            flash('You really should add some artists! Maybe you can use our suggestions..')
+            flash("You really should add some artists!"
+                  " Maybe you can use our suggestions..")
             return redirect(url_for('home'))
 
         # parameters
@@ -361,16 +365,19 @@ def results(url_slug):
             playlist_url = festival_information[4]
             id_playlist = festival_information[3]
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
-            return render_template('results.html', playlist_url=playlist_url, enough_data=enough_data)
+            return render_template('results.html', playlist_url=playlist_url, 
+                                   enough_data=enough_data)
         else:
             helpers.create_playlist(s, user_id, name)
             id_playlist = helpers.get_id_from_playlist(s, user_id, name)
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
-
-            playlist_url = ('https://embed.spotify.com/?uri=spotify:user:' +
-                            '{}:playlist:{}'.format(str(user_id), str(id_playlist)))
+            u_id = str(user_id)
+            id_pl = str(id_playlist)
+            playlist_url = ('https://embed.spotify.com/?uri=spotify:user:'
+                            '{}:playlist:{}'.format(u_id, id_pl))
             if app.config['IS_ASYNC'] is True:
-                db.update_festival.apply_async(args=[name, id_playlist, playlist_url, url_slug])
+                db.update_festival.apply_async(args=[name, id_playlist, 
+                                               playlist_url, url_slug])
             else:
                 db.update_festival(name, id_playlist, playlist_url, url_slug)
             return render_template('results.html', playlist_url=playlist_url,
