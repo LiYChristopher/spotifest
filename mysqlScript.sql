@@ -14,19 +14,13 @@ CREATE table contributors (
     festivalId int (10) NOT NULL,
     userId varchar(30) NOT NULL,
     ready boolean DEFAULT 0 NOT NULL,
-    CONSTRAINT FOREIGN KEY (festivalId) REFERENCES sessions(festivalId)
-        ON DELETE CASCADE,
-    CONSTRAINT festival_user UNIQUE (festivalId, userId)
-);
-CREATE table parameters (
-    festivalId int (10) NOT NULL,
-    userId varchar(30) NOT NULL,
-    danceability decimal(4,3),
     hotness decimal(4,3),
+    danceability decimal(4,3),
     energy decimal(4,3),
     variety decimal(4,3),
-    adventurousness decimal(4,3),
-    CONSTRAINT FOREIGN KEY (festivalId) REFERENCES contributors (festivalId)
+    adventurousness varchar(30),
+    organizer boolean DEFAULT 0 NOT NULL,
+    CONSTRAINT FOREIGN KEY (festivalId) REFERENCES sessions(festivalId)
         ON DELETE CASCADE,
-    CONSTRAINT festival_user UNIQUE (festivalId, userId)
+      CONSTRAINT festival_user UNIQUE (festivalId, userId)
 );
