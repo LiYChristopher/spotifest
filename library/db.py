@@ -37,16 +37,16 @@ def update_festival(festivalName, playlistId, playlistURL, urlSlug):
     return
 
 
-def save_contributor(festivalId, userId, ready=0, hotness=None, 
+def save_contributor(festivalId, userId, ready=0, hotness=None,
                     danceability=None, energy=None, variety=None, advent=None,
                     organizer=0):
     '''
-    requires festivalId and userId, 
+    requires festivalId and userId,
     saves whatever else you also put in it in the contributor table
-    ''' 
+    '''
     festivalId = int(festivalId)
     userId = str(userId)
-    values = (festivalId, userId, ready, hotness, 
+    values = (festivalId, userId, ready, hotness,
                 danceability, energy, variety, advent, organizer)
     print ("Saving contributor {} to festival {}".format(userId, festivalId))
     with app.app_context():
@@ -56,6 +56,7 @@ def save_contributor(festivalId, userId, ready=0, hotness=None,
         connection.commit()
         print 'saved to database'
     return
+
 
 def get_contributors(festivalId):
     '''
@@ -105,8 +106,8 @@ def get_info_from_database(urlSlug):
         connection = mysql.get_db()
         cursor = connection.cursor()
         try:
-             cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
-             data = cursor.fetchall()
+            cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
+            data = cursor.fetchall()
         except:
             return None
         print 'DATA', data
@@ -136,4 +137,3 @@ def get_average_parameters(festivalId):
         average_parameters = [float(data[0][0]), float(data[0][1]), float(data[0][2]), float(data[0][3]), float(data[0][4])]
         print 'Average Parameter : ' + str(average_parameters)
         return average_parameters
-
