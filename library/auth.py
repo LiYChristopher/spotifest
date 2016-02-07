@@ -216,7 +216,7 @@ def new():
 
     current_festival = db.get_info_from_database(urlSlug=new_url_slug)
     festivalId = current_festival[0]
-    userId = current_festival[2]
+    userId = current_festival[3]
     try:
         db.save_contributor(festivalId, userId, organizer=1)
     except:

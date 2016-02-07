@@ -173,11 +173,20 @@ def delete_session(urlSlug):
         festival = get_info_from_database(urlSlug)
         if not festival:
             return None
-        festival_catalog = Catalog(festival[4], 'general')
-        print festival_catalog
+        festival_catalog = Catalog(festival[5])
         print festival_catalog.read_items()
         festival_catalog.delete()
         cursor.execute("DELETE FROM sessions WHERE urlSlug=%s", (urlSlug,))
         connection.commit()
         print "deletion now complete"
+    return
+
+@celery.task(name='routine_deletion_expired')
+def delete_expired_session():
+    with app.app_context():
+        time_now = datetime.datetime.now()
+        connection = mysql.connect()
+        cursor = connection.cursor()
+        cursor.execute("SELECT createTime, urlSlug FROM sessions WHERE")
+        all_sessions =    
     return
