@@ -118,3 +118,22 @@ def get_info_from_database(urlSlug):
         catalogId = str(data[0][5])
         values = [festivalId, festivalName, userId, playlistId, playlistURL, catalogId]
         return values
+
+
+def get_average_parameters(festivalId):
+    '''
+    return list of the average parameters for a festival
+    '''
+    with app.app_context():
+        connection = mysql.get_db()
+        cursor = connection.cursor()
+        try:
+            cursor.execute("SELECT AVG(hotness), AVG(danceability), AVG(energy), AVG(variety), AVG(adventurousness) from contributors where festivalId = %s", (festivalId,))
+            data = cursor.fetchall()
+        except:
+            print 'error getting average parameters from the DB'
+            return None
+        average_parameters = [float(data[0][0]), float(data[0][1]), float(data[0][2]), float(data[0][3]), float(data[0][4])]
+        print 'Average Parameter : ' + str(average_parameters)
+        return average_parameters
+
