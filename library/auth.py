@@ -83,6 +83,7 @@ class UserCache():
 
 user_cache = UserCache()
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.get(user_id)
@@ -165,12 +166,12 @@ def home(config=BaseConfig):
             current_user = load_user(session.get('user_id')).access
             s = spotipy.Spotify(auth=current_user)
 
-
     if request.method == 'POST':
         url_slug = request.form['festival_id']
         print ("FESTIVAL ID OR URL SLUGGY IS {}".format(url_slug))
         return redirect(url_for('join', url_slug=url_slug))
     return render_template('home.html', login=True)
+
 
 @app.route('/festival/join/<url_slug>', methods=['GET'])
 @login_required
@@ -205,13 +206,13 @@ def new():
         user_cache.artists.update(processor.get_user_preferences(s))
         if user_cache.artists:
             helpers.random_catalog(user_cache.artists, catalog_id=new_catalog.id)
-        save_task = db.save_to_database.apply_async(args=[None, current_user.id, 
+        save_task = db.save_to_database.apply_async(args=[None, current_user.id,
                                     None, None, new_catalog.id, new_url_slug])
         while True:
             if save_task.state == 'SUCCESS':
                 break
     else:
-        db.save_to_database(None, current_user.id, None, None, 
+        db.save_to_database(None, current_user.id, None, None,
                             new_catalog.id, new_url_slug)
 
     current_festival = db.get_info_from_database(urlSlug=new_url_slug)
@@ -234,7 +235,7 @@ def festival(url_slug):
         return redirect(url_for('home'))
     owner = current_festival[2]
     _user = session.get('user_id')
-    is_owner = True   
+    is_owner = True
     # check if owner & if so, find name
     if owner != _user:
         is_owner = False
@@ -242,7 +243,7 @@ def festival(url_slug):
     elif owner == _user:
         is_owner = True
         festival_name = None
-    #fetch contributors: the 0th term = the main organizer!
+    # fetch contributors: the 0th term = the main organizer!
     try:
         contributors = db.get_contributors(current_festival[0])
         organizer = contributors.pop(0)
@@ -260,7 +261,6 @@ def festival(url_slug):
     art_select = frontend_helpers.ArtistSelect(request.form)
     params_form = frontend_helpers.ParamsForm()
 
-
     current_user = load_user(session.get('user_id')).access
     s = spotipy.Spotify(auth=current_user)
     try:
@@ -275,7 +275,6 @@ def festival(url_slug):
         s_artist = searchform.artist_search.data
         user_cache.search_results = helpers.search_artist_echonest(s_artist)
         art_select.artist_display.choices = user_cache.search_results
-
 
     if art_select.artist_display.data:
         if art_select.is_submitted():
@@ -294,9 +293,9 @@ def festival(url_slug):
             user_cache.artists.update(set(suggested_artists))
             new = True
 
-    return render_template('festival.html', url_slug=url_slug, 
+    return render_template('festival.html', url_slug=url_slug,
                             s_results=user_cache.search_results,
-                            art_select=art_select, searchform=searchform, 
+                            art_select=art_select, searchform=searchform,
                             suggested_pl_butt=suggested_pl_butt,
                             artists=user_cache.artists,
                             params_form=params_form,
@@ -387,7 +386,7 @@ def results(url_slug):
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
 
             playlist_url = ('https://embed.spotify.com/?uri=spotify:user:',
-                        '{}:playlist:{}'.format(str(user_id),str(id_playlist)))
+                        '{}:playlist:{}'.format(str(user_id), str(id_playlist)))
             if app.config['IS_ASYNC'] is True:
                 db.update_festival.apply_async(args=[name, id_playlist, playlist_url, url_slug])
             else:
@@ -401,6 +400,3 @@ def access_blocked(error):
     auth_url = login()
     flash('Please login with your Spotify account before continuing!')
     return render_template('home.html', login=False, oauth=auth_url)
-
-
-
