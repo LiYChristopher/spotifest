@@ -55,8 +55,6 @@ class User(UserMixin):
         self.id = unicode(spotify_id)
         self.access = access_token
         self.refresh = refresh_token
-        self.artists = artists
-        self.search_results = search_results
         self.users[self.id] = self
 
     @classmethod
@@ -70,7 +68,7 @@ class User(UserMixin):
 class UserCache():
     def __init__(self, artists=set(), hotness=None, danceability=None, enery=None,
                 energy=None, variety=None, adventurousness=None, organizer=0,
-                search_results=list()):
+                search_results=list(), festival_name=None):
         self.artists = artists
         self.hotness = hotness
         self.danceability = danceability
@@ -79,6 +77,7 @@ class UserCache():
         self.adventurousness = adventurousness
         self.organizer = organizer
         self.search_results = search_results
+        self.festival_name = festival_name
 user_cache = UserCache()
 
 @login_manager.user_loader
@@ -227,13 +226,12 @@ def new():
 def festival(url_slug):
     current_festival = db.get_info_from_database(url_slug)
     if not current_festival:
-        flash(("Festival '{}' does not exist! Please check"
+        flash(("Festival '{}' does not exist! Please check",
                 "the code and try again.").format(url_slug))
         return redirect(url_for('home'))
     owner = current_festival[2]
     _user = session.get('user_id')
-    is_owner = True
-    
+    is_owner = True   
     # check if owner & if so, find name
     if owner != _user:
         is_owner = False
@@ -241,7 +239,6 @@ def festival(url_slug):
     elif owner == _user:
         is_owner = True
         festival_name = None
-
     #fetch contributors: the 0th term = the main organizer!
     try:
         contributors = db.get_contributors(current_festival[0])
@@ -367,7 +364,9 @@ def results(url_slug):
             helpers.create_playlist(s, user_id, name)
             id_playlist = helpers.get_id_from_playlist(s, user_id, name)
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
-            playlist_url = 'https://embed.spotify.com/?uri=spotify:user:' + str(user_id) + ':playlist:' + str(id_playlist)
+
+            playlist_url = ('https://embed.spotify.com/?uri=spotify:user:',
+                        '{}:playlist:{}'.format(str(user_id),str(id_playlist)))
             if app.config['IS_ASYNC'] is True:
                 db.update_festival.apply_async(args=[name, id_playlist, playlist_url, url_slug])
             else:

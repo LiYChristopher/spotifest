@@ -42,11 +42,14 @@
 
 <!-- Organizer avatar and contributor avatar -->
 
-<h1>{{ organizer }}'s {% if is_owner == true %} festival {% else %} {{ festival_name }} {% endif %}</h1>
+<h1>{{ organizer }}'s
+    {% if is_owner == true %} festival 
+    {% else %} {{ festival_name }} {% endif %}</h1>
+<iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ organizer }}&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
 {% if contributors %}
-    <h3>The respected contributors:</h3>
+    <h3>The respected contributors</h3>
     {% for contributor in contributors %}
-        &nbsp;&nbsp;&nbsp; <h3>{{ contributor }}</h3>
+        <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ contributor }}&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
     {% endfor %}
 {% endif %}
 

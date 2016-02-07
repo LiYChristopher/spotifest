@@ -40,6 +40,10 @@ def update_festival(festivalName, playlistId, playlistURL, urlSlug):
 def save_contributor(festivalId, userId, ready=0, hotness=None, 
                     danceability=None, energy=None, variety=None, advent=None,
                     organizer=0):
+    '''
+    requires festivalId and userId, 
+    saves whatever else you also put in it in the contributor table
+    ''' 
     festivalId = int(festivalId)
     userId = str(userId)
     values = (festivalId, userId, ready, hotness, 
@@ -53,39 +57,10 @@ def save_contributor(festivalId, userId, ready=0, hotness=None,
         print 'saved to database'
     return
 
-'''
-def get_contributors(festivalId):
-
-    print festivalId
-    with app.app_context():
-        connection = mysql.get_db()
-        cursor = connection.cursor()
-        all_users = []
-        try:
-            cursor.execute("SELECT userId FROM contributors WHERE festivalId = %s AND organizer = 1", (festivalId,))
-            data1 = cursor.fetchall()
-            organizer = [user[0].encode('utf-8') for user in data1]
-            all_users += organizer
-        except:
-            return None
-        try:
-            cursor.execute("SELECT userId FROM contributors WHERE festivalId = %s AND organizer = 0", (festivalId,))
-            data2 = cursor.fetchall()
-            contributors = [user[0].encode('utf-8') for user in data2]
-            all_users += contributors
-        except:
-            print ('No contributors at the moment.')
-
-        print ('contributors retrieved from database: {}'.format(all_users))
-        return all_users
-
-
-'''
-
 def get_contributors(festivalId):
     '''
     return a list with all the contributors id of
-    the festival
+    the festival. THE FIRST contributor == organizer
     '''
     print type(festivalId)
     print (festivalId)
@@ -143,29 +118,3 @@ def get_info_from_database(urlSlug):
         catalogId = str(data[0][5])
         values = [festivalId, festivalName, userId, playlistId, playlistURL, catalogId]
         return values
-
-
-'''
-def get_info_from_database(urlSlug):
-
-    return a list with all the information from the
-    database for a certain festival id
-
-    print ("THE URL SLUG {}".format(urlSlug))
-    connection = mysql.connect()
-    cursor = connection.cursor()
-    try:
-        cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
-        data = cursor.fetchall()
-    except:
-        return None
-    print 'DATA', data
-    festivalId = int(data[0][0])
-    festivalName = str(data[0][1])
-    userId = str(data[0][2])
-    playlistId = str(data[0][3])
-    playlistURL = str(data[0][4])
-    catalogId = str(data[0][5])
-    values = [festivalId, userId, playlistId, playlistURL, catalogId]
-    return values
-'''
