@@ -1,6 +1,7 @@
 import base64
 import datetime
 from library.app import app, mysql, celery
+from pyechonest.catalog import Catalog
 
 
 @celery.task(name='save_festival')
@@ -124,7 +125,7 @@ def get_info_from_database(urlSlug):
     '''
     print "URL SLUG IS {}".format(urlSlug)
     with app.app_context():
-        connection = mysql.get_db()
+        connection = mysql.connect()
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
         data = cursor.fetchall()
@@ -159,3 +160,24 @@ def get_average_parameters(festivalId):
                               float(data[0][3]), float(data[0][4])]
         print 'Average Parameter : ' + str(average_parameters)
         return average_parameters
+
+
+@celery.task(name='delete_session')
+def delete_session(urlSlug):
+    '''
+    removes festival and catalog object from database and API key, respectively.
+    '''
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+        festival = get_info_from_database(urlSlug)
+        if not festival:
+            return None
+        festival_catalog = Catalog(festival[4], 'general')
+        print festival_catalog
+        print festival_catalog.read_items()
+        festival_catalog.delete()
+        cursor.execute("DELETE FROM sessions WHERE urlSlug=%s", (urlSlug,))
+        connection.commit()
+        print "deletion now complete"
+    return
