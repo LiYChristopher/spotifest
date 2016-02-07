@@ -163,10 +163,30 @@ def home(config=BaseConfig):
             current_user = load_user(session.get('user_id')).access
             s = spotipy.Spotify(auth=current_user)
 
+
     if request.method == 'POST':
         url_slug = request.form['festival_id']
-        return redirect(url_for('festival', url_slug=url_slug))
+        print ("FESTIVAL ID OR URL SLUGGY IS {}".format(url_slug))
+        return redirect(url_for('join', url_slug=url_slug))
     return render_template('home.html', login=True)
+
+@app.route('/festival/join/<url_slug>', methods=['GET'])
+@login_required
+def join(url_slug):
+    print ("URLSLUG HERE IS {}".format(url_slug))
+    current_festival = db.get_info_from_database(url_slug)
+    if not current_festival:
+        flash(("Festival '{}' does not exist! Please check"
+                "the code and try again.").format(url_slug))
+        return redirect(url_for('home'))
+    owner = current_festival[2]
+    _user = session.get('user_id')
+    if owner != _user:
+        try:
+            db.save_contributor(current_festival[0], _user)
+        except:
+            print ("Contributor {} is already in the database.".format(_user))
+    return redirect(url_for('festival', url_slug=url_slug))
 
 
 @app.route('/festival/create_new', methods=['GET'])
@@ -180,8 +200,9 @@ def new():
     s = spotipy.Spotify(auth=current_user.access)
     if app.config['IS_ASYNC'] is True:
         processor = helpers.AsyncAdapter(app)
-        artists = processor.get_user_preferences(s)
-        helpers.random_catalog(artists, catalog_id=new_catalog.id)
+        user_cache.artists.update(processor.get_user_preferences(s))
+        if user_cache.artists:
+            helpers.random_catalog(user_cache.artists, catalog_id=new_catalog.id)
         save_task = db.save_to_database.apply_async(args=[None, current_user.id, 
                                     None, None, new_catalog.id, new_url_slug])
         while True:
@@ -204,7 +225,6 @@ def new():
 @app.route('/festival/<url_slug>', methods=['GET', 'POST'])
 @login_required
 def festival(url_slug):
-
     current_festival = db.get_info_from_database(url_slug)
     if not current_festival:
         flash(("Festival '{}' does not exist! Please check"
@@ -214,15 +234,10 @@ def festival(url_slug):
     _user = session.get('user_id')
     is_owner = True
     
-
-    # save contributor if new
+    # check if owner & if so, find name
     if owner != _user:
         is_owner = False
         festival_name = current_festival[1]
-        try:
-            db.save_contributor(current_festival[0], _user)
-        except:
-            print ("Contributor {} is already in the database.".format(_user))
     elif owner == _user:
         is_owner = True
         festival_name = None
@@ -236,7 +251,8 @@ def festival(url_slug):
                 "Try the code and try again.").format(url_slug))
         return redirect(url_for('home'))
 
-
+    print ("contributors: {}".format(contributors))
+    print ("organizer: {}".format(organizer))
     new = None
     new_artist = None
     searchform = frontend_helpers.SearchForm()
@@ -293,7 +309,7 @@ def festival(url_slug):
 @app.route('/festival/<url_slug>/results', methods=['POST', 'GET'])
 def results(url_slug):
     current_festival = db.get_info_from_database(url_slug)
-    festival_catalog = current_festival[4]
+    festival_catalog = current_festival[5]
 
     if request.method == 'POST':
         # Did user click on join festival ?
@@ -343,8 +359,8 @@ def results(url_slug):
             '''
             festival_information = db.get_info_from_database(festival_id)
             print 'festival id entered : ' + festival_id
-            playlist_url = festival_information[3]
-            id_playlist = festival_information[2]
+            playlist_url = festival_information[4]
+            id_playlist = festival_information[3]
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
             return render_template('results.html', playlist_url=playlist_url, enough_data=enough_data)
         else:

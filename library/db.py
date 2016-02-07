@@ -53,6 +53,35 @@ def save_contributor(festivalId, userId, ready=0, hotness=None,
         print 'saved to database'
     return
 
+'''
+def get_contributors(festivalId):
+
+    print festivalId
+    with app.app_context():
+        connection = mysql.get_db()
+        cursor = connection.cursor()
+        all_users = []
+        try:
+            cursor.execute("SELECT userId FROM contributors WHERE festivalId = %s AND organizer = 1", (festivalId,))
+            data1 = cursor.fetchall()
+            organizer = [user[0].encode('utf-8') for user in data1]
+            all_users += organizer
+        except:
+            return None
+        try:
+            cursor.execute("SELECT userId FROM contributors WHERE festivalId = %s AND organizer = 0", (festivalId,))
+            data2 = cursor.fetchall()
+            contributors = [user[0].encode('utf-8') for user in data2]
+            all_users += contributors
+        except:
+            print ('No contributors at the moment.')
+
+        print ('contributors retrieved from database: {}'.format(all_users))
+        return all_users
+
+
+'''
+
 def get_contributors(festivalId):
     '''
     return a list with all the contributors id of
@@ -75,6 +104,7 @@ def get_contributors(festivalId):
         return None
 
     try:
+        connection = mysql.get_db()
         cursor = connection.cursor()
         cursor.execute("SELECT userId FROM contributors WHERE (festivalId = %s AND organizer = 0)", (festivalId,))
         data2 = cursor.fetchall()
@@ -88,6 +118,7 @@ def get_contributors(festivalId):
 
     print ('contributors retrieved from database: {}'.format(all_users))
     return all_users
+
 
 def get_info_from_database(urlSlug):
     '''
