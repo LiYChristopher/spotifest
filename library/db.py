@@ -37,6 +37,27 @@ def update_festival(festivalName, playlistId, playlistURL, urlSlug):
     return
 
 
+def update_parameters(festivalId, userId, hotttnesss, danceability,
+                    energy, variety, advent):
+    festivalId = int(festivalId)
+    userId = str(userId)
+    hotttnesss = float(hotttnesss)
+    danceability = float(danceability)
+    energy = float(energy)
+    variety = float(variety)
+    advent = float(advent)
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+        values = (hotttnesss, danceability, energy, variety, advent, festivalId, userId)
+        print "THESE ARE VALUES", values
+        cursor.execute("UPDATE contributors SET hotness=%s, danceability=%s, energy=%s,\
+                        variety=%s, adventurousness=%s, ready=1 WHERE festivalId=%s AND userId=%s", values)
+        connection.commit()
+        print "updated settings for user."
+    return
+
+
 def save_contributor(festivalId, userId, ready=0, hotness=None,
                     danceability=None, energy=None, variety=None, advent=None,
                     organizer=0):
@@ -105,10 +126,9 @@ def get_info_from_database(urlSlug):
     with app.app_context():
         connection = mysql.get_db()
         cursor = connection.cursor()
-        try:
-            cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
-            data = cursor.fetchall()
-        except:
+        cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
+        data = cursor.fetchall()
+        if not data:
             return None
         print 'DATA', data
         festivalId = int(data[0][0])
@@ -129,11 +149,13 @@ def get_average_parameters(festivalId):
         connection = mysql.get_db()
         cursor = connection.cursor()
         try:
-            cursor.execute("SELECT AVG(hotness), AVG(danceability), AVG(energy), AVG(variety), AVG(adventurousness) from contributors where festivalId = %s", (festivalId,))
+            cursor.execute("SELECT AVG(hotness), AVG(danceability), AVG(energy), AVG(variety),\
+                            AVG(adventurousness) from contributors where festivalId = %s", (festivalId,))
             data = cursor.fetchall()
         except:
             print 'error getting average parameters from the DB'
             return None
-        average_parameters = [float(data[0][0]), float(data[0][1]), float(data[0][2]), float(data[0][3]), float(data[0][4])]
+        average_parameters = [float(data[0][0]), float(data[0][1]), float(data[0][2]),
+                              float(data[0][3]), float(data[0][4])]
         print 'Average Parameter : ' + str(average_parameters)
         return average_parameters

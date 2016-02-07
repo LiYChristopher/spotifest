@@ -1,7 +1,6 @@
-from library.app import app, login_manager
+from library.app import app, celery, login_manager
 from library.helpers import (suggested_artists, random_catalog, seed_playlist)
 from library import frontend_helpers
-from library.app import app, celery, login_manager
 from config import BaseConfig
 
 from flask.ext.login import login_user, logout_user
@@ -79,6 +78,8 @@ class UserCache():
         self.organizer = organizer
         self.search_results = search_results
         self.festival_name = festival_name
+
+
 user_cache = UserCache()
 
 
@@ -111,7 +112,7 @@ def refresh():
 @app.before_request
 def before_request():
     refresh()
-    if session.get('user_id') and not User.users:
+    if session.get('user_id') and not load_user(session.get('user_id')):
         logout_user()
     return
 
@@ -178,7 +179,7 @@ def join(url_slug):
     current_festival = db.get_info_from_database(url_slug)
     if not current_festival:
         flash(("Festival '{}' does not exist! Please check"
-                "the code and try again.").format(url_slug))
+                " the code and try again.").format(url_slug))
         return redirect(url_for('home'))
     owner = current_festival[2]
     _user = session.get('user_id')
@@ -303,6 +304,24 @@ def festival(url_slug):
                             new=new, new_artist=new_artist, is_owner=is_owner)
 
 
+@app.route('/festival/<url_slug>/update_parameters', methods=['POST'])
+def update_parameters(url_slug):
+    '''
+    If not the owner, update contributor's parameters on database.
+    '''
+    festivalId = db.get_info_from_database(url_slug)[0]
+    h = request.form.get('hotttnesss')
+    d = request.form.get('danceability')
+    e = request.form.get('energy')
+    v = request.form.get('variety')
+    a = request.form.get('adventurousness')
+    _user = session.get('user_id')
+    db.update_parameters(festivalId, _user, h, d, e, v, a)
+    flash("You've pitched the perfect festival to the organizer." +
+          " Now we wait.")
+    return redirect(url_for('festival', url_slug=url_slug))
+
+
 @app.route('/festival/<url_slug>/results', methods=['POST', 'GET'])
 def results(url_slug):
     current_festival = db.get_info_from_database(url_slug)
@@ -365,7 +384,7 @@ def results(url_slug):
             id_playlist = helpers.get_id_from_playlist(s, user_id, name)
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
 
-            playlist_url = ('https://embed.spotify.com/?uri=spotify:user:',
+            playlist_url = ('https://embed.spotify.com/?uri=spotify:user:' +
                         '{}:playlist:{}'.format(str(user_id), str(id_playlist)))
             if app.config['IS_ASYNC'] is True:
                 db.update_festival.apply_async(args=[name, id_playlist, playlist_url, url_slug])
