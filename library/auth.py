@@ -1,7 +1,6 @@
-from library.app import app, login_manager
+from library.app import app, celery, login_manager
 from library.helpers import (suggested_artists, random_catalog, seed_playlist)
 from library import frontend_helpers
-from library.app import app, celery, login_manager
 from config import BaseConfig
 
 from flask.ext.login import login_user, logout_user
@@ -79,6 +78,8 @@ class UserCache():
         self.organizer = organizer
         self.search_results = search_results
         self.festival_name = festival_name
+
+
 user_cache = UserCache()
 
 
@@ -164,7 +165,6 @@ def home(config=BaseConfig):
             current_user = load_user(session.get('user_id')).access
             s = spotipy.Spotify(auth=current_user)
 
-
     if request.method == 'POST':
         url_slug = request.form['festival_id']
         print ("FESTIVAL ID OR URL SLUGGY IS {}".format(url_slug))
@@ -208,6 +208,7 @@ def new():
         save_task = db.save_to_database.apply_async(args=[None, current_user.id,
                                                     None, None, new_catalog.id,
                                                     new_url_slug])
+
         while True:
             if save_task.state == 'SUCCESS':
                 break
@@ -243,7 +244,7 @@ def festival(url_slug):
     elif owner == _user:
         is_owner = True
         festival_name = None
-    #fetch contributors: the 0th term = the main organizer!
+    # fetch contributors: the 0th term = the main organizer!
     try:
         all_users = db.get_contributors(current_festival[0])
     except:
@@ -256,7 +257,6 @@ def festival(url_slug):
     
     new = None
     new_artist = None
-
 
 
     current_user = load_user(session.get('user_id')).access
@@ -306,6 +306,25 @@ def festival(url_slug):
                            festival_name=festival_name,
                            user=_user,
                            new=new, new_artist=new_artist, is_owner=is_owner)
+
+
+
+@app.route('/festival/<url_slug>/update_parameters', methods=['POST'])
+def update_parameters(url_slug):
+    '''
+    If not the owner, update contributor's parameters on database.
+    '''
+    festivalId = db.get_info_from_database(url_slug)[0]
+    h = request.form.get('hotttnesss')
+    d = request.form.get('danceability')
+    e = request.form.get('energy')
+    v = request.form.get('variety')
+    a = request.form.get('adventurousness')
+    _user = session.get('user_id')
+    db.update_parameters(festivalId, _user, h, d, e, v, a)
+    flash("You've pitched the perfect festival to the organizer." +
+          " Now we wait.")
+    return redirect(url_for('festival', url_slug=url_slug))
 
 
 @app.route('/festival/<url_slug>/results', methods=['POST', 'GET'])

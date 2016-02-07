@@ -40,9 +40,30 @@ def update_festival(festivalName, playlistId, playlistURL, urlSlug):
     return
 
 
+def update_parameters(festivalId, userId, hotttnesss, danceability,
+                    energy, variety, advent):
+    festivalId = int(festivalId)
+    userId = str(userId)
+    hotttnesss = float(hotttnesss)
+    danceability = float(danceability)
+    energy = float(energy)
+    variety = float(variety)
+    advent = float(advent)
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+        values = (hotttnesss, danceability, energy, variety, advent, festivalId, userId)
+        print "THESE ARE VALUES", values
+        cursor.execute("UPDATE contributors SET hotness=%s, danceability=%s, energy=%s,\
+                        variety=%s, adventurousness=%s, ready=1 WHERE festivalId=%s AND userId=%s", values)
+        connection.commit()
+        print "updated settings for user."
+    return
+
+
 def save_contributor(festivalId, userId, ready=0, hotness=None,
-                     danceability=None, energy=None, variety=None, advent=None,
-                     organizer=0):
+                    danceability=None, energy=None, variety=None, advent=None,
+                    organizer=0):
     '''
     requires festivalId and userId,
     saves whatever else you also put in it in the contributor table
@@ -51,6 +72,7 @@ def save_contributor(festivalId, userId, ready=0, hotness=None,
     userId = str(userId)
     values = (festivalId, userId, ready, hotness,
               danceability, energy, variety, advent, organizer)
+
     print ("Saving contributor {} to festival {}".format(userId, festivalId))
     with app.app_context():
         connection = mysql.connect()
@@ -60,6 +82,7 @@ def save_contributor(festivalId, userId, ready=0, hotness=None,
         connection.commit()
         print 'saved to database'
     return
+
 
 def get_contributors(festivalId):
     '''
@@ -79,9 +102,12 @@ def get_contributors(festivalId):
     d1 = cursor.fetchall()
     if d1:
         all_users = {'owner': {'userId': str(d1[0][1]), 'ready': int(d1[0][2]), 
-                                'hotness': float(d1[0][3]), 'danceability': float(d1[0][4]),
-                                'energy': float(d1[0][5]), 'variety': float(d1[0][6]),
-                                'variety': float(d1[0][7]), 'adventurousness': float(d1[0][8])}}
+                               'hotness': float(d1[0][3]), 
+                               'danceability': float(d1[0][4]),
+                               'energy': float(d1[0][5]), 
+                               'variety': float(d1[0][6]),
+                               'variety': float(d1[0][7]), 
+                               'adventurousness': float(d1[0][8])}}
     else:
         print ("There is no organizer assigned.")
         return None
@@ -139,3 +165,27 @@ def get_info_from_database(urlSlug):
         values = [festivalId, festivalName, userId,
                   playlistId, playlistURL, catalogId]
         return values
+
+
+
+def get_average_parameters(festivalId):
+    '''
+    return list of the average parameters for a festival
+    '''
+    with app.app_context():
+        connection = mysql.get_db()
+        cursor = connection.cursor()
+        try:
+            cursor.execute("SELECT AVG(hotness), AVG(danceability), \
+                            AVG(energy), AVG(variety), AVG(adventurousness) \
+                            from contributors where festivalId = %s", (festivalId,))
+            data = cursor.fetchall()
+        except:
+            print 'error getting average parameters from the DB'
+            return None
+        average_parameters = [float(data[0][0]), float(data[0][1]), 
+                              float(data[0][2]), float(data[0][3]), 
+                              float(data[0][4])]
+        print 'Average Parameter : ' + str(average_parameters)
+        return average_parameters
+

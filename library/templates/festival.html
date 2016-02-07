@@ -29,6 +29,19 @@
 
     </form>
 
+{% block flash %}
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p id="flash">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+{% endblock %}
+
+
 {% elif s_results == false %}
     <p class="lead">No artists found with the name {{ new_artist }} !</p>
 {% endif %}
@@ -63,11 +76,14 @@
 
 
     <p class="lead">
+        {% if is_owner == true %}
       <form action="{{ url_for('results', url_slug=url_slug) }}" method="post">
         <fieldset>
-        {% if is_owner == true %}
             {{ params_form.name.label }} <br>
             {{ params_form.name }} <br>
+        {% else %}
+      <form action="{{ url_for('update_parameters', url_slug=url_slug) }}" method="post">
+        <fieldset>
         {% endif %}
 
         {{ params_form.danceability.label }}
@@ -79,15 +95,15 @@
         {{ params_form.variety.label }}
         {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
         {{ params_form.adventurousness.label }}
-        {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)")}}                
+        {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)")}} 
+
         {% if not is_owner %}
             {% if all_users['contributors'][user]['ready'] == 0 %}
                 {{ params_form.ready_butt }}
             {% else %}
                {{ params_form.unready_butt }}
             {% endif %}
-
-        {% if is_owner %}
+        {% elif is_owner %}
             {% if 'contributors' not in all_users %}
                 <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
             {% elif all_users['all_ready'] == 0 %}
@@ -103,7 +119,7 @@
         {% endif %}         
         </fieldset>
       </form>
-    </p>
+    </p>             	
 </div>
 
     {% if artists %}

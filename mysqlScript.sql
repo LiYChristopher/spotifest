@@ -18,7 +18,7 @@ CREATE table contributors (
     danceability decimal(4,3),
     energy decimal(4,3),
     variety decimal(4,3),
-    adventurousness varchar(30),
+    adventurousness decimal(4,3),
     organizer boolean DEFAULT 0 NOT NULL,
     CONSTRAINT FOREIGN KEY (festivalId) REFERENCES sessions(festivalId)
         ON DELETE CASCADE,
