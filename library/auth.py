@@ -65,6 +65,7 @@ class User(UserMixin):
         else:
             return None
 
+
 class UserCache():
     def __init__(self, artists=set(), hotness=None, danceability=None, enery=None,
                 energy=None, variety=None, adventurousness=None, organizer=0,
@@ -78,6 +79,8 @@ class UserCache():
         self.organizer = organizer
         self.search_results = search_results
         self.festival_name = festival_name
+
+
 user_cache = UserCache()
 
 @login_manager.user_loader
@@ -109,7 +112,7 @@ def refresh():
 @app.before_request
 def before_request():
     refresh()
-    if session.get('user_id') and not User.users:
+    if session.get('user_id') and not load_user(session.get('user_id')):
         logout_user()
     return
 
@@ -289,7 +292,7 @@ def festival(url_slug):
         if request.form.get("add_button"):
             new_artist = ', '.join(suggested_artists)
             user_cache.artists.update(set(suggested_artists))
-            new = True    
+            new = True
 
     return render_template('festival.html', url_slug=url_slug, 
                             s_results=user_cache.search_results,
@@ -301,6 +304,24 @@ def festival(url_slug):
                             contributors=contributors,
                             festival_name=festival_name,
                             new=new, new_artist=new_artist, is_owner=is_owner)
+
+
+@app.route('/festival/<url_slug>/update_parameters', methods=['POST'])
+def update_parameters(url_slug):
+    '''
+    If not the owner, update contributor's parameters on database.
+    '''
+    festivalId = db.get_info_from_database(url_slug)[0]
+    h = request.form.get('hotttnesss')
+    d = request.form.get('danceability')
+    e = request.form.get('energy')
+    v = request.form.get('variety')
+    a = request.form.get('adventurousness')
+    _user = session.get('user_id')
+    db.update_parameters(festivalId, _user, h, d, e, v, a)
+    flash("You've pitched the perfect festival to the organizer." +
+          " Now we wait.")
+    return redirect(url_for('festival', url_slug=url_slug))
 
 
 @app.route('/festival/<url_slug>/results', methods=['POST', 'GET'])

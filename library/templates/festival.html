@@ -29,6 +29,19 @@
 
     </form>
 
+{% block flash %}
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p id="flash">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+{% endblock %}
+
+
 {% elif s_results == false %}
     <p class="lead">No artists found with the name {{ new_artist }} !</p>
 {% endif %}
@@ -56,33 +69,36 @@
 
 
     <p class="lead">
+        {% if is_owner == true %}
       <form action="{{ url_for('results', url_slug=url_slug) }}" method="post">
         <fieldset>
-        {% if is_owner == true %}
             {{ params_form.name.label }} <br>
             {{ params_form.name }} <br>
+        {% else %}
+      <form action="{{ url_for('update_parameters', url_slug=url_slug) }}" method="post">
+        <fieldset>
         {% endif %}
-
-        {{ params_form.danceability.label }}
-        {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
-        {{ params_form.hotttnesss.label}}
-        {{ params_form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
-        {{ params_form.energy.label }}
-        {{ params_form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
-        {{ params_form.variety.label }}
-        {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
-        {{ params_form.adventurousness.label }}
-        {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)")}}                
+	        {{ params_form.danceability.label }}
+	        {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
+	        {{ params_form.hotttnesss.label}}
+	        {{ params_form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
+	        {{ params_form.energy.label }}
+	        {{ params_form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
+	        {{ params_form.variety.label }}
+	        {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
+	        {{ params_form.adventurousness.label }}
+	        {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)")}}  
         {% if is_owner %}
             <input class="btn btn-success btn-lg" type="submit" value="Generate"></input>
-        {% else %}
-        <a href="#">
-            <input class="btn btn-success btn-lg" type="submit" value="Save Parameters"></input>
-        </a>
-        {% endif %}     	
         </fieldset>
       </form>
     </p>
+        {% else %}
+            <input class="btn btn-success btn-lg" type="submit" value="Propose Vision"></input>
+        </fieldset>
+      </form>
+    </p>            
+        {% endif %}     	
 </div>
 
     {% if artists %}

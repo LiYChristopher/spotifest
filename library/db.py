@@ -37,16 +37,37 @@ def update_festival(festivalName, playlistId, playlistURL, urlSlug):
     return
 
 
-def save_contributor(festivalId, userId, ready=0, hotness=None, 
+def update_parameters(festivalId, userId, hotttnesss, danceability,
+                    energy, variety, advent):
+    festivalId = int(festivalId)
+    userId = str(userId)
+    hotttnesss = float(hotttnesss)
+    danceability = float(danceability)
+    energy = float(energy)
+    variety = float(variety)
+    advent = float(advent)
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+        values = (hotttnesss, danceability, energy, variety, advent, festivalId, userId)
+        print "THESE ARE VALUES", values
+        cursor.execute("UPDATE contributors SET hotness=%s, danceability=%s, energy=%s,\
+                        variety=%s, adventurousness=%s, ready=1 WHERE festivalId=%s AND userId=%s", values)
+        connection.commit()
+        print "updated settings for user."
+    return
+
+
+def save_contributor(festivalId, userId, ready=0, hotness=None,
                     danceability=None, energy=None, variety=None, advent=None,
                     organizer=0):
     '''
-    requires festivalId and userId, 
+    requires festivalId and userId,
     saves whatever else you also put in it in the contributor table
     ''' 
     festivalId = int(festivalId)
     userId = str(userId)
-    values = (festivalId, userId, ready, hotness, 
+    values = (festivalId, userId, ready, hotness,
                 danceability, energy, variety, advent, organizer)
     print ("Saving contributor {} to festival {}".format(userId, festivalId))
     with app.app_context():
