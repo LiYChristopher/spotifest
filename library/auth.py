@@ -179,7 +179,7 @@ def join(url_slug):
     current_festival = db.get_info_from_database(url_slug)
     if not current_festival:
         flash(("Festival '{}' does not exist! Please check"
-                "the code and try again.").format(url_slug))
+                " the code and try again.").format(url_slug))
         return redirect(url_for('home'))
     owner = current_festival[2]
     _user = session.get('user_id')
@@ -384,7 +384,7 @@ def results(url_slug):
             id_playlist = helpers.get_id_from_playlist(s, user_id, name)
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
 
-            playlist_url = ('https://embed.spotify.com/?uri=spotify:user:',
+            playlist_url = ('https://embed.spotify.com/?uri=spotify:user:' +
                         '{}:playlist:{}'.format(str(user_id), str(id_playlist)))
             if app.config['IS_ASYNC'] is True:
                 db.update_festival.apply_async(args=[name, id_playlist, playlist_url, url_slug])

@@ -126,10 +126,9 @@ def get_info_from_database(urlSlug):
     with app.app_context():
         connection = mysql.get_db()
         cursor = connection.cursor()
-        try:
-            cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
-            data = cursor.fetchall()
-        except:
+        cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
+        data = cursor.fetchall()
+        if not data:
             return None
         print 'DATA', data
         festivalId = int(data[0][0])
