@@ -89,6 +89,7 @@ def get_contributors(festivalId):
     return a list with all the contributors id of
     the festival. THE FIRST contributor == organizer
     '''
+
     print type(festivalId)
     print (festivalId)
     connection = mysql.get_db()
@@ -96,48 +97,52 @@ def get_contributors(festivalId):
     try:
         cursor.execute("SELECT * FROM contributors WHERE\
                        (festivalId = %s AND organizer = 1)", (festivalId,))
+        d1 = cursor.fetchall()
     except:
         print ("Database can't be reached")
         return None
-    d1 = cursor.fetchall()
-    if d1:
-        all_users = {'owner': {'userId': str(d1[0][1]), 'ready': int(d1[0][2]), 
-                               'hotness': float(d1[0][3]), 
-                               'danceability': float(d1[0][4]),
-                               'energy': float(d1[0][5]), 
-                               'variety': float(d1[0][6]),
-                               'variety': float(d1[0][7]), 
-                               'adventurousness': float(d1[0][8])}}
     else:
-        print ("There is no organizer assigned.")
-        return None
+        print (d1)
+        if d1:
+            print ("going into the if now")
+            all_users = {'organizer': {'userId': str(d1[0][1]), 
+                                   'ready': int(d1[0][2]), 
+                                   'hotness': (d1[0][3]), 
+                                   'danceability': (d1[0][4]),
+                                   'energy': (d1[0][5]), 
+                                   'variety': (d1[0][6]),
+                                   'adventurousness': (d1[0][7])}}
+            print ("going out of the if now")
+        else:
+            print ("There is no organizer assigned.")
+            return None
+        print (all_users)
 
     try:
-        connection = mysql.get_db()
-        cursor = connection.cursor()
-        cursor.execute("SELECT userId FROM contributors WHERE\
+        cursor.execute("SELECT * FROM contributors WHERE\
                        (festivalId = %s AND organizer = 0)", (festivalId,))
         d2 = cursor.fetchall()
-        print ("contributors: {}".format(d2))
     except:
         print ("Database can't be reached..")
         return None
-    if d2:
-        contributors = {{str(u[0][1]): {'ready': int(u[0][2]), 
-                        'hotness': float(u[0][3]), 
-                        'danceability': float(u[0][4]),
-                        'energy': float(u[0][5]), 
-                        'variety': float(u[0][6]),
-                        'variety': float(u[0][7]), 
-                        'adventurousness': float(u[0][8])}} for u in d2}
-        all_ready = 1
-        for contributor in contributors:
-            if contributor['ready'] == 0:
-                all_ready = 0
-                break
-
-        all_users.update({'contributors': contributors, 'all_ready': all_ready})
-
+    else:
+        print (d2)
+        if d2:
+            contributors = {str(u[1]): {'ready': int(u[2]), 
+                                        'hotness': u[3], 
+                                        'danceability': u[4],
+                                        'energy': u[5], 
+                                        'variety': u[6],
+                                        'adventurousness': u[7]} for u in d2}
+            print (contributors)
+            all_ready = 1
+            for contributor in contributors:
+                if contributors[contributor]['ready'] == 0:
+                    all_ready = 0
+                    print ("a contributor isn't ready")
+                    break
+            all_users.update({'contributors': contributors, 'all_ready': all_ready})
+            print (all_users)
     print ('contributors retrieved from database: {}'.format(all_users))
     return all_users
 
@@ -188,4 +193,3 @@ def get_average_parameters(festivalId):
                               float(data[0][4])]
         print 'Average Parameter : ' + str(average_parameters)
         return average_parameters
-

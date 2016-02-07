@@ -181,13 +181,15 @@ def join(url_slug):
         flash(("Festival '{}' does not exist! Please check"
                 " the code and try again.").format(url_slug))
         return redirect(url_for('home'))
-    owner = current_festival[2]
+    organizer = current_festival[2]
     _user = session.get('user_id')
-    if owner != _user:
+    if organizer != _user:
         try:
             db.save_contributor(current_festival[0], _user)
         except:
             print ("Contributor {} is already in the database.".format(_user))
+    else:
+        flash("Welcome back to your own festival!")
     return redirect(url_for('festival', url_slug=url_slug))
 
 
@@ -234,27 +236,27 @@ def festival(url_slug):
         flash(("Festival '{}' does not exist! Please check"
                "the code and try again.").format(url_slug))
         return redirect(url_for('home'))
-    owner = current_festival[2]
+    organizer = current_festival[2]
     _user = session.get('user_id')
-    is_owner = True
-    # check if owner & if so, find name
-    if owner != _user:
-        is_owner = False
+    is_org = True
+    # check if organizer & if so, find name
+    if organizer != _user:
+        is_org = False
         festival_name = current_festival[1]
-    elif owner == _user:
-        is_owner = True
+    elif organizer == _user:
+        is_org = True
         festival_name = None
     # fetch contributors: the 0th term = the main organizer!
     try:
         all_users = db.get_contributors(current_festival[0])
+        if all_users == None:
+            flash(("Festival '{}' is having problems. Please check with the "
+                "organizer. Try again later.").format(url_slug))
+            return redirect(url_for('home')) 
     except:
         flash(("Festival '{}' is having problems. Please check with the "
                 "organizer. Try again later.").format(url_slug))
         return redirect(url_for('home'))
-    all_contributors = [contributor['userId'] for contributor in all_users['contributors']]
-    print ("contributors: {}".format(all_contributors))
-    print ("organizer: {}".format(all_users['organizer']['userId']))
-    
     new = None
     new_artist = None
 
@@ -305,7 +307,7 @@ def festival(url_slug):
                            all_users=all_users,
                            festival_name=festival_name,
                            user=_user,
-                           new=new, new_artist=new_artist, is_owner=is_owner)
+                           new=new, new_artist=new_artist, is_org=is_org)
 
 
 
