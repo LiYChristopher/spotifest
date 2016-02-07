@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-<!--
+
 {% block flash %}
 
     {% with messages = get_flashed_messages() %}
@@ -11,9 +11,22 @@
         {% endif %}
     {% endwith %}
 
-{% endblock %} -->
+{% endblock %}
 
 {% block login %}
+
+    {% if login == false %}
+    <div class="inner cover">
+            <h1 class="cover-heading">Let's start your ideal Festival</h1>
+            <p class="lead">Festify will create the perfect festival base on the musical taste of the awesome people that will
+                enjoy this musical experience.</p>
+            <br>
+                <p class="lead">Log in to create a festival, or join a friend's festival organization!
+                <a href="{{ oauth }}"><input name="submit" class="btn btn-success btn-lg" value="Log in!" type="button"></input></a>
+
+                <br><br>** insert flashy screenshots of a made festival or something **
+    </div>
+    {% else %}
 
     <div class="inner cover">
             <h1 class="cover-heading">Let's start your ideal Festival</h1>
@@ -21,7 +34,7 @@
                 enjoy this musical experience.</p>
             <br>
 
-                <a href="{{ url_for('home') }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
+                <a href="{{ url_for('new') }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
                         <nav>
                             <ul>
                                 <li id="login">
@@ -35,5 +48,6 @@
                         </nav>
     </div>
 
+    {% endif %}
 
 {% endblock %}

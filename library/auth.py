@@ -222,7 +222,7 @@ def new():
     festivalId = current_festival[0]
     userId = current_festival[2]
     try:
-        db.save_contributor(festivalId, userId, organizer=1)
+        db.save_contributor(festivalId, userId, organizer=1, ready=1)
     except:
         print ("SAVING CONTRIBUTOR FAILED!")
     return redirect(url_for('festival', url_slug=new_url_slug))
