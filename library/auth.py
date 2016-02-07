@@ -1,7 +1,6 @@
-from library.app import app, login_manager
+from library.app import app, celery, login_manager
 from library.helpers import (suggested_artists, random_catalog, seed_playlist)
 from library import frontend_helpers
-from library.app import app, celery, login_manager
 from config import BaseConfig
 
 from flask.ext.login import login_user, logout_user
