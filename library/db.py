@@ -42,7 +42,7 @@ def update_festival(festivalName, playlistId, playlistURL, urlSlug):
 
 
 def update_parameters(festivalId, userId, hotttnesss, danceability,
-                    energy, variety, advent):
+                      energy, variety, advent):
     festivalId = int(festivalId)
     userId = str(userId)
     hotttnesss = float(hotttnesss)
@@ -61,10 +61,10 @@ def update_parameters(festivalId, userId, hotttnesss, danceability,
         print "updated settings for user."
     return
 
-
+@celery.task(name='save_contributor')
 def save_contributor(festivalId, userId, ready=0, hotness=None,
-                    danceability=None, energy=None, variety=None, advent=None,
-                    organizer=0):
+                     danceability=None, energy=None, variety=None, advent=None,
+                     organizer=0):
     '''
     requires festivalId and userId,
     saves whatever else you also put in it in the contributor table
@@ -90,9 +90,6 @@ def get_contributors(festivalId):
     return a list with all the contributors id of
     the festival. THE FIRST contributor == organizer
     '''
-
-    print type(festivalId)
-    print (festivalId)
     connection = mysql.get_db()
     cursor = connection.cursor()
     try:
