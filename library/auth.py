@@ -247,7 +247,7 @@ def festival(url_slug):
     # fetch contributors: the 0th term = the main organizer!
     try:
         all_users = db.get_contributors(current_festival[0])
-        if all_users == None:
+        if all_users is None:
             flash(("Festival '{}' is having problems. Please check with the "
                 "organizer. Try again later.").format(url_slug))
             return redirect(url_for('home'))
