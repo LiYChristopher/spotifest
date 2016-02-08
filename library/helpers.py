@@ -253,7 +253,8 @@ def seed_playlist(catalog, danceability=0.5, hotttnesss=0.5,
         pl = playlist.static(type='catalog-radio', seed_catalog=catalog,
                              min_danceability=danceability, artist_min_hotttnesss=hotttnesss,
                              min_energy=energy, variety=variety, adventurousness=adventurousness,
-                             distribution='focused', results=results)
+                             distribution='focused', artist_pick='song_hotttnesss-desc',
+                             sort='artist_familiarity-desc', results=results)
         print 'songs in playslist', len(pl)
         # catalog.delete()
         return pl
