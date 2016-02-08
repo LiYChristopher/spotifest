@@ -103,7 +103,6 @@ def get_contributors(festivalId):
         print ("Database can't be reached")
         return None
     else:
-        print (d1)
         if d1:
             print ("going into the if now")
             all_users = {'organizer': {'userId': str(d1[0][1]), 

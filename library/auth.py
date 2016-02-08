@@ -220,7 +220,7 @@ def new():
 
     current_festival = db.get_info_from_database(urlSlug=new_url_slug)
     festivalId = current_festival[0]
-    userId = current_festival[3]
+    userId = current_festival[2]
     try:
         db.save_contributor(festivalId, userId, organizer=1, ready=1)
     except:
@@ -249,7 +249,6 @@ def festival(url_slug):
     # fetch contributors: the 0th term = the main organizer!
     try:
         all_users = db.get_contributors(current_festival[0])
-        print "ALL USERS", all_users
         if all_users == None:
             flash(("Festival '{}' is having problems. Please check with the "
                 "organizer. Try again later.").format(url_slug))
