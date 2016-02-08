@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 
 """A very simple example demonstrating Sijax and the Flask-Sijax extension."""
-
-import os, sys
+from flask import Flask, g, render_template
+import flask_sijax
+import os
+import sys
 
 path = os.path.join('.', os.path.dirname(__file__), '../')
 sys.path.append(path)
-
-
-from flask import Flask, g, render_template
-import flask_sijax
-
 app = Flask(__name__)
 
 # The path where you want the extension to create the needed javascript files
@@ -23,10 +20,12 @@ app.config["SIJAX_JSON_URI"] = '/static/js/sijax/json2.js'
 
 flask_sijax.Sijax(app)
 
+
 # Regular flask view function - Sijax is unavailable here
 @app.route("/")
 def hello():
     return "Hello World!<br /><a href='/sijax'>Go to Sijax test</a>"
+
 
 # Sijax enabled function - notice the `@Sijax.route` decorator
 # used instead of `@app.route` (above).

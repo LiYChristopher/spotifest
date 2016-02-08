@@ -105,11 +105,11 @@ def get_contributors(festivalId):
     else:
         if d1:
             print ("going into the if now")
-            all_users = {'organizer': {'userId': str(d1[0][1]), 
-                                   'ready': int(d1[0][2]), 
-                                   'hotness': (d1[0][3]), 
+            all_users = {'organizer': {'userId': str(d1[0][1]),
+                                   'ready': int(d1[0][2]),
+                                   'hotness': (d1[0][3]),
                                    'danceability': (d1[0][4]),
-                                   'energy': (d1[0][5]), 
+                                   'energy': (d1[0][5]),
                                    'variety': (d1[0][6]),
                                    'adventurousness': (d1[0][7])}}
             print ("going out of the if now")
@@ -128,10 +128,10 @@ def get_contributors(festivalId):
     else:
         print (d2)
         if d2:
-            contributors = {str(u[1]): {'ready': int(u[2]), 
-                                        'hotness': u[3], 
+            contributors = {str(u[1]): {'ready': int(u[2]),
+                                        'hotness': u[3],
                                         'danceability': u[4],
-                                        'energy': u[5], 
+                                        'energy': u[5],
                                         'variety': u[6],
                                         'adventurousness': u[7]} for u in d2}
             print (contributors)
@@ -172,7 +172,6 @@ def get_info_from_database(urlSlug):
         return values
 
 
-
 def get_average_parameters(festivalId):
     '''
     return list of the average parameters for a festival
@@ -188,8 +187,8 @@ def get_average_parameters(festivalId):
         except:
             print 'error getting average parameters from the DB'
             return None
-        average_parameters = [float(data[0][0]), float(data[0][1]), 
-                              float(data[0][2]), float(data[0][3]), 
+        average_parameters = [float(data[0][0]), float(data[0][1]),
+                              float(data[0][2]), float(data[0][3]),
                               float(data[0][4])]
         print 'Average Parameter : ' + str(average_parameters)
         return average_parameters

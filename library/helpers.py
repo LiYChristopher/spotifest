@@ -297,7 +297,6 @@ def process_to_item(artist):
     return item
 
 
-
 def seed_playlist(catalog, danceability=0.5, hotttnesss=0.5,
                   energy=0.5, variety=0.5, adventurousness=0.5,
                   results=50):

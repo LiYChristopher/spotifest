@@ -247,17 +247,16 @@ def festival(url_slug):
     # fetch contributors: the 0th term = the main organizer!
     try:
         all_users = db.get_contributors(current_festival[0])
-        if all_users == None:
+        if all_users is None:
             flash(("Festival '{}' is having problems. Please check with the "
                 "organizer. Try again later.").format(url_slug))
-            return redirect(url_for('home')) 
+            return redirect(url_for('home'))
     except:
         flash(("Festival '{}' is having problems. Please check with the "
                 "organizer. Try again later.").format(url_slug))
         return redirect(url_for('home'))
     new = None
     new_artist = None
-
 
     current_user = load_user(session.get('user_id')).access
     s = spotipy.Spotify(auth=current_user)
@@ -267,7 +266,7 @@ def festival(url_slug):
         print (user_cache.artists)
     except:
         print ("No artists followed found in the user's Spotify account.")
-    
+
     # prep forms
     searchform = frontend_helpers.SearchForm()
     suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
@@ -306,7 +305,6 @@ def festival(url_slug):
                            festival_name=festival_name,
                            user=_user,
                            new=new, new_artist=new_artist, is_org=is_org)
-
 
 
 @app.route('/festival/<url_slug>/update_parameters', methods=['POST'])
@@ -384,7 +382,7 @@ def results(url_slug):
             playlist_url = festival_information[4]
             id_playlist = festival_information[3]
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
-            return render_template('results.html', playlist_url=playlist_url, 
+            return render_template('results.html', playlist_url=playlist_url,
                                    enough_data=enough_data)
         else:
             helpers.create_playlist(s, user_id, name)
@@ -395,7 +393,7 @@ def results(url_slug):
             playlist_url = ('https://embed.spotify.com/?uri=spotify:user:'
                             '{}:playlist:{}'.format(u_id, id_pl))
             if app.config['IS_ASYNC'] is True:
-                db.update_festival.apply_async(args=[name, id_playlist, 
+                db.update_festival.apply_async(args=[name, id_playlist,
                                                playlist_url, url_slug])
             else:
                 db.update_festival(name, id_playlist, playlist_url, url_slug)
