@@ -8,9 +8,14 @@ from pyechonest import playlist
 from pyechonest import artist
 from pyechonest.catalog import Catalog
 from library.app import celery
+from config import BaseConfig
+import os
+import datetime
+import base64
+import hashlib
 
 
-config.ECHO_NEST_API_KEY = "SNRNTTK9UXTWYCMBH"
+config.ECHO_NEST_API_KEY = BaseConfig.ECHONEST_API_KEY
 
 suggested_artists = set(['Radiohead', 'Nirvana', 'The Beatles', 'David Bowie',
                         'Aretha Franklin', 'Mogwai', 'Eels', 'Glass Animals',
@@ -38,22 +43,42 @@ class AsyncAdapter(object):
                 raise ValueError("Missing arguments for async - 'total_items",
                                  "'chunk_size'")
             return self.async_process_spotify_ids(total_items, chunk_size,
-                                             helper_args=[spotipy, playlist])
+                                                  helper_args=[spotipy, playlist])
 
     def get_user_preferences(self, spotipy):
+        '''
+        Returns set of artists gathered from a spotify user's saved tracks,
+        public playlists and followed artists.
+        '''
         if not self.is_async:
             return self.non_async_get_user_preferences(spotipy)
         else:
             return self.async_get_user_preferences(spotipy)
 
-    def non_async_process_spotify_ids(self, spotipy, playlist):
+    def populate_catalog(self, artists, num_tasks, limit=5, catalog=None):
+        '''
+        Populates a given catalog object with a randomized selection of songs.
+        '''
+        if not self.is_async:
+            return self.non_async_populate_catalog(artists, catalog)
+        else:
+            return self.async_populate_catalog(artists, num_tasks,
+                                               limit, catalog)
 
+    def non_async_process_spotify_ids(self, spotipy, playlist):
+        '''
+        Returns array of spotify song IDs, given an iterable of song names (playlist).
+        '''
         songs_id = get_songs_id(spotipy, playlist, None)
         return songs_id
 
     def async_process_spotify_ids(self, total_items, chunk_size, helper_args=[]):
+        '''
+        Asynchronous task factory, to run multiple task instances for
+        the .get_songs_id(...) helper function.
+        '''
         if not helper_args:
-            return "stop"
+            return
         task_ids = []
         limit = total_items + chunk_size
         for chunk in xrange(0, limit, chunk_size):
@@ -73,6 +98,10 @@ class AsyncAdapter(object):
         return songs_id
 
     def non_async_get_user_preferences(self, spotipy):
+        '''
+        Normal wrapper for three helper functions involved in gathering
+        user preferences.
+        '''
         # artists from saved tracks
         st = get_user_saved_tracks(spotipy)
         # artists form user playlists (public)
@@ -82,6 +111,12 @@ class AsyncAdapter(object):
         return st | up | fa
 
     def async_get_user_preferences(self, spotipy):
+        '''
+        Asynchronous task factory for three helper functions:
+            - .get_user_saved_tracks(...)
+            - .get_user_playlists(...)
+            - .get_user_followed(...)
+        '''
         tasks = []
         preferences = set()
         # artists from saved tracks
@@ -108,12 +143,40 @@ class AsyncAdapter(object):
                     continue
         return preferences
 
+    def async_populate_catalog(self, artists, num_tasks, limit=5, catalog=None):
+        '''
+        Asynchronous task factory for the .populate_catalog(...) helper function.
+        '''
+        artists = list(artists)
+        tasks = []
+        if not catalog:
+            random_catalog(artists, limit=15)
+            return
+        for _ in xrange(num_tasks):
+            task = random_catalog.apply_async(args=[artists],
+                                              kwargs={'limit': 5,
+                                                      'catalog': catalog})
+            insertion_results = random_catalog.AsyncResult(task.task_id)
+            tasks.append(insertion_results)
+
+            while tasks:
+                for t in tasks:
+                    if t.state == 'SUCCESS':
+                        tasks.remove(t)
+                    else:
+                        continue
+        print 'Catalog processing complete..'
+        return
+
+    def non_async_populate_catalog(self, artists, catalog):
+        return random_catalog(artists, catalog)
+
 
 @celery.task(name='saved_tracks')
 def get_user_saved_tracks(spotipy):
     '''
-    return a set with the saved tracks.
-    for now it will return a set with only the artists
+    Returns a set of all artists found
+    within the current Spotify user's saved tracks.
     '''
     offset = 0  # this set will be deleted if later we returns tracks instead of artists
     artists = set()
@@ -132,8 +195,8 @@ def get_user_saved_tracks(spotipy):
 @celery.task(name='saved_playlists')
 def get_user_playlists(spotipy):
     '''
-    return a set with users tracks on playlist
-    for now it will return a set with only the artists
+    Returns set of all artists found
+    within the current Spotify user's playlists.
     '''
     def show_tracks(results):
         '''
@@ -150,7 +213,8 @@ def get_user_playlists(spotipy):
 
     for playlist in playlists['items']:
         owner = playlist['owner']['id']
-        results = spotipy.user_playlist(owner, playlist['id'], fields="tracks,next")
+        results = spotipy.user_playlist(owner, playlist['id'],
+                                        fields="tracks,next")
         tracks = results['tracks']
         show_tracks(tracks)
         while tracks['next']:
@@ -161,7 +225,7 @@ def get_user_playlists(spotipy):
 @celery.task(name='followed_users')
 def get_user_followed(spotipy):
     '''
-    return a set with artists followed by artist.
+    Return a set of artists followed by the current user on Spotify.
     '''
     followed = spotipy.current_user_followed_artists()
     artists = {artist['name'] for artist in followed['artists']['items']}
@@ -169,7 +233,9 @@ def get_user_followed(spotipy):
 
 
 def search_artist_echonest(name):
-
+    '''
+    Returns array of artists based on search query to Echonest API.
+    '''
     # add validation via echonest here
     results = artist.search(name=name)
     if results is False:
@@ -182,27 +248,26 @@ def search_artist_echonest(name):
 
 def create_playlist(spotipy, user_id, name_playlist):
     '''
-    Function that will create a playlist por a user
-    with name provided
-    user_id = current_user['id']
+    Creates a spotify playlist for user at user_id.
     '''
     spotipy.user_playlist_create(user_id, name_playlist, public=True)
     print 'playlist created'
+    return
 
 
 def add_songs_to_playlist(spotipy, user_id, playlist_id, id_songs):
     '''
-    add songs to a playlist providing user, id playlist
-    and a list of songs
+    Inserts multiple songs (based on their spotify IDs)
+    into a specified playlist.
     '''
     spotipy.user_playlist_add_tracks(user_id, playlist_id, id_songs)
-    print 'track added to playlist'
+    print 'songs added to playlist'
+    return
 
 
 def get_id_from_playlist(spotipy, user_id, name_playlist):
     '''
-    function that return the id of a playlist
-    providing the id
+    Returns spotify playlist ID, given a user_id and playlist name.
     '''
     offset = 0
     playlists = spotipy.user_playlists(user_id)
@@ -214,6 +279,9 @@ def get_id_from_playlist(spotipy, user_id, name_playlist):
 
 
 def insert_to_catalog(catalog, item):
+    '''
+    Wraps process_to_item funciton, returns catalog status ticket.
+    '''
     ready = process_to_item(item)
     ticket = catalog.update(ready)
     return ticket
@@ -229,41 +297,42 @@ def process_to_item(artist):
     return item
 
 
-def random_catalog(artists, limit=15, catalog_id=None):
-    if catalog_id:
-        catalog = Catalog(catalog_id)
-    else:
-        catalog = Catalog('your_catalog', 'general')
-    artists = list(artists)
-    for _ in xrange(limit):
-        choice = random.choice(artists)
-        insert_to_catalog(catalog, choice)
-    return catalog
-
 
 def seed_playlist(catalog, danceability=0.5, hotttnesss=0.5,
                   energy=0.5, variety=0.5, adventurousness=0.5,
                   results=50):
-        ''' Allow user to adjust:
-        - style
     '''
-    # write a wrapper around playlist.static() spotify obj, so extra params
-    # can be set before instantiating the playlist.
+    Seed playlist and return playlist parameterized by args.
+    '''
+    pl = playlist.static(type='catalog-radio', seed_catalog=catalog,
+                         min_danceability=danceability, artist_min_hotttnesss=hotttnesss,
+                         min_energy=energy, variety=variety, adventurousness=adventurousness,
+                         distribution='focused', artist_pick='song_hotttnesss-desc',
+                         sort='artist_familiarity-desc', results=results)
+    print 'songs in playslist', len(pl)
+    return pl
 
-        pl = playlist.static(type='catalog-radio', seed_catalog=catalog,
-                             min_danceability=danceability, artist_min_hotttnesss=hotttnesss,
-                             min_energy=energy, variety=variety, adventurousness=adventurousness,
-                             distribution='focused', artist_pick='song_hotttnesss-desc',
-                             sort='artist_familiarity-desc', results=results)
-        print 'songs in playslist', len(pl)
-        # catalog.delete()
-        return pl
+
+@celery.task(name='random_catalog')
+def random_catalog(artists, limit=15, catalog=None):
+    '''
+    Inserts a number of artists into a catalog object based on
+    random selection from iterable of artists.
+    '''
+    if not catalog:
+        catalog = Catalog('your_catalog', 'general')
+    artists = list(artists)
+    for _ in xrange(limit):
+        choice = random.choice(artists)
+        artists.remove(choice)
+        insert_to_catalog(catalog, choice)
+    return catalog
 
 
 @celery.task(name='song_ids')
 def get_songs_id(spotipy, playlist, offset):
     '''
-    get a list of sgons names and return list of songs ids
+    Returns list of song IDs for each song in echonest playlist object.
     '''
     songs_id = []
     # full playlist
@@ -282,3 +351,13 @@ def get_songs_id(spotipy, playlist, offset):
         spotify_id = spotipy.search(q, type='track', limit=1)['tracks']['items'][0]['id']
         songs_id.append(spotify_id)
     return songs_id
+
+
+def generate_urlslug(user_id):
+    ''' Create URL slug based on md5 hash of: user_id,
+    current time, and unique base64 3 byte tag.'''
+
+    unique = base64.b64encode(os.urandom(3))
+    slug_hash = hashlib.md5(user_id + str(datetime.datetime.now()) + unique)
+    new_url_slug = slug_hash.hexdigest()[:7]
+    return new_url_slug

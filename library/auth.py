@@ -15,10 +15,7 @@ from flask import render_template, request, redirect, url_for, session, flash
 import redis
 import spotipy
 import spotipy.util as util
-import os
 import base64
-import hashlib
-import datetime
 import requests
 import helpers
 import db
@@ -197,30 +194,31 @@ def join(url_slug):
 @login_required
 def new():
     current_user = load_user(session.get('user_id'))
-    unique = base64.b64encode(os.urandom(3))
-    slug_hash = hashlib.md5(current_user.id + str(datetime.datetime.now()) + unique)
-    new_url_slug = slug_hash.hexdigest()[:7]
+    new_url_slug = helpers.generate_urlslug(current_user.id)
     new_catalog = helpers.Catalog(new_url_slug, 'general')
     s = spotipy.Spotify(auth=current_user.access)
+    processor = helpers.AsyncAdapter(app)
+
     if app.config['IS_ASYNC'] is True:
-        processor = helpers.AsyncAdapter(app)
         user_cache.artists.update(processor.get_user_preferences(s))
         if user_cache.artists:
-            helpers.random_catalog(user_cache.artists, catalog_id=new_catalog.id)
+            processor.populate_catalog(user_cache.artists, 3, catalog=new_catalog)
+
         save_task = db.save_to_database.apply_async(args=[None, current_user.id,
                                                     None, None, new_catalog.id,
                                                     new_url_slug])
-
         while True:
             if save_task.state == 'SUCCESS':
                 break
     else:
         db.save_to_database(None, current_user.id, None, None,
                             new_catalog.id, new_url_slug)
+        processor.populate_catalog(user_cache.artists, catalog=new_catalog)
 
     current_festival = db.get_info_from_database(urlSlug=new_url_slug)
     festivalId = current_festival[0]
     userId = current_festival[2]
+
     try:
         db.save_contributor(festivalId, userId, organizer=1, ready=1)
     except:
