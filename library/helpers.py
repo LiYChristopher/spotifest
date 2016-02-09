@@ -158,6 +158,7 @@ class AsyncAdapter(object):
                                                       'catalog': catalog})
             insertion_results = random_catalog.AsyncResult(task.task_id)
             tasks.append(insertion_results)
+        print 'Catalog now has {} items.'.format(len(catalog.get_item_dicts(results=100)))
         return
 
     def non_async_populate_catalog(self, artists, catalog):
