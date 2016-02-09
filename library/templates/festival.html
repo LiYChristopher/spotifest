@@ -1,22 +1,24 @@
 {% extends 'base.html' %}
 
-{% block lists %}
+{% block login %}
 
 <div class="inner cover">
 
 <form action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
     {{ suggested_pl_butt.hidden_tag() }}
-    {{ suggested_pl_butt.add_button }}
+    {{ suggested_pl_butt.add_button(class_="btn btn-primary") }}
 </form>
 
 
 
-<p class="lead">Would you like to invite more artists?</p>
+<p id="search-artist" class="lead">Would you like to invite more artists?</p>
 
 <form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
     {{ searchform.hidden_tag() }}
-    {{ searchform.artist_search(size=20)}}
-    {{ searchform.submit }}
+    <div style="display:inline-block;">
+    {{ searchform.artist_search(class_="form-control", size=20)}}
+    {{ searchform.submit(id="search-artist", class_="btn btn-default")}}
+    </div>
 </form>
 
 
@@ -81,7 +83,7 @@
   <form action="{{ url_for('results', url_slug=url_slug) }}" method="post">
     <fieldset>
         {{ params_form.name.label }} <br>
-        {{ params_form.name }} <br>
+        {{ params_form.name (id="festival-name", class_="form_control")}} <br>
     {% else %}
   <form action="{{ url_for('update_parameters', url_slug=url_slug) }}" method="post">
     <fieldset>
@@ -107,7 +109,7 @@
 
     {% elif is_org %}
         {% if 'contributors' not in all_users %}
-            <input class="btn btn-success btn-lg" type="submit" value="SOLO generate"></input>
+            <input style="margin-top:20px;" class="btn btn-success btn-lg" type="submit" value="Generate"></input>
         {% else %}
         <nav>
         <ul>
