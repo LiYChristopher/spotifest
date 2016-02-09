@@ -14,15 +14,10 @@ from flask import render_template, request, redirect, url_for, session, flash
 
 import redis
 import spotipy
-import spotipy.util as util
 import base64
 import requests
 import helpers
 import db
-
-
-festival_id = None
-did_user_sel_parameters = False
 
 
 def oauth_prep(config=None, scope=['user-library-read']):
@@ -31,9 +26,9 @@ def oauth_prep(config=None, scope=['user-library-read']):
 
     scope = ' '.join(scope)
     oauth = spotipy.oauth2.SpotifyOAuth(client_id=config.CLIENT_ID,
-                                client_secret=config.CLIENT_SECRET,
-                                redirect_uri=config.REDIRECT_URI,
-                                scope=scope)
+                                        client_secret=config.CLIENT_SECRET,
+                                        redirect_uri=config.REDIRECT_URI,
+                                        scope=scope)
     return oauth
 
 scope = ['user-library-read', 'playlist-read-collaborative',
@@ -75,6 +70,8 @@ class UserCache():
         self.organizer = organizer
         self.search_results = search_results
         self.festival_name = festival_name
+        self.festival_id = None
+        self.did_user_sel_parameters = False
 
     def save_preferences(self, artists, urlSlug):
         if not isinstance(artists, set):
@@ -399,11 +396,10 @@ def results(url_slug):
             if request.form['festival_id']:
                 print 'User selected join'
                 auth_url = login()
-                global festival_id
-                festival_id = request.form['festival_id']
+                user_cache.festival_id = request.form['festival_id']
                 return redirect(auth_url)
         except:
-            if festival_id is None:
+            if user_cache.festival_id is None:
                 print 'User did not click on join and selected parameter'
             else:
                 print 'User selected parameters'
@@ -417,12 +413,12 @@ def results(url_slug):
         enough_data = True
         name = request.form.get('name')
         h = request.form.get('hotttnesss')
-        global did_user_sel_parameters
-        did_user_sel_parameters = True
         d = request.form.get('danceability')
         e = request.form.get('energy')
         v = request.form.get('variety')
         a = request.form.get('adventurousness')
+        user_cache.did_user_sel_parameters = True
+
         current_user = load_user(session.get('user_id')).access
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
@@ -433,14 +429,13 @@ def results(url_slug):
                                          adventurousness=a)
         songs_id = processor.process_spotify_ids(50, 10, s, playlist)
 
-        global festival_id
-        if festival_id is not None and did_user_sel_parameters:
+        if user_cache.festival_id is not None and user_cache.did_user_sel_parameters:
             '''
             This will need to be above and we will need
             to update the catalog instead of creating one
             or just add this playlist to existent playlist
             '''
-            festival_information = db.get_info_from_database(festival_id)
+            festival_information = db.get_info_from_database(user_cache.festival_id)
             playlist_url = festival_information[4]
             id_playlist = festival_information[3]
             helpers.add_songs_to_playlist(s, user_id, id_playlist, songs_id)
