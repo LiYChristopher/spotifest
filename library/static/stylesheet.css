@@ -1,12 +1,8 @@
 /*
  * Globals
  */
-nav {
-    text-align: start;
-    margin-left: 32%;
-    margin-top: 5%;
-}
 
+/*
 #login {
     list-style: none;
     height: 40px;
@@ -22,6 +18,7 @@ nav {
     -webkit-border-radius: 5px;
     padding: 10px 20px;
 }
+*/
 
 #login-form  {
     position: absolute;
@@ -36,11 +33,13 @@ nav {
     -webkit-border-radius: 5px;
 }
 
+/*
 #login-form .text {
     width: 100%;
     float: right;
     margin-bottom: 2%;
 }
+*/
 
 #login-form .submit {
     float: right;
@@ -56,7 +55,7 @@ nav {
 a,
 a:focus,
 a:hover {
-color: #fff;
+  color: #fff;
 }
 
 /* Custom default button */
@@ -77,13 +76,13 @@ color: #fff;
 html,
 body {
   height: 100%;
-  background-image: url("http://www.heavymetalmediastudies.com/wp-content/uploads/2015/09/bigstock_silhouettes_of_concert_crowd-Recovered.jpg");
+  background-image: url('/static/background.png');
   background-color: #333;
 }
 body {
-  color: #121212;
+  color: #fff;
   text-align: center;
-  text-shadow: 0 1px 3px rgba(14, 16, 14, 0.5);
+  text-shadow: 1px 2px 3px rgba(0,0,0,.5);
 }
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
@@ -149,7 +148,6 @@ body {
 @media (min-width: 768px) {
   .masthead-brand {
     float: left;
-    color:white;
   }
   .masthead-nav {
     float: right;
@@ -187,11 +185,11 @@ body {
 @media (min-width: 768px) {
   /* Pull out the header and footer */
   .masthead {
-    position: relative;
+    position: fixed;
     top: 0;
   }
   .mastfoot {
-    position: relative;
+    position: fixed;
     bottom: 0;
   }
   /* Start the vertical centering */
@@ -222,4 +220,30 @@ form.login-buttons {
     position: absolute;
     left: 50%;
     top:50%;
+}
+
+p.login-page {
+    color:rgb(255, 255, 255);
+    font-size: 25px;
+    font-style: oblique;
+    font-weight: 600;
+}
+
+nav.create-join {
+    text-align: start;
+    margin-left: 32%;
+    margin-top: 5%;
+}
+
+#festi-text {
+    color: black;
+}
+
+#search-artist {
+    margin-top: 10px;
+}
+
+#festival-name {
+    color:black;
+    margin-bottom: 10px;
 }
