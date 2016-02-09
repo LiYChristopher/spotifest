@@ -19,21 +19,21 @@ class ArtistSelect(Form):
 
 
 class ParamsForm(Form):
-    name = StringField('name', [validators.DataRequired()],
+    name = StringField('Name', [validators.DataRequired()],
                        default='Festify 2016')
-    danceability = DecimalRangeField('danceability',
+    danceability = DecimalRangeField('Danceability',
                                      [validators.NumberRange(min=0, max=1)],
                                      default=0.5)
-    hotttnesss = DecimalRangeField('hotttnesss',
+    hotttnesss = DecimalRangeField('Hotttnesss',
                                    [validators.NumberRange(min=0, max=1)],
                                    default=0.5)
-    energy = DecimalRangeField('energy',
+    energy = DecimalRangeField('Energy',
                                [validators.NumberRange(min=0, max=1)],
                                default=0.5)
-    variety = DecimalRangeField('variety',
+    variety = DecimalRangeField('Variety',
                                 [validators.NumberRange(min=0, max=1)],
                                 default=0.5)
-    adventurousness = DecimalRangeField('adventurousness',
+    adventurousness = DecimalRangeField('Adventurousness',
                                         [validators.NumberRange(min=0, max=1)],
                                         default=0.5)
     ready_butt = SubmitField("Propose Vision")

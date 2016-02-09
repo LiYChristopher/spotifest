@@ -17,28 +17,24 @@
 
     {% if login == false %}
     <div class="inner cover">
-            <h1 class="cover-heading">Let's start your ideal Festival</h1>
-            <p class="lead">Festify will create the perfect festival base on the musical taste of the awesome people that will
-                enjoy this musical experience.</p>
+            <h1 style="font-weight:bolder;color:#ffffff;" class="cover-heading">Let's start your ideal Festival</h1>
+            <p class="login-page">Festify will use your Spotify's numbers to create the ideal Festival</p>
+            <p class="login-page">Login to get started</p>
             <br>
-                <p class="lead">Log in to create a festival, or join a friend's festival organization!
-                <a href="{{ oauth }}"><input name="submit" class="btn btn-success btn-lg" value="Log in!" type="button"></input></a>
+            <a href="{{ oauth }}"><input name="submit" class="btn btn-success btn-lg" value="Login" type="button"></input></a>
 
-                <br><br>** insert flashy screenshots of a made festival or something **
     </div>
     {% else %}
 
     <div class="inner cover">
-            <h1 class="cover-heading">Let's start your ideal Festival</h1>
-            <p class="lead">Festify will create the perfect festival base on the musical taste of the awesome people that will
-                enjoy this musical experience.</p>
+            <h1 style="font-weight:bolder;color:#ffffff;" class="cover-heading">Let's start your ideal Festival</h1>
+            <p class="login-page">Festify will create the perfect festival base on your musical taste and of your contributors</p>
             <br>
-
-                <a href="{{ url_for('new') }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
-                        <nav>
+            <a href="{{ url_for('new') }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
+                        <nav class="create-join">
                             <ul>
                                 <li id="login">
-                                    <a class="btn btn-success btn-lg" href="#" margin-right="40px" type="button">Join Festival  </a>
+                                    <a class="btn btn-success btn-lg" href="#" type="button">Join Festival  </a>
                                         <form id="login-form" action="{{ url_for('home') }}" method="post">
                                             <p><input id="festi-text" class="text" type="text" name="festival_id" placeholder="Festival ID" /></p>
                                             <p><input class="btn btn-primary btn-lg" id="festivalSubmit" type="submit" value="Submit" /></p>
