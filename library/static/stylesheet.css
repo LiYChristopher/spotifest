@@ -18,7 +18,7 @@
     -webkit-border-radius: 5px;
     padding: 10px 20px;
 }
-*/
+
 
 #login-form  {
     position: absolute;
@@ -208,11 +208,34 @@ body {
   .masthead,
   .mastfoot,
   .cover-container {
-    width: 700px;
+    width: 900px;
   }
 }
 
-form.login-buttons {
+/* row and column */
+
+@media (min-width: 544px) {
+  .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
+    float: left;
+  }
+
+.col-sm-5 {
+    width: 41.666667%;
+  }
+
+.row {
+  margin-right: -.9375rem;
+  margin-left: -.9375rem;
+}
+
+.row::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+/* */
+
+.login-buttons {
     display: inline;
 }
 
@@ -222,17 +245,21 @@ form.login-buttons {
     top:50%;
 }
 
-p.login-page {
+.login-page {
     color:rgb(255, 255, 255);
-    font-size: 25px;
+    font-size: 14px;
     font-style: oblique;
-    font-weight: 600;
+    font-weight: 100;
 }
 
-nav.create-join {
-    text-align: start;
-    margin-left: 32%;
+.create-join {
+    text-align: center;
+    margin-left: -5%;
     margin-top: 5%;
+}
+
+.create-join ul {
+    list-style: none;
 }
 
 #festi-text {
@@ -247,3 +274,75 @@ nav.create-join {
     color:black;
     margin-bottom: 10px;
 }
+
+/* Flexbox CSS */
+
+.flex-container {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+  /* border-style: solid; */
+  width: auto;
+  justify-content: space-between;
+}
+
+.flex-left {
+  order: -1;
+  /*overflow-x: hidden;*/
+  /* border-style: solid;*/
+  width: 200px;
+}
+
+.flex-center {
+  order: 0;
+  overflow-x: hidden;
+  /* border-style: solid;*/
+}
+
+.flex-right {
+  order: 1;
+  /* border-style: solid;*/
+  width: 200px;
+}
+
+.hot-links {
+  position: relative; top: -20px;
+  border: 3px solid #5cb85c;
+  background: black;
+  text-align: left;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.hot-links > ul {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+.hot-links > ul > li {
+  text-align: left;
+  background: #5cb85c;
+  border-radius: 4px;
+  margin: 0;
+  margin-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.hot-links > ul > li:hover {
+  background-color: #449d44;
+}
+.hot-links > ul > li > a:hover {
+  text-decoration: none;
+}
+
+.rcorners {
+  border-radius: 10px;
+}
+
+.lg-background {
+  background: #5cb85c;
+}
+
+/* */
