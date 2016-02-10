@@ -14,7 +14,7 @@
     <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ all_users['organizer']['userId'] }}&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
 
     {% if 'contributors' in all_users %}
-        <h3>Contributors</h3>
+       <!--<h3>Contributors</h3>-->
         <div id='cover-container'>
         {% for contributor in all_users['contributors'] %}
             <div id='login-form text'>
@@ -27,57 +27,7 @@
         </div>
     {% endif %}
     </div>
-    <div class="col-sm-4">
-    <form action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
-        {{ suggested_pl_butt.hidden_tag() }}
-        {{ suggested_pl_butt.add_button(class_="btn btn-primary") }}
-    </form>
 
-
-
-    <p id="search-artist" class="lead">Would you like to invite more artists?</p>
-
-    <form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
-        {{ searchform.hidden_tag() }}
-        <div style="display:inline-block;">
-        {{ searchform.artist_search(class_="form-control", size=20)}}
-        {{ searchform.submit(id="search-artist", class_="btn btn-default")}}
-        </div>
-    </form>
-
-
-    {% if art_select.artist_display.choices %}
-        <form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
-
-            {{ art_select.hidden_tag() }}
-            {{ art_select.artist_display }}
-            {{ art_select.confirm_button }}
-
-        </form>
-
-    {% block flash %}
-
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <p id="flash">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-    {% endblock %}
-
-
-    {% elif s_results == false %}
-        <p class="lead">No artists found with the name {{ new_artist }} !</p>
-    {% endif %}
-
-    {% if new  == 1 %}
-        <h6 color="green" border=1>{{ new_artist }} added!</h6>
-    {% elif new == 0 %}
-        <h6 color="red"  border=1>{{ new_artist }} is already here.</h6>
-    {% endif %}
-    </div>
     <div class="col-sm-4">
 
     <p class="lead">
@@ -118,18 +68,17 @@
             <li id="login">
                 {% if all_users['all_ready'] == 0%}
 
-        
               
-                <a class="btn btn-success btn-lg" href="#" margin-right="40px" type="button">NOT EVERYONE READY Generate</a>
+                <a class="btn btn-success btn-lg" href="#" margin-right="40px" type="button">Contributors not ready</a>
 
                 <form id="login-form" action="{{ url_for('results', url_slug=url_slug) }}" method="post">
                <p>Not everyone has shared their vibes! Are you sure?"</p> 
-                <p><input id="festivalSubmit" class="btn btn-primary btn-lg" type="submit" value="Generate" placeholder="placeholder" /></p>-->
+                <p><input id="festivalSubmit" class="btn btn-primary btn-lg" type="submit" value="Generate" placeholder="placeholder" /></p>
             </form>
      
                 {% else %}
                 <form id="login-form" action="{{ url_for('results', url_slug=url_slug) }}" method="post">
-                    <p><input class="btn btn-primary btn-lg" type="submit" value="ALL READY Generate" /></p>
+                    <p style='text-decoration:none'><input class="btn btn-success btn-lg" type="submit" value="Everyone's ready, let's do this" /></p>
                 </form>
 
                 {% endif %}  
@@ -141,8 +90,60 @@
         </fieldset>
       </form>
     </p>      
-    </div>       	
+    </div>   
 
+
+    <div class="col-sm-4">
+
+        <p id="search-artist" class="login-page">Would you like to invite more artists?</p>
+
+
+        <form action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
+            {{ suggested_pl_butt.hidden_tag() }}
+            {{ suggested_pl_butt.add_button(class_="btn btn-success") }}
+        </form>
+
+        <form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
+            {{ searchform.hidden_tag() }}
+            <div style="display:inline-block;">
+            {{ searchform.artist_search(class_="form-control", size=20)}}
+            {{ searchform.submit(id="search-artist", class_="btn btn-success")}}
+            </div>
+        </form>
+
+
+        {% if art_select.artist_display.choices %}
+            <form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
+
+                {{ art_select.hidden_tag() }}
+                {{ art_select.artist_display }}
+                {{ art_select.confirm_button }}
+
+            </form>
+
+        {% block flash %}
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p id="flash">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+        {% endblock %}
+
+        {% elif s_results == false %}
+            <p class="lead">No artists found with the name {{ new_artist }} !</p>
+        {% endif %}
+
+        {% if new  == 1 %}
+            <h6 color="green" border=1>{{ new_artist }} added!</h6>
+        {% elif new == 0 %}
+            <h6 color="red"  border=1>{{ new_artist }} is already here.</h6>
+        {% endif %}
+
+    </div>    	
 
 <!--
     {% if artists %}

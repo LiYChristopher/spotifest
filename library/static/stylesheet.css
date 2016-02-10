@@ -41,17 +41,6 @@
 }
 */
 
-.home-btns {
-  list-style-type: none;
-  width: 50px;
-}
-
-.home-btns a {
-  display: block;
-  padding-top: 10px;
-  text-decoration: none;
-}
-
 #login-form .submit {
     float: right;
 }

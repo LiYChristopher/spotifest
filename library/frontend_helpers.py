@@ -41,5 +41,5 @@ class ParamsForm(Form):
 
 
 class SuggestedPlaylistButton(Form):
-    add_button = SubmitField("Add the Festify team's favorites!")
+    add_button = SubmitField("Add the Spotifest team's favorites!")
     confirm_button = SubmitField("Accept our suggestions?")
