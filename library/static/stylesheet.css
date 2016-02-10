@@ -18,7 +18,7 @@
     -webkit-border-radius: 5px;
     padding: 10px 20px;
 }
-*/
+
 
 #login-form  {
     position: absolute;
@@ -208,7 +208,7 @@ body {
   .masthead,
   .mastfoot,
   .cover-container {
-    width: 700px;
+    width: 900px;
   }
 }
 
