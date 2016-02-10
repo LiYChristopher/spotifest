@@ -1,5 +1,5 @@
-CREATE DATABASE festify;
-use festify;
+CREATE DATABASE festify2;
+use festify2;
 CREATE TABLE sessions (
     festivalId int(10) NOT NULL AUTO_INCREMENT,
     festivalName varchar(100) NOT NULL,

@@ -229,15 +229,13 @@ def join(url_slug):
 
     db.add_user(_user)
 
-    s = spotipy.Spotify(auth=_user)
+    current_user = load_user(_user).access
+    s = spotipy.Spotify(auth=current_user)
     processor = helpers.AsyncAdapter(app)
     artist_list = processor.get_user_preferences(s)
 
     # save preferences to database
-    db.save_artist_preferences(current_user, artist_list)
-    
-    user_cache.save_preferences(artist_list, new_url_slug)
-
+    db.save_artist_preferences(_user, artist_list)
 
     if not user_cache.cur_festival:
         flash(("Festival '{}' does not exist! Please check"
@@ -273,14 +271,14 @@ def new():
     artist_list = processor.get_user_preferences(s)
 
     # save preferences to database
-    db.save_artist_preferences(current_user, artist_list)
-    
-    user_cache.save_preferences(artist_list, new_url_slug)
+    db.save_artist_preferences(current_user.id, artist_list)
 
     db.save_to_database(None, current_user.id, None, None,
                         new_catalog.id, new_url_slug)
 
     user_cache.cur_festival = db.get_info_from_database(urlSlug=new_url_slug)
+    print "CURRENT FESTIVAL in NEW", user_cache.cur_festival
+
     festivalId = user_cache.cur_festival[0]
     userId = user_cache.cur_festival[2]
 
@@ -302,6 +300,7 @@ def festival(url_slug):
         return redirect(url_for('home'))
     organizer = user_cache.cur_festival[2]
     _user = session.get('user_id')
+    user_cache.artists = db.retrieve_preferences(_user, user_cache.cur_festival[0])
     is_org = True
     # check if organizer & if so, find name
     if organizer != _user:
@@ -326,13 +325,11 @@ def festival(url_slug):
 
     current_user = load_user(session.get('user_id')).access
     s = spotipy.Spotify(auth=current_user)
-    if not user_cache.artists:
-        try:
-            processor = helpers.AsyncAdapter(app)
-            user_cache.artists = processor.get_user_preferences(s)
-            print (user_cache.artists)
-        except:
-            print ("No artists followed found in the user's Spotify account.")
+    try:
+        processor = helpers.AsyncAdapter(app)
+        print (user_cache.artists)
+    except:
+        print ("No artists followed found in the user's Spotify account.")
 
     # prep forms
     searchform = frontend_helpers.SearchForm()
@@ -350,8 +347,7 @@ def festival(url_slug):
             option_n = int(art_select.artist_display.data) - 1
             chosen_art = user_cache.search_results[option_n][1]
             if chosen_art not in user_cache.artists:
-                user_cache.artists.update(set(chosen_art))
-                db.save_artist_preferences(chosen_art)
+                db.save_artist_preferences(_user, chosen_art, user_cache.cur_festival[0])
                 new_artist = chosen_art
                 new = 1
             else:
@@ -360,7 +356,7 @@ def festival(url_slug):
     elif suggested_pl_butt.validate_on_submit():
         if request.form.get("add_button"):
             new_artist = ', '.join(suggested_artists)
-            user_cache.artists.update(set(suggested_artists))
+            db.save_artist_preferences(_user, chosen_art, user_cache.cur_festival[0])
             new = True
 
     if user_cache.time:
