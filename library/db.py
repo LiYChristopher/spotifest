@@ -227,3 +227,44 @@ def delete_expired_session():
             delete_session(session[0])
         print "{} sessions have been deleted.".format(len(all_sessions))
     return
+
+def save_artist_preferences(user_id, artist_list, festival_id=None):
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+
+        user_artist_list = []
+        for artist in artist_list:
+            user_artist_list.append([user_id, artist])
+
+        if festival_id is None:
+            q = "INSERT IGNORE INTO festivalArtists\
+                (userId, artist) values (userId, %s)"
+            try:
+                cursor.executemany(q, artist_list)
+                connection.commit()
+            except:
+                connection.rollback()
+
+        else:
+            q = ("INSERT INTO festivalArtists\
+            (userId, artist, festivalId) values (%s, %s, %s)", values)
+
+            if cursor.execute("SELECT (1) FROM festivalArtists where artist=artist_list[0] AND festivalId=festivalId"):
+                return True
+            else: 
+                cursor.execute(q)
+                connection.commit()
+    print ('saved user preferences to database')
+    return
+
+def add_user(user_id):
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+
+        q = ("INSERT INTO users (userId) VALUES %s", values)
+        cursor.execute(q)
+        connection.commit()
+        print ('saved user to the database')
+    return

@@ -1,5 +1,19 @@
 {% extends 'base.html'%}
 
+{% block flash %}
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p id="flash">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+{% endblock %}
+
+
+    {% block lists %}
     {% if enough_data == false %}
 
         <h1 style="color:white;" class="cover-heading">
@@ -14,7 +28,7 @@
 
     {% endif %}
 
-	{% block lists %}
+
 
 
 	    <iframe src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>

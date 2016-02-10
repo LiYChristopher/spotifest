@@ -1,4 +1,3 @@
-# Frontend helpers
 from flask_wtf import Form
 from wtforms import (StringField, SubmitField, SelectField,
                     validators)
