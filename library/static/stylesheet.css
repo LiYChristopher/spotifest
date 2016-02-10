@@ -253,9 +253,13 @@ body {
 }
 
 .create-join {
-    text-align: start;
-    margin-left: 32%;
+    text-align: center;
+    margin-left: -5%;
     margin-top: 5%;
+}
+
+.create-join ul {
+    list-style: none;
 }
 
 #festi-text {
@@ -270,3 +274,75 @@ body {
     color:black;
     margin-bottom: 10px;
 }
+
+/* Flexbox CSS */
+
+.flex-container {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+  /* border-style: solid; */
+  width: auto;
+  justify-content: space-between;
+}
+
+.flex-left {
+  order: -1;
+  /*overflow-x: hidden;*/
+  /* border-style: solid;*/
+  width: 200px;
+}
+
+.flex-center {
+  order: 0;
+  overflow-x: hidden;
+  /* border-style: solid;*/
+}
+
+.flex-right {
+  order: 1;
+  /* border-style: solid;*/
+  width: 200px;
+}
+
+.hot-links {
+  position: relative; top: -20px;
+  border: 3px solid #5cb85c;
+  background: black;
+  text-align: left;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.hot-links > ul {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+.hot-links > ul > li {
+  text-align: left;
+  background: #5cb85c;
+  border-radius: 4px;
+  margin: 0;
+  margin-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.hot-links > ul > li:hover {
+  background-color: #449d44;
+}
+.hot-links > ul > li > a:hover {
+  text-decoration: none;
+}
+
+.rcorners {
+  border-radius: 10px;
+}
+
+.lg-background {
+  background: #5cb85c;
+}
+
+/* */

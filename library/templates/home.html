@@ -17,9 +17,9 @@
 
     {% if login == false %}
     <div class="inner cover">
-            <h1 style="font-weight:bolder;color:#ffffff;" class="cover-heading">Let's start your ideal Festival</h1>
-            <p class="login-page">Festify will use your Spotify's numbers to create the ideal Festival</p>
-            <p class="login-page">Login to get started</p>
+            <h1 style="font-weight:bolder;color:#ffffff;" class="cover-heading">Is it festival season yet?</h1>
+            <p class="login-page">Don't wait - put together your own using you and your friends' music preferences.</p>
+            <p class="login-page">Please login to get started!</p>
             <br>
             <a href="{{ oauth }}"><input name="submit" class="btn btn-success btn-lg" value="Login" type="button"></input></a>
 
@@ -28,23 +28,21 @@
 
     <div class="inner cover">
             <h1 style="font-weight:bolder;color:#ffffff;" class="cover-heading">Let's start your ideal Festival</h1>
-            <p class="login-page">Festify will create the perfect festival base on your musical taste and of your contributors</p>
+            <p class="login-page">You can create a new festival below, or if you have a valid Festival ID, join a pre-existing one.</p>
             <br>
-
+            <a href="{{ url_for('new') }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
                         <nav class="create-join">
                             <ul>
-                                <a href="{{ url_for('new') }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
                                 <li id="login">
                                     <a class="btn btn-success btn-lg" href="#" type="button">Join Festival  </a>
                                         <form id="login-form" action="{{ url_for('home') }}" method="post">
                                             <p><input id="festi-text" class="text" type="text" name="festival_id" placeholder="Festival ID" /></p>
-                                            <p><input class="btn btn-primary btn-lg" id="festivalSubmit" type="submit" value="Submit" /></p>
+                                            <p><input class="btn btn-success btn-lg" id="festivalSubmit" type="submit" value="Submit" /></p>
                                         </form>
                                 </li>
                             </ul>
                         </nav>
     </div>
-
     {% endif %}
 
 {% endblock %}

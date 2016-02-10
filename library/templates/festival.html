@@ -54,18 +54,17 @@
 
         {% if not is_org %}
             {% if all_users['contributors'][user]['ready'] == 0 %}
-                {{ params_form.ready_butt }}
+                {{ params_form.ready_butt (class_="btn btn-success") }}
             {% else %}
-               {{ params_form.unready_butt }}
+               {{ params_form.unready_butt (class_="btn btn-success") }}
             {% endif %}
 
         {% elif is_org %}
             {% if 'contributors' not in all_users %}
                 <input style="margin-top:20px;" class="btn btn-success btn-lg" type="submit" value="Generate"></input>
             {% else %}
-            <nav>
-            <ul>
-            <li id="login">
+
+            <div>
                 {% if all_users['all_ready'] == 0%}
 
               
@@ -82,9 +81,8 @@
                 </form>
 
                 {% endif %}  
-             </li>
-            </ul>
-            </nav>
+            </div>
+
             {% endif %}
         {% endif %}         
         </fieldset>
