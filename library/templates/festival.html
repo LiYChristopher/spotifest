@@ -4,141 +4,144 @@
 
 <div class="inner cover">
 
-<form action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
-    {{ suggested_pl_butt.hidden_tag() }}
-    {{ suggested_pl_butt.add_button(class_="btn btn-primary") }}
-</form>
-
-
-
-<p id="search-artist" class="lead">Would you like to invite more artists?</p>
-
-<form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
-    {{ searchform.hidden_tag() }}
-    <div style="display:inline-block;">
-    {{ searchform.artist_search(class_="form-control", size=20)}}
-    {{ searchform.submit(id="search-artist", class_="btn btn-default")}}
-    </div>
-</form>
-
-
-{% if art_select.artist_display.choices %}
-    <form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
-
-        {{ art_select.hidden_tag() }}
-        {{ art_select.artist_display }}
-        {{ art_select.confirm_button }}
-
-    </form>
-
-{% block flash %}
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <p id="flash">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-{% endblock %}
-
-
-{% elif s_results == false %}
-    <p class="lead">No artists found with the name {{ new_artist }} !</p>
-{% endif %}
-
-{% if new  == 1 %}
-    <h6 color="green" border=1>{{ new_artist }} added!</h6>
-{% elif new == 0 %}
-    <h6 color="red"  border=1>{{ new_artist }} is already here.</h6>
-{% endif %}
-
-
 <!-- Organizer avatar and contributor avatar -->
 
 <h1>{{ all_users['organizer']['userId'] }}'s
     {% if is_org == true %} festival 
     {% else %} {{ festival_name }} {% endif %}</h1>
-<iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ all_users['organizer']['userId'] }}&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
+<div class ='row'>
+    <div class="col-sm-4">   
+    <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ all_users['organizer']['userId'] }}&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
 
-{% if 'contributors' in all_users %}
-    <h3>Contributors</h3>
-    <div id='cover-container'>
-    {% for contributor in all_users['contributors'] %}
-        <div id='login-form text'>
-            <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ contributor }}&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
-            {% if all_users['contributors'][contributor]['ready'] == 1%}
-                <p>...is set!</p>
-            {% endif %}
-        </div> 
-    {% endfor %}
+    {% if 'contributors' in all_users %}
+        <h3>Contributors</h3>
+        <div id='cover-container'>
+        {% for contributor in all_users['contributors'] %}
+            <div id='login-form text'>
+                <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ contributor }}&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
+                {% if all_users['contributors'][contributor]['ready'] == 1%}
+                    <p>...is set!</p>
+                {% endif %}
+            </div> 
+        {% endfor %}
+        </div>
+    {% endif %}
     </div>
-{% endif %}
+    <div class="col-sm-4">
+    <form action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
+        {{ suggested_pl_butt.hidden_tag() }}
+        {{ suggested_pl_butt.add_button(class_="btn btn-primary") }}
+    </form>
 
 
 
-<p class="lead">
-    {% if is_org == true %}
-  <form action="{{ url_for('results', url_slug=url_slug) }}" method="post">
-    <fieldset>
-        {{ params_form.name.label }} <br>
-        {{ params_form.name (id="festival-name", class_="form_control")}} <br>
-    {% else %}
-  <form action="{{ url_for('update_parameters', url_slug=url_slug) }}" method="post">
-    <fieldset>
+    <p id="search-artist" class="lead">Would you like to invite more artists?</p>
+
+    <form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
+        {{ searchform.hidden_tag() }}
+        <div style="display:inline-block;">
+        {{ searchform.artist_search(class_="form-control", size=20)}}
+        {{ searchform.submit(id="search-artist", class_="btn btn-default")}}
+        </div>
+    </form>
+
+
+    {% if art_select.artist_display.choices %}
+        <form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
+
+            {{ art_select.hidden_tag() }}
+            {{ art_select.artist_display }}
+            {{ art_select.confirm_button }}
+
+        </form>
+
+    {% block flash %}
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p id="flash">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+    {% endblock %}
+
+
+    {% elif s_results == false %}
+        <p class="lead">No artists found with the name {{ new_artist }} !</p>
     {% endif %}
 
-    {{ params_form.danceability.label }}
-    {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
-    {{ params_form.hotttnesss.label}}
-    {{ params_form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
-    {{ params_form.energy.label }}
-    {{ params_form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
-    {{ params_form.variety.label }}
-    {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
-    {{ params_form.adventurousness.label }}
-    {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)")}} 
+    {% if new  == 1 %}
+        <h6 color="green" border=1>{{ new_artist }} added!</h6>
+    {% elif new == 0 %}
+        <h6 color="red"  border=1>{{ new_artist }} is already here.</h6>
+    {% endif %}
+    </div>
+    <div class="col-sm-4">
 
-    {% if not is_org %}
-        {% if all_users['contributors'][user]['ready'] == 0 %}
-            {{ params_form.ready_butt }}
+    <p class="lead">
+        {% if is_org == true %}
+      <form action="{{ url_for('results', url_slug=url_slug) }}" method="post">
+        <fieldset>
+            {{ params_form.name.label }} <br>
+            {{ params_form.name (id="festival-name", class_="form_control")}} <br>
         {% else %}
-           {{ params_form.unready_butt }}
+      <form action="{{ url_for('update_parameters', url_slug=url_slug) }}" method="post">
+        <fieldset>
         {% endif %}
 
-    {% elif is_org %}
-        {% if 'contributors' not in all_users %}
-            <input style="margin-top:20px;" class="btn btn-success btn-lg" type="submit" value="Generate"></input>
-        {% else %}
-        <nav>
-        <ul>
-        <li id="login">
-            {% if all_users['all_ready'] == 0%}
+        {{ params_form.danceability.label }}
+        {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
+        {{ params_form.hotttnesss.label}}
+        {{ params_form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
+        {{ params_form.energy.label }}
+        {{ params_form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
+        {{ params_form.variety.label }}
+        {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
+        {{ params_form.adventurousness.label }}
+        {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)")}} 
 
-    
-          
-            <a class="btn btn-success btn-lg" href="#" margin-right="40px" type="button">NOT EVERYONE READY Generate</a>
-
-            <form id="login-form" action="{{ url_for('results', url_slug=url_slug) }}" method="post">
-           <p>Not everyone has shared their vibes! Are you sure?"</p> 
-            <p><input id="festivalSubmit" class="btn btn-primary btn-lg" type="submit" value="Generate" placeholder="placeholder" /></p>-->
-        </form>
- 
+        {% if not is_org %}
+            {% if all_users['contributors'][user]['ready'] == 0 %}
+                {{ params_form.ready_butt }}
             {% else %}
-            <form id="login-form" action="{{ url_for('results', url_slug=url_slug) }}" method="post">
-                <p><input class="btn btn-primary btn-lg" type="submit" value="ALL READY Generate" /></p>
-            </form>
+               {{ params_form.unready_butt }}
+            {% endif %}
 
-            {% endif %}  
-         </li>
-        </ul>
-        </nav>
-        {% endif %}
-    {% endif %}         
-    </fieldset>
-  </form>
-</p>             	
+        {% elif is_org %}
+            {% if 'contributors' not in all_users %}
+                <input style="margin-top:20px;" class="btn btn-success btn-lg" type="submit" value="Generate"></input>
+            {% else %}
+            <nav>
+            <ul>
+            <li id="login">
+                {% if all_users['all_ready'] == 0%}
+
+        
+              
+                <a class="btn btn-success btn-lg" href="#" margin-right="40px" type="button">NOT EVERYONE READY Generate</a>
+
+                <form id="login-form" action="{{ url_for('results', url_slug=url_slug) }}" method="post">
+               <p>Not everyone has shared their vibes! Are you sure?"</p> 
+                <p><input id="festivalSubmit" class="btn btn-primary btn-lg" type="submit" value="Generate" placeholder="placeholder" /></p>-->
+            </form>
+     
+                {% else %}
+                <form id="login-form" action="{{ url_for('results', url_slug=url_slug) }}" method="post">
+                    <p><input class="btn btn-primary btn-lg" type="submit" value="ALL READY Generate" /></p>
+                </form>
+
+                {% endif %}  
+             </li>
+            </ul>
+            </nav>
+            {% endif %}
+        {% endif %}         
+        </fieldset>
+      </form>
+    </p>      
+    </div>       	
 
 
 <!--
