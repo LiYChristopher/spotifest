@@ -30,13 +30,12 @@
             <h1 style="font-weight:bolder;color:#ffffff;" class="cover-heading">Let's start your ideal Festival</h1>
             <p class="login-page">Festify will create the perfect festival base on your musical taste and of your contributors</p>
             <br>
+
                         <nav class="create-join">
                             <ul>
-                                <li>
-                                    <a href="{{ url_for('new') }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
-                                </li>
+                                <a href="{{ url_for('new') }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
                                 <li id="login">
-                                    <a class="btn btn-success btn-lg" href="#" type="button">Join Festival  </a></br>
+                                    <a class="btn btn-success btn-lg" href="#" type="button">Join Festival  </a>
                                         <form id="login-form" action="{{ url_for('home') }}" method="post">
                                             <p><input id="festi-text" class="text" type="text" name="festival_id" placeholder="Festival ID" /></p>
                                             <p><input class="btn btn-primary btn-lg" id="festivalSubmit" type="submit" value="Submit" /></p>

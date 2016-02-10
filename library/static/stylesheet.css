@@ -41,6 +41,17 @@
 }
 */
 
+.home-btns {
+  list-style-type: none;
+  width: 50px;
+}
+
+.home-btns a {
+  display: block;
+  padding-top: 10px;
+  text-decoration: none;
+}
+
 #login-form .submit {
     float: right;
 }
@@ -235,7 +246,7 @@ body {
 }
 /* */
 
-form.login-buttons {
+.login-buttons {
     display: inline;
 }
 
@@ -245,14 +256,14 @@ form.login-buttons {
     top:50%;
 }
 
-p.login-page {
+.login-page {
     color:rgb(255, 255, 255);
-    font-size: 25px;
+    font-size: 14px;
     font-style: oblique;
-    font-weight: 600;
+    font-weight: 100;
 }
 
-nav.create-join {
+.create-join {
     text-align: start;
     margin-left: 32%;
     margin-top: 5%;
