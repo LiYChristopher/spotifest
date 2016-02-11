@@ -1,6 +1,6 @@
 import base64
 import datetime
-from library.app import app, mysql, celery
+from library import app, mysql, celery
 from pyechonest.catalog import Catalog
 
 
@@ -60,6 +60,7 @@ def update_parameters(festivalId, userId, hotttnesss, danceability,
         connection.commit()
         print "updated settings for user."
     return
+
 
 @celery.task(name='save_contributor')
 def save_contributor(festivalId, userId, ready=0, hotness=None,
@@ -166,6 +167,7 @@ def get_info_from_database(urlSlug):
         catalogId = str(data[0][5])
         values = [festivalId, festivalName, userId,
                   playlistId, playlistURL, catalogId]
+
         return values
 
 
@@ -203,11 +205,9 @@ def delete_session(urlSlug):
         if not festival:
             return None
         festival_catalog = Catalog(festival[5])
-        print festival_catalog.read_items()
         festival_catalog.delete()
         cursor.execute("DELETE FROM sessions WHERE urlSlug=%s", (urlSlug,))
         connection.commit()
-        print "deletion now complete"
     return
 
 

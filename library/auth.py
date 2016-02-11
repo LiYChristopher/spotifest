@@ -1,4 +1,4 @@
-from library.app import app, celery, login_manager
+from library import app, celery, login_manager
 from library.helpers import (suggested_artists, random_catalog, seed_playlist)
 from library import frontend_helpers
 from config import BaseConfig
@@ -248,12 +248,13 @@ def new():
                                                     new_url_slug])
         while True:
             if save_task.state == 'SUCCESS':
+                print 'just saved DB'
                 break
     else:
         db.save_to_database(None, current_user.id, None, None,
                             new_catalog.id, new_url_slug)
 
-    current_festival = db.get_info_from_database(urlSlug=new_url_slug)
+    current_festival = db.get_info_from_database(new_url_slug)
     festivalId = current_festival[0]
     userId = current_festival[2]
     try:
@@ -317,7 +318,6 @@ def festival(url_slug):
         print ("No artists followed found in the user's Spotify account.")
 
     # prep forms
-    
     searchform = frontend_helpers.SearchForm()
     suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
     art_select = frontend_helpers.ArtistSelect(request.form)
@@ -420,9 +420,11 @@ def results(url_slug):
         a = request.form.get('adventurousness')
         user_cache.did_user_sel_parameters = True
         current_user = load_user(session.get('user_id')).access
+        #db.update_parameters(festivalId, _user, h, d, e, v, a)
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
 
+        #db.get_average_parameters(user_cache.current_festival)
         processor = helpers.AsyncAdapter(app)
         playlist = helpers.seed_playlist(catalog=festival_catalog, hotttnesss=h,
                                          danceability=d, energy=e, variety=v,
