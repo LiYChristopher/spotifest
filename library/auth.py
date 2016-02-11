@@ -1,4 +1,4 @@
-from library.app import app, celery, login_manager
+from library import app, celery, login_manager
 from library.helpers import (suggested_artists, random_catalog, seed_playlist)
 from library import frontend_helpers
 from config import BaseConfig
