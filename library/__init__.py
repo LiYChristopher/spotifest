@@ -22,10 +22,7 @@ login_manager.init_app(app)
 mysql = MySQL()
 
 # mysql configurations
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_DB'] = 'festify'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'uberschall'
+
 
 mysql.init_app(app)
 
