@@ -220,10 +220,10 @@ def delete_expired_session():
         cursor.execute("SELECT urlSlug, createTime FROM sessions WHERE\
                         TIMESTAMPDIFF(HOUR, createTime, CURRENT_TIMESTAMP()) > 48;")
         all_sessions = cursor.fetchall()
-        try:
-            for session in all_sessions:
+        for session in all_sessions:
+            try:
                 delete_session(session[0])
-        except:
-            retry(countdown=5)
+            except Exception, e:
+                delete_session.retry(exc=e, countdown=5)
         print "{} sessions have been deleted.".format(len(all_sessions))
     return

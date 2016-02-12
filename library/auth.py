@@ -241,25 +241,18 @@ def new():
 
     if user_cache.retrieve_preferences(new_url_slug):
         processor.populate_catalog(artists, 3, catalog=new_catalog)
-    if app.config['IS_ASYNC'] is True:
-        save_task = db.save_to_database.apply_async(args=[None, current_user.id,
-                                                    None, None, new_catalog.id,
-                                                    new_url_slug])
-        while True:
-            if save_task.state == 'SUCCESS':
-                print 'just saved DB'
-                break
-    else:
-        db.save_to_database(None, current_user.id, None, None,
-                            new_catalog.id, new_url_slug)
+
+    db.save_to_database(None, current_user.id, None, None,
+                        new_catalog.id, new_url_slug)
 
     current_festival = db.get_info_from_database(new_url_slug)
     festivalId = current_festival[0]
     userId = current_festival[2]
-    try:
+    if app.config['IS_ASYNC']:
+        db.save_contributor.apply_async(args=(festivalId, userId),
+                                        kwargs={'organizer': 1, 'ready': 1})
+    else:
         db.save_contributor(festivalId, userId, organizer=1, ready=1)
-    except:
-        print ("SAVING CONTRIBUTOR FAILED!")
     return redirect(url_for('festival', url_slug=new_url_slug))
 
 
@@ -268,11 +261,6 @@ def new():
 def festival(url_slug):
     current_festival = db.get_info_from_database(url_slug)
     user_cache.cur_festival_id = current_festival[0]
-    if user_cache.artists:
-        for person in user_cache.artists.keys():
-            print "Person: ", person
-            if user_cache.artists[person].keys():
-                print "Festivals Active in: ", user_cache.artists[person].keys()
 
     if not current_festival:
         flash(("Festival '{}' does not exist! Please check"

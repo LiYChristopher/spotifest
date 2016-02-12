@@ -40,9 +40,6 @@ class AsyncAdapter(object):
         if not self.is_async:
             return self.non_async_process_spotify_ids(spotipy, playlist)
         else:
-            if 'total_items' not in locals() or 'chunk_size' not in locals():
-                raise ValueError("Missing arguments for async - 'total_items",
-                                 "'chunk_size'")
             return self.async_process_spotify_ids(total_items, chunk_size,
                                                   spotipy, playlist)
 
@@ -122,8 +119,8 @@ class AsyncAdapter(object):
             random_catalog(artists, limit=15)
             return
 
-        populated = group([random_catalog.s(artists, limit=5, catalog=catalog)
-                          for _ in xrange(num_tasks)], link_error=echonest_errhandler.s())()
+        populated = group(random_catalog.s(artists, limit=5, catalog=catalog)
+                          for _ in xrange(num_tasks))()
 
         if populated.successful():
             print 'Catalog now has {} items.'.format(len(catalog.get_item_dicts(results=100)))
@@ -132,13 +129,6 @@ class AsyncAdapter(object):
     def non_async_populate_catalog(self, artists, catalog):
         limit = 15
         return random_catalog(artists, limit, catalog)
-
-
-@celery.task(name='echonest_errhandler')
-def echonest_errhandler():
-    print locals()
-    print 'error detected'
-    return
 
 
 @celery.task(name='saved_tracks')
