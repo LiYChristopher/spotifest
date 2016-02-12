@@ -4,7 +4,7 @@ from library import app, mysql, celery
 from pyechonest.catalog import Catalog
 
 
-@celery.task(name='save_festival', ignore_result=True)
+@celery.task(name='save_festival')
 def save_to_database(festivalName, userId, playlistId,
                      playlistURL, catalogId, urlSlug):
     '''

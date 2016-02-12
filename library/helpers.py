@@ -121,18 +121,24 @@ class AsyncAdapter(object):
         if not catalog:
             random_catalog(artists, limit=15)
             return
-        for _ in xrange(num_tasks):
-            task = random_catalog.apply_async(args=[artists],
-                                              kwargs={'limit': 5,
-                                                      'catalog': catalog})
-            insertion_results = random_catalog.AsyncResult(task.task_id)
-            tasks.append(insertion_results)
-        print 'Catalog now has {} items.'.format(len(catalog.get_item_dicts(results=100)))
+
+        populated = group([random_catalog.s(artists, limit=5, catalog=catalog)
+                          for _ in xrange(num_tasks)], link_error=echonest_errhandler.s())()
+
+        if populated.successful():
+            print 'Catalog now has {} items.'.format(len(catalog.get_item_dicts(results=100)))
         return
 
     def non_async_populate_catalog(self, artists, catalog):
         limit = 15
         return random_catalog(artists, limit, catalog)
+
+
+@celery.task(name='echonest_errhandler')
+def echonest_errhandler():
+    print locals()
+    print 'error detected'
+    return
 
 
 @celery.task(name='saved_tracks')
