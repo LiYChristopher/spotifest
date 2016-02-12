@@ -1,6 +1,6 @@
 import base64
 import datetime
-from library import app, mysql, celery
+from . import app, mysql, celery
 from pyechonest.catalog import Catalog
 
 

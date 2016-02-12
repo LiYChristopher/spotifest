@@ -8,7 +8,7 @@ CREATE TABLE sessions (
     playlistURL varchar(512) NOT NULL,
     catalogId varchar(30) NOT NULL,
     urlSlug varchar (512) NOT NULL,
-    createTime DATETIME DEFAULT CURRENT_TIMESTAMP,    
+    createTime DATETIME,    
     PRIMARY KEY (festivalId)
 );
 CREATE table contributors (

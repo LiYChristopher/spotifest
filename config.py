@@ -1,5 +1,8 @@
 # config.py
 from datetime import timedelta
+import os
+import logging
+import sys
 
 SECRET_KEY = 'this_is_a_secret'
 
@@ -13,8 +16,10 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(minutes=60)
     },
 }
-IS_ASYNC = True
+IS_ASYNC = False
 
+
+os.chdir('/var/www/festify/festify')
 class BaseConfig(object):
 
     with open('credentials.txt', 'r') as cred:

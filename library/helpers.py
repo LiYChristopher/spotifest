@@ -7,15 +7,15 @@ from pyechonest import config
 from pyechonest import playlist
 from pyechonest import artist
 from pyechonest.catalog import Catalog
-from library import celery
-from config import BaseConfig
+from . import celery
+# from festify.config import BaseConfig
 import os
 import datetime
 import base64
 import hashlib
 
 
-config.ECHO_NEST_API_KEY = BaseConfig.ECHONEST_API_KEY
+config.ECHO_NEST_API_KEY = 'XL63SRXARB18QDOHU'
 
 suggested_artists = set(['Radiohead', 'Nirvana', 'The Beatles', 'David Bowie',
                         'Aretha Franklin', 'Mogwai', 'Eels', 'Glass Animals',
