@@ -4,7 +4,7 @@ from library import app, mysql, celery
 from pyechonest.catalog import Catalog
 
 
-@celery.task(name='save_festival')
+@celery.task(name='save_festival', ignore_result=True)
 def save_to_database(festivalName, userId, playlistId,
                      playlistURL, catalogId, urlSlug):
     '''
@@ -27,7 +27,7 @@ def save_to_database(festivalName, userId, playlistId,
     return
 
 
-@celery.task(name='update_festival')
+@celery.task(name='update_festival', ignore_result=True)
 def update_festival(festivalName, playlistId, playlistURL, urlSlug):
     values = (festivalName, playlistId, playlistURL, urlSlug)
     with app.app_context():
@@ -62,7 +62,7 @@ def update_parameters(festivalId, userId, hotttnesss, danceability,
     return
 
 
-@celery.task(name='save_contributor')
+@celery.task(name='save_contributor', ignore_result=True)
 def save_contributor(festivalId, userId, ready=0, hotness=None,
                      danceability=None, energy=None, variety=None, advent=None,
                      organizer=0):
@@ -193,7 +193,7 @@ def get_average_parameters(festivalId):
         return average_parameters
 
 
-@celery.task(name='delete_session')
+@celery.task(name='delete_session', ignore_result=True)
 def delete_session(urlSlug):
     '''
     removes festival and catalog object from database and API key, respectively.
@@ -211,7 +211,7 @@ def delete_session(urlSlug):
     return
 
 
-@celery.task(name='routine_deletion_expired')
+@celery.task(name='routine_deletion_expired', ignore_result=True)
 def delete_expired_session():
     with app.app_context():
         time_now = datetime.datetime.now()
@@ -220,7 +220,10 @@ def delete_expired_session():
         cursor.execute("SELECT urlSlug, createTime FROM sessions WHERE\
                         TIMESTAMPDIFF(HOUR, createTime, CURRENT_TIMESTAMP()) > 48;")
         all_sessions = cursor.fetchall()
-        for session in all_sessions:
-            delete_session(session[0])
+        try:
+            for session in all_sessions:
+                delete_session(session[0])
+        except:
+            retry(countdown=5)
         print "{} sessions have been deleted.".format(len(all_sessions))
     return

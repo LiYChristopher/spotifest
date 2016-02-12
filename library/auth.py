@@ -1,4 +1,4 @@
-from library import app, celery, login_manager
+from library import app, celery, login_manager, redis
 from library.helpers import (suggested_artists, random_catalog, seed_playlist)
 from library import frontend_helpers
 from config import BaseConfig
@@ -12,7 +12,6 @@ from flask.ext.login import login_user, logout_user, login_required, UserMixin
 from flask.ext.wtf import Form
 from flask import render_template, request, redirect, url_for, session, flash
 
-import redis
 import spotipy
 import spotipy.util as util
 import base64

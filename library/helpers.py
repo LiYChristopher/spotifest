@@ -7,6 +7,7 @@ from pyechonest import config
 from pyechonest import playlist
 from pyechonest import artist
 from pyechonest.catalog import Catalog
+from celery import group
 from library import celery
 from config import BaseConfig
 import os
@@ -43,7 +44,7 @@ class AsyncAdapter(object):
                 raise ValueError("Missing arguments for async - 'total_items",
                                  "'chunk_size'")
             return self.async_process_spotify_ids(total_items, chunk_size,
-                                                  helper_args=[spotipy, playlist])
+                                                  spotipy, playlist)
 
     def get_user_preferences(self, spotipy):
         '''
@@ -72,30 +73,16 @@ class AsyncAdapter(object):
         songs_id = get_songs_id(spotipy, playlist, None)
         return songs_id
 
-    def async_process_spotify_ids(self, total_items, chunk_size, helper_args=[]):
+    def async_process_spotify_ids(self, total_items, chunk_size, spotipy, playlist):
         '''
         Asynchronous task factory, to run multiple task instances for
         the .get_songs_id(...) helper function.
         '''
-        if not helper_args:
-            return
         task_ids = []
         limit = total_items + chunk_size
-        for chunk in xrange(0, limit, chunk_size):
-            async_args = helper_args + [chunk]
-            task = get_songs_id.apply_async(args=async_args)
-            task_ids.append(task.task_id)
-        songs_id = []
-        while task_ids:
-            for t in task_ids:
-                cur_task = get_songs_id.AsyncResult(t)
-                if cur_task.state == 'SUCCESS':
-                    result = get_songs_id.AsyncResult(t).result
-                    task_ids.remove(t)
-                    songs_id += result
-                else:
-                    continue
-        return songs_id
+        all_ids = group(get_songs_id.s(spotipy, playlist, chunk)
+                        for chunk in xrange(0, limit, chunk_size))()
+        return reduce(lambda x, y: x + y, all_ids.get())
 
     def non_async_get_user_preferences(self, spotipy):
         '''
@@ -118,30 +105,12 @@ class AsyncAdapter(object):
             - .get_user_followed(...)
         '''
         tasks = []
-        preferences = set()
+        pref_funcs = [get_user_saved_tracks,
+                      get_user_playlists,
+                      get_user_followed]
         # artists from saved tracks
-        st = get_user_saved_tracks.apply_async(args=[spotipy])
-        st_results = get_user_saved_tracks.AsyncResult(st.task_id)
-        tasks.append(st_results)
-
-        # artists form user playlists (public)
-        up = get_user_playlists.apply_async(args=[spotipy])
-        up_results = get_user_playlists.AsyncResult(up.task_id)
-        tasks.append(up_results)
-
-        # artists from followed artists
-        fa = get_user_followed.apply_async(args=[spotipy])
-        fa_results = get_user_followed.AsyncResult(fa.task_id)
-        tasks.append(fa_results)
-        while tasks:
-            for t in tasks:
-                if t.state == 'SUCCESS':
-                    result = t.result
-                    tasks.remove(t)
-                    preferences = preferences | set(result)
-                else:
-                    continue
-        return preferences
+        preferences = group(func.s(spotipy) for func in pref_funcs)()
+        return reduce(lambda x, y: x | y, preferences.get())
 
     def async_populate_catalog(self, artists, num_tasks, limit=5, catalog=None):
         '''
