@@ -346,7 +346,7 @@ def festival(url_slug):
                 new = 1
             else:
                 new = 0
-            #user_cache.search_results = list()
+            # user_cache.search_results = list()
 
     elif suggested_pl_butt.validate_on_submit():
         if request.form.get("add_button"):
@@ -426,11 +426,11 @@ def results(url_slug):
         a = request.form.get('adventurousness')
         user_cache.did_user_sel_parameters = True
         current_user = load_user(session.get('user_id')).access
-        #db.update_parameters(festivalId, _user, h, d, e, v, a)
+        # db.update_parameters(festivalId, _user, h, d, e, v, a)
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
 
-        #db.get_average_parameters(user_cache.current_festival)
+        # db.get_average_parameters(user_cache.current_festival)
         processor = helpers.AsyncAdapter(app)
         playlist = helpers.seed_playlist(catalog=festival_catalog, hotttnesss=h,
                                          danceability=d, energy=e, variety=v,
