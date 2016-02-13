@@ -187,20 +187,18 @@ def get_user_festivals(user_id):
         "and c.userId = '{}'".format(user_id))
 
     print "this is the query {}".format(query)
-    
     cursor.execute(query)
     d = cursor.fetchall()
     print (d)
-    
-    organized_festivals = {u[1]: {'festival_name':u[2], 'url_slug':u[3]} for u in d if u[4] == 1}
+    organized_festivals = {u[1]: {'festival_name': u[2], 'url_slug': u[3]} for u in d if u[4] == 1}
     print (" organized festivals", organized_festivals)
-    contributed_festivals = {u[1]:{'festival_name':u[2], 'url_slug':u[3], 'user_id':u[0]} for u in d if u[4] == 0}
+    contributed_festivals = {u[1]: {'festival_name': u[2], 'url_slug': u[3], 'user_id': u[0]} for u in d if u[4] == 0}
     print ("  contributed", contributed_festivals)
     user_festivals = {}
     if organized_festivals:
-        user_festivals = {'organizer':organized_festivals}
+        user_festivals = {'organizer': organized_festivals}
     if contributed_festivals:
-        user_festivals.update({'contributor':contributed_festivals})
+        user_festivals.update({'contributor': contributed_festivals})
     print ("these are the festivals the user is involved in {}".format(user_festivals))
     return user_festivals
 
