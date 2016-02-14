@@ -5,7 +5,8 @@ import logging
 import sys
 
 SECRET_KEY = 'this_is_a_secret'
-
+path = os.path.abspath('credentails.txt')
+os.chdir(path[:-15])
 # Celery config
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
@@ -17,9 +18,6 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 IS_ASYNC = False
-
-
-os.chdir('/var/www/festify/festify')
 class BaseConfig(object):
 
     with open('credentials.txt', 'r') as cred:
