@@ -1,7 +1,7 @@
 from . import app, celery, login_manager
 from . helpers import (suggested_artists, random_catalog, seed_playlist)
 from . import frontend_helpers
-from ..config import BaseConfig
+from config import BaseConfig
 
 from flask.ext.login import login_user, logout_user
 from flask.ext.login import UserMixin
