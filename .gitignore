@@ -9,8 +9,12 @@ __pycache__/
 # C extensions
 *.so
 
+# wsi
+*.wsggi
+
 # Distribution / packaging
 .Python
+venv/
 env/
 build/
 develop-eggs/
