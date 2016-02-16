@@ -171,6 +171,38 @@ def get_info_from_database(urlSlug):
         return values
 
 
+def get_user_festivals(user_id):
+    '''
+    return the festivals the user is involved in
+    '''
+    connection = mysql.get_db()
+    cursor = connection.cursor()
+    query1 = str(("SELECT contributors.festivalId, sessions.festivalName, sessions.userId, "
+            "sessions.urlSlug, contributors.organizer FROM contributors "
+            "INNER JOIN sessions ON contributors.festivalId=sessions.festivalId"
+            "WHERE contributors.userId = %s", (user_id,)))
+    query = ("SELECT c.userId, s.festivalId, s.festivalName, s.urlSlug, "
+        "c.organizer FROM sessions as s INNER JOIN contributors as c on "
+        "s.festivalId = c.festivalId  where s.festivalId = c.festivalId "
+        "and c.userId = '{}'".format(user_id))
+
+    print "this is the query {}".format(query)
+    cursor.execute(query)
+    d = cursor.fetchall()
+    print (d)
+    organized_festivals = {u[1]: {'festival_name': u[2], 'url_slug': u[3]} for u in d if u[4] == 1}
+    print (" organized festivals", organized_festivals)
+    contributed_festivals = {u[1]: {'festival_name': u[2], 'url_slug': u[3], 'user_id': u[0]} for u in d if u[4] == 0}
+    print ("  contributed", contributed_festivals)
+    user_festivals = {}
+    if organized_festivals:
+        user_festivals = {'organizer': organized_festivals}
+    if contributed_festivals:
+        user_festivals.update({'contributor': contributed_festivals})
+    print ("these are the festivals the user is involved in {}".format(user_festivals))
+    return user_festivals
+
+
 def get_average_parameters(festivalId):
     '''
     return list of the average parameters for a festival

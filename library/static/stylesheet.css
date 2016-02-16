@@ -2,10 +2,11 @@
  * Globals
  */
 
-/*
+
 #login {
     list-style: none;
     height: 40px;
+    text-align: center;
 
 }
 
@@ -17,6 +18,7 @@
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     padding: 10px 20px;
+
 }
 
 
@@ -33,13 +35,13 @@
     -webkit-border-radius: 5px;
 }
 
-/*
+
 #login-form .text {
     width: 100%;
     float: right;
     margin-bottom: 2%;
 }
-*/
+
 
 #login-form .submit {
     float: right;
@@ -84,6 +86,37 @@ body {
   text-align: center;
   text-shadow: 1px 2px 3px rgba(0,0,0,.5);
 }
+
+h1{
+  font-weight:bolder;
+  color:#ffffff;
+  margin: 5px;
+}
+
+h2 {
+  color:rgb(255, 255, 255);
+  font-size: 14px;
+  font-style: oblique;
+  font-weight: bold;
+  margin: 5px;
+}
+
+p {
+  color:rgb(255, 255, 255);
+  font-size: 14px;
+  font-style: oblique;
+  font-weight: 100;
+}
+
+
+
+
+
+
+
+
+
+
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
 .site-wrapper {
@@ -246,20 +279,16 @@ body {
 }
 
 .login-page {
-    color:rgb(255, 255, 255);
-    font-size: 14px;
-    font-style: oblique;
-    font-weight: 100;
 }
 
 .create-join {
     text-align: center;
-    margin-left: -5%;
     margin-top: 5%;
 }
 
 .create-join ul {
-    list-style: none;
+    list-style-type: none;
+
 }
 
 #festi-text {
@@ -278,35 +307,49 @@ body {
 /* Flexbox CSS */
 
 .flex-container {
+  position: relative; top: 25%;
   display: flex;
   align-items: flex-start;
-  flex-direction: row;
-  /* border-style: solid; */
+  /*border-style: solid;*/
   width: auto;
   justify-content: space-between;
+  text-align: right;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-column {
+  flex-direction: column;
 }
 
 .flex-left {
   order: -1;
   /*overflow-x: hidden;*/
-  /* border-style: solid;*/
+  /*border-style: solid;*/
   width: 200px;
 }
 
 .flex-center {
   order: 0;
-  overflow-x: hidden;
-  /* border-style: solid;*/
+
+  margin-right: auto;
+  margin-left: auto;
+  /*border-style: solid;*/
+  text-align: center;
 }
 
 .flex-right {
   order: 1;
-  /* border-style: solid;*/
+  order-style: solid;
   width: 200px;
 }
 
 .hot-links {
-  position: relative; top: -20px;
+  position: relative;
   border: 3px solid #5cb85c;
   background: black;
   text-align: left;
@@ -314,6 +357,15 @@ body {
   padding-right: 10px;
   padding-top: 5px;
   padding-bottom: 5px;
+  font-weight: bold;
+}
+
+.over-top {
+  position: relative; top: -20px;
+}
+
+.hanging-in {
+  position: relative; top: 100px;
 }
 
 .hot-links > ul {
@@ -329,6 +381,7 @@ body {
   margin-bottom: 2px;
   padding-left: 5px;
   padding-right: 5px;
+
 }
 .hot-links > ul > li:hover {
   background-color: #449d44;

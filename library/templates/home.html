@@ -17,32 +17,69 @@
 
     {% if login == false %}
     <div class="inner cover">
-            <h1 style="font-weight:bolder;color:#ffffff;" class="cover-heading">Is it festival season yet?</h1>
+            <h1 class="cover-heading">Is it festival season yet?</h1>
             <p class="login-page">Don't wait - put together your own using you and your friends' music preferences.</p>
-            <p class="login-page">Please login to get started!</p>
+            <p class="login-page">Log in to get started!</p>
             <br>
-            <a href="{{ oauth }}"><input name="submit" class="btn btn-success btn-lg" value="Login" type="button"></input></a>
-
+            <a href="{{ oauth }}"><input name="submit" class="btn btn-success btn-lg" value="Log in" type="button"></input></a>
     </div>
+
     {% else %}
 
     <div class="inner cover">
-            <h1 style="font-weight:bolder;color:#ffffff;" class="cover-heading">Let's start your ideal Festival</h1>
-            <p class="login-page">You can create a new festival below, or if you have a valid Festival ID, join a pre-existing one.</p>
-            <br>
-            <a href="{{ url_for('new') }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
-                        <nav class="create-join">
-                            <ul>
-                                <li id="login">
-                                    <a class="btn btn-success btn-lg" href="#" type="button">Join Festival  </a>
-                                        <form id="login-form" action="{{ url_for('home') }}" method="post">
-                                            <p><input id="festi-text" class="text" type="text" name="festival_id" placeholder="Festival ID" /></p>
-                                            <p><input class="btn btn-success btn-lg" id="festivalSubmit" type="submit" value="Submit" /></p>
-                                        </form>
-                                </li>
-                            </ul>
-                        </nav>
+        <div class="flex-container flex-column">
+            <div class="flex-center">
+                <h1 class="cover-heading">Let's start your ideal Festival</h1>
+                <p class="login-page">You can create a new festival below, or if you have a valid Festival ID, join a pre-existing one.</p>
+                <br>
+            </div>
+        </div>
+        <div class="flex-container flex-row">
+            <div class="flex-left hot-links rcorners over-top">
+                {% if user_festivals['contributor'] %}
+                    <br>Contributor to:
+                    <ul>{% for festival_id in user_festivals['contributor'] %}
+                    <li> <a href="{{  url_for('festival', url_slug=user_festivals['contributor'][festival_id]['url_slug']) }}"> {{ user_festivals['contributor']['user_id']}}'s {{ user_festivals['contributor'][festival_id]['festival_name'] }}</a>
+                {% endfor %}</ul>
+                {% else %}
+                    <h1>Did you know?</h1>
+                    You can organize a festival playlist with your friends. Create a festival and spread the word to anyone you want!
+                {% endif %}
+
+            </div>
+
+            <div class="flex-center">
+                <br>
+                <a href="{{ url_for('new') }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
+                
+
+
+                <nav class="create-join" id="login">
+
+                        <a class="btn btn-success btn-lg" href="#" type="button">Join Festival  </a>
+                        <form id="login-form" action="{{ url_for('home') }}" method="post">
+                            <p><input id="festi-text" class="text" type="text" name="festival_id" placeholder="Festival ID" /></p>
+                            <p><input class="btn btn-success btn-lg" id="festivalSubmit" type="submit" value="Submit" /></p>
+                        </form>
+
+                </nav>
+            </div>
+
+            {% if 'organizer' in user_festivals %}
+                <div class="flex-right hot-links rcorners over-top">
+                    {{ user_id }}'s festivals:
+                    <ul>{% for festival_id in user_festivals['organizer'] %}
+                        <li> <a href="{{  url_for('festival', url_slug=user_festivals['organizer'][festival_id]['url_slug']) }}"> {{ user_festivals['organizer'][festival_id]['festival_name'] }}</a>
+                </div>
+                {% endfor %}</ul>
+                </div>
+                {% else %}
+                <div class="flex-right over-top">
+                </div>
+            {% endif %}
     </div>
+
+
     {% endif %}
 
 {% endblock %}

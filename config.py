@@ -15,6 +15,7 @@ CELERYBEAT_SCHEDULE = {
 }
 IS_ASYNC = True
 
+
 class BaseConfig(object):
 
     with open('credentials.txt', 'r') as cred:

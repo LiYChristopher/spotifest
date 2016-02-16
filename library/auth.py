@@ -70,6 +70,8 @@ class UserCache():
         self.organizer = organizer
         self.search_results = search_results
         self.festival_name = festival_name
+        self.user_id = None
+        self.user_festivals = None
         self.did_user_sel_parameters = False
         self.festival_id = None
 
@@ -199,11 +201,15 @@ def home(config=BaseConfig):
             current_user = load_user(session.get('user_id')).access
             s = spotipy.Spotify(auth=current_user)
 
+    user_cache.user_festivals = db.get_user_festivals(user_cache.user_id)
+
     if request.method == 'POST':
         url_slug = request.form['festival_id']
         print ("FESTIVAL ID OR URL SLUGGY IS {}".format(url_slug))
         return redirect(url_for('join', url_slug=url_slug))
-    return render_template('home.html', login=True)
+    return render_template('home.html', login=True,
+                            user_festivals=user_cache.user_festivals,
+                            user_id=user_cache.user_id)
 
 
 @app.route('/festival/join/<url_slug>', methods=['GET'])
@@ -327,7 +333,7 @@ def festival(url_slug):
                 new = 1
             else:
                 new = 0
-            #user_cache.search_results = list()
+            # user_cache.search_results = list()
 
     elif suggested_pl_butt.validate_on_submit():
         if request.form.get("add_button"):
@@ -407,11 +413,11 @@ def results(url_slug):
         a = request.form.get('adventurousness')
         user_cache.did_user_sel_parameters = True
         current_user = load_user(session.get('user_id')).access
-        #db.update_parameters(festivalId, _user, h, d, e, v, a)
+        # db.update_parameters(festivalId, _user, h, d, e, v, a)
         s = spotipy.Spotify(auth=current_user)
         user_id = s.me()['id']
 
-        #db.get_average_parameters(user_cache.current_festival)
+        # db.get_average_parameters(user_cache.current_festival)
         processor = helpers.AsyncAdapter(app)
         playlist = helpers.seed_playlist(catalog=festival_catalog, hotttnesss=h,
                                          danceability=d, energy=e, variety=v,
