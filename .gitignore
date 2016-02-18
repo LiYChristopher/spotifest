@@ -76,3 +76,6 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#wsgi apache file
+spotifest.wsgi
