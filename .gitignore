@@ -49,6 +49,7 @@ credentials.txt
 
 #celery
 *.pid
+*-schedule
 
 # Unit test / coverage reports
 htmlcov/
