@@ -25,15 +25,30 @@ AS OF 20160216 —-
 - Intro of eventlet to asynchronous task queue
 - Running celery as a daemon
 
-I’m experimenting with using `eventlet`, a “green thread” based task processor that we can use to spawn and execute tasks on threads that aren’t bound to CPU/cores. So instead of three workers, we can have thousands without the overhead. Again, it’s an experiment at the moment but to run celery with eventlet.
+I’m experimenting with using `eventlet`, a “green thread” based task processor that we can use to spawn and execute tasks on threads that aren’t bound to CPU/cores. So instead of three workers, we can have thousands without the overhead. 
 
-pip install eventlet
+			--- Requirements ---
 
-	celery worker -A library.celery -I config -P eventlet -c 1000 —-loglevel=info
+	pip install eventlet
+
+                        --- TO START CELERY ---
+
+        celery worker -A library.celery -I config -P eventlet -c 1000 —-loglevel=info
 
 To run celery in the background, so that you can see logs but continue to use the same terminal window for other things, simply append a `&` at the end of the terminal command:
 
- 	celery worker -A library.celery -I config -P eventlet -c 1000 —-loglevel=info &
+        celery worker -A library.celery -I config -P eventlet -c 1000 —-loglevel=info &
+
+                        --- TO KILL CELERY ---
+Wait to finish tasks:
+
+        ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill
+
+Don't wait to finish tasks:
+
+        ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill -9
+
+
 
 To run celery as a daemon, see details here:
 
