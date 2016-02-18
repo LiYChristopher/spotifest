@@ -24,7 +24,7 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(minutes=60)
     },
 }
-IS_ASYNC = False
+IS_ASYNC = True
 
 
 class BaseConfig(object):

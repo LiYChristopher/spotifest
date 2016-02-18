@@ -9,16 +9,35 @@ redis-server
 
 and then another tab
 
-celery worker -A library.app.celery -I config -c 3 --loglevel=info
+	celery worker -A library.celery -I config -c 3 --loglevel=info
 
 and another tab for scheduled deletion of sessions:
 
-celery beat —-app library.app.celery
+	celery beat —-app library.celery
 
 -A - Points to app/celery location
 -I - Imports modules (this is where config links for redis are)
 -c - # of concurrent processes - play around with this based on your computer processing power
 --loglevel=info - debug messages
+
+AS OF 20160216 —-
+
+- Intro of eventlet to asynchronous task queue
+- Running celery as a daemon
+
+I’m experimenting with using `eventlet`, a “green thread” based task processor that we can use to spawn and execute tasks on threads that aren’t bound to CPU/cores. So instead of three workers, we can have thousands without the overhead. Again, it’s an experiment at the moment but to run celery with eventlet.
+
+pip install eventlet
+
+	celery worker -A library.celery -I config -P eventlet -c 1000 —-loglevel=info
+
+To run celery in the background, so that you can see logs but continue to use the same terminal window for other things, simply append a `&` at the end of the terminal command:
+
+ 	celery worker -A library.celery -I config -P eventlet -c 1000 —-loglevel=info &
+
+To run celery as a daemon, see details here:
+
+http://michal.karzynski.pl/blog/2014/05/18/setting-up-an-asynchronous-task-queue-for-django-using-celery-redis/
 
 
 DATABASE
