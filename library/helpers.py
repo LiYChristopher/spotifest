@@ -7,7 +7,7 @@ from pyechonest import config
 from pyechonest import playlist
 from pyechonest import artist
 from pyechonest.catalog import Catalog
-from library import celery
+from . import celery
 from config import BaseConfig
 import os
 import datetime

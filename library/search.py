@@ -2,7 +2,7 @@
 
 from flask import render_template, request, redirect, url_for, session, g
 
-from library import app
+from . import app
 from frontend_helpers import SearchForm, SuggestedPlaylistButton, ArtistSelect
 from helpers import search_artist_echonest
 
