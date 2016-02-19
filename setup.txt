@@ -1,9 +1,9 @@
+PIP
+===
+pip install -r requirements.txt
+
 Celery and Redis
 ================
-
-pip install celery
-pip install redis
-
 Install redis onto your computer. Prior to running, in the command-line:
 redis-server
 
@@ -29,7 +29,7 @@ I’m experimenting with using `eventlet`, a “green thread” based task proce
 
 			--- Requirements ---
 
-	pip install eventlet
+	pip install eventlet (added to requirements.txt)
 
                         --- TO START CELERY ---
 
@@ -66,5 +66,11 @@ DATABASE
 - Run script mysqlScript.sql on your database :
   mysql -uroot -p < mysqlScript.sql
   This will create the database
--
--- pip install flask-mysql
+
+  Ubuntu needs sudo apt-get install libmysqlclient-dev
+
+
+CREDENTIALS
+===========
+
+Get the file credentials.txt on your repo

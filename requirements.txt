@@ -10,3 +10,4 @@ redis == 2.10.5
 requests == 2.9.1
 spotipy == 2.3.7
 WTForms == 2.1
+eventlet==0.18.4
