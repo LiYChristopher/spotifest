@@ -34,28 +34,15 @@
     {% endblock %}
   </head>
 
-{% block content %}
-
-
+{% block body %}
+  <body>
     <div class="site-wrapper">
-
       <div class="site-wrapper-inner">
+        <div class="cover-container">
 
-        <!-- Flashblock -->
-        {% block flash %}
-
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <p id="flash">{{ message }}</p>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-        {% endblock %}
-
-        {% block nav %}
         <!-- Navblock-->
+        {% block nav %}
+        
             <div class="inner">
               <h3 class="masthead-brand">Spotifest</h3>
               <nav>
@@ -67,14 +54,34 @@
             </div>
         {% endblock %}
 
+        {% block content %}
+
+          <!-- Flashblock -->
+          {% block flash %}
+
+              {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                      {% for message in messages %}
+                          <p id="flash">{{ message }}</p>
+                      {% endfor %}
+                  {% endif %}
+              {% endwith %}
+
+          {% endblock %} <!-- flash -->
+
+        {% endblock %} <!-- content -->
+
+
         {% block footer %}
             <div class="inner">
                 <p style="color:#2EBD59">Spotifest's code on <a href="https://github.com/LiYChristopher/festify">GitHub</a>.</p>
+                <p> Powered by Spotify and Echonest. </p>
             </div>
         {% endblock %}
-        </div>
 
-      </div>
+  </div>
+  </div>
+  </div>
 
 {% endblock %}
 

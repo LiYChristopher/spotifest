@@ -1,47 +1,42 @@
 {% extends 'base.html'%}
+<!-- standard body block implicitly imported -->
+
+
+<!--Block nav -->
+{% block nav %}
+    
+    {{ super() }}
+
+{% endblock %}
 
 {% block content %}
-<body>
+<div class="inner cover">
+    <!-- Other messages -->
+    {% if enough_data == false %}
 
-<div class="site-wrapper">
-    <div class="site-wrapper-inner">
-        <div class="cover-container">
+        <h3 style="color:white;" class="cover-heading">
+            You don't have that many saved artists yet.. let us help you!
+        </h3>
+        <br>
 
-            <!--Block nav -->
-            {% block nav %}
-                
-                {{ super() }}
+    {% else %}
 
-            {% endblock %}
+        <h3 style="color:white;" class="cover-heading">Enjoy the show!</h3>
+        <br>
 
-            <!-- Other messages -->
-            {% if enough_data == false %}
+    {% endif %}
 
-                <h3 style="color:white;" class="cover-heading">
-                    You don't have that many saved artists yet.. let us help you!
-                </h3>
-                <br>
+    <!-- Results Playlist -->
 
-            {% else %}
+       <iframe src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>
 
-                <h3 style="color:white;" class="cover-heading">Enjoy the show!</h3>
-                <br>
-
-            {% endif %}
-
-            <!-- Results Playlist -->
-            
-               <iframe src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>
-            <!-- Block footer -->
-            {% block footer %}
-
-                {{ super() }}
-
-            {% endblock %}
-
-        </div>
-    </div>
 </div>
+{% endblock %} <!-- content -->
 
-</body>
-{% endblock %} 
+
+<!-- Block footer -->
+{% block footer %}
+
+    {{ super() }}
+
+{% endblock %}
