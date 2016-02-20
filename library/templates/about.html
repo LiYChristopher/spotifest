@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<body class='about'>
+		<div class='cover-container'>	        	
+			<!-- Block Nav-->
+			{% block nav %}
+				{{ super() }}					
+			{% endblock %}
+		</div>
+
+
+			<!-- Stock image -->
+			<div class='carousel-inner'>
+				<img class='full-width img-responsive' src='/static/about_img.jpg'></img>
+
+				<div class='carousel-caption'>
+					<h2> Take a step on the wild side.</h2>
+				</div>
+			</div>
+
+
+			<div class='row marginless' style='background-color:white'>
+				<!-- What is Spotifest? -->
+				
+				<div class='col-md-6'>
+					<div class='inner'>
+					<h3 class='about-heading'>What is Spotifest?</h3>
+					<p class='about-text'>
+						Spotifest is a data-driven, music festival playlist generator. Festival lineups and genres are all determined algorithmically, drawing collective inspiration primarily from your and your friends' preferred artists on Spotify. All you have to do is create a festival, maybe get a few friends involved and then let Spotifest take care of the rest. Hopefully you'll walk away with several hours of music you can jam out to.
+					</p>
+					<p class='about-text'>
+						With over 20 million songs in Spotify's catalog, there's no simple way of curating and discovering music you'll actually like. With Spotifest we hope to help you traverse all the possibilities, by using your pre-existing music preferences as a starting point for serendipitous exploration.
+					</p>
+					</div>
+				</div>
+				<!-- How does it work? -->
+				<div class='col-md-6'>
+					<div class='inner'>
+					<h3 class='about-heading'>How does it work?</h3>
+					<ul style>
+						<li><p class='about-text'>Everytime you create a festival, we gather all the artists you listen to and follow on Spotify to serve as the basis of your lineup. </p></li>
+						<li><p class='about-text'>If you want, you can tell your friends to help out, by providing them your festival ID, and we'll gather their listening preferences as well. </p></li>
+						<li><p class='about-text'>You and everyone contributing to your festival decide how the festival will turn out by adjusting a set of parameters, based on metrics and analysis done by music data and technology firm Echonest. These settings can make the difference between an electronic dance festival and a bluegrass and folk festival.</p></li>
+						<li><p class='about-text'>We use the Echonest and Spotify APIs to algorithmically stitch together a unique playlist based on all the data you and your friends have provided, which will be available to you to save and listen to either on the browser or on the Spotify desktop client. </p></li>
+					</ul>
+					</div>
+				</div>			
+			</div>
+			<!-- About Us -->
+			<div class='row marginless about-team'>
+				<div class='col-md-12'>
+					<h3>The Team</h3>
+				</div>
+			</div>
+			<div class='row marginless about-team'>
+				<!-- Andres -->
+				<div class='col-md-4 col-xs-4 text-center'>
+					<img class='img-circle img-responsive center-block' src='/static/andres_crop.jpeg'></img>
+					<h5> Andres Hazard </h5>
+					<p> Likes burritos. </p>	
+				</div>
+				<!-- Tycho -->
+				<div class='col-md-4 col-xs-4 text-center'>
+					<img class='img-circle img-responsive center-block' src='/static/tycho_crop.jpg'></img>
+					<h5> Tycho van Kleef </h5>
+					<p> Likes tacos. </p>
+				</div>
+				<!-- Chris -->
+				<div class='col-md-4 col-xs-4 text-center'>
+					<img class='img-circle img-responsive center-block' src='/static/fb_crop.jpg'></img>
+					<h5> Chris Li </h5>
+					<p> Likes tofu. </p>
+				</div>						
+			</div>
+			<!-- Block footer-->
+			<div class='about-team'>
+			{% block footer %}
+				{{ super() }}
+			{% endblock %}
+			</div>
+	</body>
+{% endblock %}
