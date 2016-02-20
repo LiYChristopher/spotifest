@@ -1,22 +1,47 @@
 {% extends 'base.html'%}
 
-    {% if enough_data == false %}
+{% block content %}
+<body>
 
-        <h1 style="color:white;" class="cover-heading">
-            You don't have that many saved artists yet.. let us help you!
-        </h1>
-        <br>
+<div class="site-wrapper">
+    <div class="site-wrapper-inner">
+        <div class="cover-container">
 
-    {% else %}
+            <!--Block nav -->
+            {% block nav %}
+                
+                {{ super() }}
 
-        <h1 style="color:white;" class="cover-heading">Enjoy the show!</h1>
-        <br>
+            {% endblock %}
 
-    {% endif %}
+            <!-- Other messages -->
+            {% if enough_data == false %}
 
-	{% block login %}
+                <h3 style="color:white;" class="cover-heading">
+                    You don't have that many saved artists yet.. let us help you!
+                </h3>
+                <br>
 
+            {% else %}
 
-	    <iframe src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>
+                <h3 style="color:white;" class="cover-heading">Enjoy the show!</h3>
+                <br>
 
-	{% endblock %} 
+            {% endif %}
+
+            <!-- Results Playlist -->
+            
+               <iframe src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>
+            <!-- Block footer -->
+            {% block footer %}
+
+                {{ super() }}
+
+            {% endblock %}
+
+        </div>
+    </div>
+</div>
+
+</body>
+{% endblock %} 

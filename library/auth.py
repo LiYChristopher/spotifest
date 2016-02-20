@@ -453,6 +453,10 @@ def results(url_slug):
                                    enough_data=enough_data)
 
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
 @app.errorhandler(401)
 def access_blocked(error):
     auth_url = login()
