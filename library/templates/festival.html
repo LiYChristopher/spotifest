@@ -35,8 +35,7 @@ $('#select_artist').click(function() {
 }
 */
 // $.find( "input[name='artist_display']").val()
-/*
-function select_artist(url) {
+/* function select_artist(url) {
     $.post('/festival', {
         confirm_select: 'v'
     }).done(function(reply) {
@@ -91,7 +90,7 @@ function select_artist(url) {
         <div class='flex-left'>
         {% if 'contributors' in all_users %}
             {% set n = 1 %}
-            {% if length(all_users['contributors']['c_names']) > 2 %}
+            {% if all_users['contributors']['c_names']|length > 2 %}
                 {% set n = 2 %}
             {% endif %}
             {% for x in range(n) %}
@@ -119,10 +118,10 @@ function select_artist(url) {
         {% if 'contributors' in all_users %}
             {% set n = 3 %}
             {% set e = 5 %}
-            {% if length(all_users['contributors']['c_names']) < 4 %}
+            {% if all_users['contributors']['c_names']|length < 4 %}
                 {% set n = 3 %}
                 {% set n = 4 %}
-            {% elif length(all_users['contributors']['c_names']) < 2 %}
+            {% elif all_users['contributors']['c_names']|length < 2 %}
                 {% set n = 0 %}
                 {% set e = 0 %}
             {% endif %}
@@ -236,25 +235,20 @@ function select_artist(url) {
             <span color="red">{{ new_artist }} is already here.</span>
         {% endif %}
     </p>
-
         {{ searchform.hidden_tag() }}
         <div style="display:inline-block;">
             {{ searchform.artist_search(role="form", class_="form-inline", style="color:black;")}}
-            {{ searchform.submit_search(id="search-artist", class_="btn btn-success")}}
-    </form>
+            {{ searchform.submit_search(id="search-artist", class_="btn btn-success") }}
+   
     <p>
     {% if art_select.artist_display.choices %}
-        {% for choice in art_select.artist_}
         {{ art_select.hidden_tag() }}
         {{ art_select.artist_display(id="select_artist", style="width:200px;color:black;")}}
         {{ art_select.confirm_select(class="btn btn-success") }}
     {% endif %}
     </p>
-    
-
-
-            
-                
+    </form>
+ 
           
 
     </div>
