@@ -1,5 +1,80 @@
 {% extends 'base.html' %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+ 
+       /* $(document).ready(function(){
+ 
+
+        $("#select_artist").change(function(){
+ 
+            window.location = $(this).val()
+
+            });
+ 
+        }); */
+
+ // Attach a change handler to the form
+ /*
+ $(document).ready(function(){
+    $("#select_artist").click(function () {
+
+        $.post($(this), { q: $(this).val() }, function() {
+    $('#form').slideUp('slow');
+  });
+});
+
+}); */
+
+/*
+function select_artist(url)
+{ 
+$('#select_artist').click(function() {
+    .$post (url, { confirm_select:val() }).done(function (selected) {});});
+}
+*/
+// $.find( "input[name='artist_display']").val()
+/*
+function select_artist(url) {
+    $.post('/festival', {
+        confirm_select: 'v'
+    }).done(function(reply) {
+    });
+} */
+  // Get some values from elements on the page:
+
+    //term = $.find( "input[name='artist_display']" ).val(),
+ 
+  // Send the data using post
+  //$.post( $(this), { artist_display: term } ).change();
+
+ /*
+  // Put the results in a div
+  posting.done(function( data ) {
+    var content = $( data ).find( "#content" );
+    $( "#result" ).empty().append( content );
+  });*/
+//});
+
+
+
+  /*$("div").text($(this).val());
+  $.post($(this), { q: $(this).val() }, function() {
+    $('#form').slideUp('slow');
+  });
+}).change();*/
+
+</script>
+{% endblock %}
+
+
+
+
 <!-- standard body block implicitly imported -->
+
+
+
 
 <!-- Navblock -->
 {% block nav %}
@@ -11,34 +86,77 @@
 {% block content %}
 <div class="inner cover">
 
-    <!-- Organizer avatar and contributor avatar -->
-    <h1>{{ all_users['organizer']['userId'] }}'s
-        {% if is_org == true %} festival 
-        {% else %} {{ festival_name }} {% endif %}</h1>
-    <div class ='row'>
-
-        <!-- Contributors -->
-        <div class="col-sm-4">   
-        <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ all_users['organizer']['userId'] }}&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
-
+        <!-- Organizer avatar and contributor avatar -->
+    <div class='flex-container flex-row' style="height:200px; align-items:flex-end;">
+        <div class='flex-left'>
         {% if 'contributors' in all_users %}
-           <!--<h3>Contributors</h3>-->
-            <div id='cover-container'>
-            {% for contributor in all_users['contributors'] %}
+            {% set n = 1 %}
+            {% if length(all_users['contributors']['c_names']) > 2 %}
+                {% set n = 2 %}
+            {% endif %}
+            {% for x in range(n) %}
                 <div id='login-form text'>
-                    <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ contributor }} &size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
-                    {% if all_users['contributors'][contributor]['ready'] == 1%}
+                    {% set name = all_users['contributors']['c_names'][x] %}
+                    <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ name }}&size=detail&theme=dark" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
+                    {% if all_users['contributors'][name]['ready'] == 1%}
                         <p>...is set!</p>
                     {% endif %}
-                </div> 
+                </div>
             {% endfor %}
-            </div>
         {% endif %}
         </div>
+    
+
+        <div class='flex-center'>
+            <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ all_users['organizer']['userId'] }}&size=detail&theme=dark" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
+            <h1>{{ all_users['organizer']['userId'] }}'s
+            {% if is_org == true %} festival 
+            {% else %} {{ festival_name }} {% endif %}</h1>
+        </div>
+
+
+        <div class='flex-right'>
+        {% if 'contributors' in all_users %}
+            {% set n = 3 %}
+            {% set e = 5 %}
+            {% if length(all_users['contributors']['c_names']) < 4 %}
+                {% set n = 3 %}
+                {% set n = 4 %}
+            {% elif length(all_users['contributors']['c_names']) < 2 %}
+                {% set n = 0 %}
+                {% set e = 0 %}
+            {% endif %}
+            {% for x in range(n, e) %}
+                <div id='login-form text'>
+                    {% set name = all_users['contributors']['c_names'][x] %}
+                    <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ name }}&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
+                    {% if all_users['contributors'][name]['ready'] == 1%}
+                        <p>...is set!</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+        </div>
+    </div>
+
+    <div class="flex-container flex-row">
+
+        <div class="flex-left" style='margin-right:auto;width:300px;'>&nbsp;
+           <!--Contributor to
+            <ul>
+                <li> <a>New jazz festival</a></li>
+                <li> <a>Hip hop battles</a></li>
+                <li> <a>Tester</a></li>
+                <li> <a>Something</a></li>
+            </ul> -->
+        </div>
+
+        <div class="flex-center">
+            {% block flash %}
+                {{ super() }}
+            {% endblock %}
 
         <!-- Parameters panel -->
-        <div class="col-sm-4">
-
         <p class="lead">
             {% if is_org == true %}
           <form action="{{ url_for('results', url_slug=url_slug) }}" method="post">
@@ -97,55 +215,54 @@
             </fieldset>
           </form>
         </p>      
-        </div>   
-
-        <!-- Search -->
-        <div class="col-sm-4">
-
-            <p id="search-artist" class="login-page">Would you like to invite more artists?</p>
+    </div>
 
 
-            <form action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
-                {{ suggested_pl_butt.hidden_tag() }}
-                {{ suggested_pl_butt.add_button(class_="btn btn-success") }}
-            </form>
+     <!-- Search -->
+    <div class="flex-right" style="width:300px; margin-left:auto;text-align:center;">
+    <p id="search-artist" class="login-page">Would you like to invite more artists?</p>
 
-            <form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
-                {{ searchform.hidden_tag() }}
-                <div style="display:inline-block;">
-                {{ searchform.artist_search(class_="form-control", size=20)}}
-                {{ searchform.submit(id="search-artist", class_="btn btn-success")}}
-                </div>
-            </form>
+    <form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
+        {{ suggested_pl_butt.hidden_tag() }}
+        {{ suggested_pl_butt.add_button(class_="btn btn-success") }}
+
+    <p class="login-page">
+        <!-- Search messages  -->
+        {% if s_results == false %}
+            <span class="lead">No artists found with the name {{ new_artist }}!</span>
+        {% elif new == 1 %}
+            <span color="green">{{ new_artist }} added!</span>
+        {% elif new == 0 %}
+            <span color="red">{{ new_artist }} is already here.</span>
+        {% endif %}
+    </p>
+
+        {{ searchform.hidden_tag() }}
+        <div style="display:inline-block;">
+            {{ searchform.artist_search(role="form", class_="form-inline", style="color:black;")}}
+            {{ searchform.submit_search(id="search-artist", class_="btn btn-success")}}
+    </form>
+    <p>
+    {% if art_select.artist_display.choices %}
+        {% for choice in art_select.artist_}
+        {{ art_select.hidden_tag() }}
+        {{ art_select.artist_display(id="select_artist", style="width:200px;color:black;")}}
+        {{ art_select.confirm_select(class="btn btn-success") }}
+    {% endif %}
+    </p>
+    
 
 
-            {% if art_select.artist_display.choices %}
-                <form action="{{ url_for('festival', url_slug=url_slug) }}" method="POST">
+            
+                
+          
 
-                    {{ art_select.hidden_tag() }}
-                    {{ art_select.artist_display }}
-                    {{ art_select.confirm_button }}
+    </div>
 
-                </form>
 
-            <!-- Search - flash block -->
-            {% block flash %}
+    
 
-                {{ super() }}
 
-            {% endblock %}
-
-            {% elif s_results == false %}
-                <p class="lead">No artists found with the name {{ new_artist }} !</p>
-            {% endif %}
-
-            {% if new  == 1 %}
-                <h6 color="green" border=1>{{ new_artist }} added!</h6>
-            {% elif new == 0 %}
-                <h6 color="red"  border=1>{{ new_artist }} is already here.</h6>
-            {% endif %}
-
-    </div> 
     <!--
         {% if artists %}
             <h3>These artists grace you with their presence:</h3>
@@ -161,7 +278,7 @@
             <h3> We haven't been able to find any artists yet! <br>
         {% endif %}
     -->
-
+    </div> 
 </div>
 {% endblock %} <!-- content -->
 

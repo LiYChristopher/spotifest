@@ -313,7 +313,7 @@ p {
   position: relative; top: 25%;
   display: flex;
   align-items: flex-start;
-  /*border-style: solid;*/
+  border-style: solid;
   width: auto;
   justify-content: space-between;
   text-align: right;
@@ -332,7 +332,7 @@ p {
 .flex-left {
   order: -1;
   /*overflow-x: hidden;*/
-  /*border-style: solid;*/
+  border-style: solid;
   width: 200px;
 }
 
@@ -341,7 +341,7 @@ p {
 
   margin-right: auto;
   margin-left: auto;
-  /*border-style: solid;*/
+  border-style: solid;
   text-align: center;
 }
 
@@ -349,6 +349,7 @@ p {
   order: 1;
   order-style: solid;
   width: 200px;
+  border-style: solid;
 }
 
 .hot-links {
@@ -443,5 +444,7 @@ p {
 .about-team {
   background-color: black;
 }
+
+
 
 /* */

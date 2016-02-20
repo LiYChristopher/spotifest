@@ -10,6 +10,8 @@ from flask import session, flash
 
 from flask.ext.login import login_user, logout_user, login_required, UserMixin
 from flask.ext.wtf import Form
+
+
 from flask import render_template, request, redirect, url_for, session, flash
 
 import spotipy
@@ -317,22 +319,24 @@ def festival(url_slug):
     params_form = frontend_helpers.ParamsForm()
 
     if searchform.validate_on_submit():
-        s_artist = searchform.artist_search.data
-        user_cache.search_results = helpers.search_artist_echonest(s_artist)
-        art_select.artist_display.choices = user_cache.search_results
+        if request.form.get("submit_search"):
+            s_artist = searchform.artist_search.data
+            user_cache.search_results = helpers.search_artist_echonest(s_artist)
+            art_select.artist_display.choices = user_cache.search_results
 
-    if art_select.artist_display.data:
-        if art_select.is_submitted():
-            option_n = int(art_select.artist_display.data) - 1
-            chosen_art = user_cache.search_results[option_n][1]
-            cur_user_preferences = user_cache.retrieve_preferences(url_slug)
-            if chosen_art not in cur_user_preferences:
-                print "ADDING CHOSEN ART", chosen_art
-                user_cache.update_preferences(set([chosen_art]), url_slug)
-                new_artist = chosen_art
-                new = 1
-            else:
-                new = 0
+
+    #if art_select.is_submitted():
+    if request.form["confirm_select"]:
+        option_n = int(art_select.artist_display.data) - 1
+        chosen_art = user_cache.search_results[option_n][1]
+        cur_user_preferences = user_cache.retrieve_preferences(url_slug)
+        if chosen_art not in cur_user_preferences:
+            print "ADDING CHOSEN ART", chosen_art
+            user_cache.update_preferences(set([chosen_art]), url_slug)
+            new_artist = chosen_art
+            new = 1
+        else:
+            new = 0
             # user_cache.search_results = list()
 
     elif suggested_pl_butt.validate_on_submit():
