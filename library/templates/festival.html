@@ -2,68 +2,24 @@
 
 {% block scripts %}
     {{ super() }}
-    <script>
- 
-       /* $(document).ready(function(){
- 
+<script>
+    $(function(){
 
-        $("#select_artist").change(function(){
- 
-            window.location = $(this).val()
+    $("ul.dropdown li").hover(function(){
 
-            });
- 
-        }); */
+        $(this).addClass("hover");
+        $('ul:first',this).css('visibility', 'visible');
 
- // Attach a change handler to the form
- /*
- $(document).ready(function(){
-    $("#select_artist").click(function () {
+    }, function(){
 
-        $.post($(this), { q: $(this).val() }, function() {
-    $('#form').slideUp('slow');
-  });
-});
+        $(this).removeClass("hover");
+        $('ul:first',this).css('visibility', 'hidden');
 
-}); */
-
-/*
-function select_artist(url)
-{ 
-$('#select_artist').click(function() {
-    .$post (url, { confirm_select:val() }).done(function (selected) {});});
-}
-*/
-// $.find( "input[name='artist_display']").val()
-/* function select_artist(url) {
-    $.post('/festival', {
-        confirm_select: 'v'
-    }).done(function(reply) {
     });
-} */
-  // Get some values from elements on the page:
 
-    //term = $.find( "input[name='artist_display']" ).val(),
- 
-  // Send the data using post
-  //$.post( $(this), { artist_display: term } ).change();
+    $("ul.dropdown li ul li:has(ul)").find("a:first").append(" &raquo; ");
 
- /*
-  // Put the results in a div
-  posting.done(function( data ) {
-    var content = $( data ).find( "#content" );
-    $( "#result" ).empty().append( content );
-  });*/
-//});
-
-
-
-  /*$("div").text($(this).val());
-  $.post($(this), { q: $(this).val() }, function() {
-    $('#form').slideUp('slow');
-  });
-}).change();*/
-
+});
 </script>
 {% endblock %}
 
@@ -107,23 +63,28 @@ $('#select_artist').click(function() {
     
 
         <div class='flex-center'>
-            <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ all_users['organizer']['userId'] }}&size=detail&theme=dark" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
+            <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ all_users['organizer']['userId'] }}&size=detail&theme=dark" width="300" height="56" scrolling="no" frameborder="0" style="vertical-align: middle; border:none; overflow:hidden;" allowtransparency="true"></iframe>
             <h1>{{ all_users['organizer']['userId'] }}'s
             {% if is_org == true %} festival 
-            {% else %} {{ festival_name }} {% endif %}</h1>
+            {% else %} {{ festival_name }} 
+            {% endif %}</h1>
         </div>
 
 
         <div class='flex-right'>
         {% if 'contributors' in all_users %}
-            {% set n = 3 %}
-            {% set e = 5 %}
-            {% if all_users['contributors']['c_names']|length < 4 %}
-                {% set n = 3 %}
-                {% set n = 4 %}
-            {% elif all_users['contributors']['c_names']|length < 2 %}
+            {% if all_users['contributors']['c_names']|length < 2 %}
                 {% set n = 0 %}
                 {% set e = 0 %}
+            {% elif all_users['contributors']['c_names']|length == 2 %}
+                {% set n = 1 %}
+                {% set e = 2 %}
+            {% elif all_users['contributors']['c_names']|length == 3 %}
+                {% set n = 2 %}
+                {% set n = 3 %}
+            {% elif all_users['contributors']['c_names']|length == 4 %}
+                {% set n = 2 %}
+                {% set n = 4 %}
             {% endif %}
             {% for x in range(n, e) %}
                 <div id='login-form text'>
@@ -239,13 +200,21 @@ $('#select_artist').click(function() {
         <div style="display:inline-block;">
             {{ searchform.artist_search(role="form", class_="form-inline", style="color:black;")}}
             {{ searchform.submit_search(id="search-artist", class_="btn btn-success") }}
-   
+   </form>
     <p>
-    {% if art_select.artist_display.choices %}
-        {{ art_select.hidden_tag() }}
-        {{ art_select.artist_display(id="select_artist", style="width:200px;color:black;")}}
-        {{ art_select.confirm_select(class="btn btn-success") }}
-    {% endif %}
+    {% if s_results %}
+        <ul id="selectartist" class="dropdown" style="width:200px;color:black;">
+            <div style="clear:both;">
+            <li><input type="button" value=" Found artists"></input>
+                <ul><form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
+            {% for artist in s_results %}
+                <li><input name="selectartist" type="submit" value="{{artist}}"></input></li>
+            {% endfor %}
+                </li></ul>
+            </div>
+        </ul>
+    {% endif %}     
+
     </p>
     </form>
  
