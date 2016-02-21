@@ -323,25 +323,24 @@ def festival(url_slug):
             s_artist = searchform.artist_search.data
             user_cache.search_results = helpers.search_artist_echonest(s_artist)
             art_select.artist_display.choices = user_cache.search_results
-            # print (user_cache.search_results)
+            print (user_cache.search_results)
 
 
-    if art_select.is_submitted():
-        if request.form.get("confirm_select"):
-            option_n = int(art_select.artist_display.data) - 1
-            chosen_art = user_cache.search_results[option_n][1]
-            cur_user_preferences = user_cache.retrieve_preferences(url_slug)
 
-            if not cur_user_preferences or chosen_art not in cur_user_preferences:
-                print "ADDING CHOSEN ART", chosen_art
-                user_cache.update_preferences(set([chosen_art]), url_slug)
-                new_artist = chosen_art
-                new = 1
-            else:
-                new = 0
-                # user_cache.search_results = list()
+    if request.form.get("selectartist"):
+        chosen_art = request.form.get("selectartist")
+        cur_user_preferences = user_cache.retrieve_preferences(url_slug)
 
-    elif suggested_pl_butt.validate_on_submit():
+        if not cur_user_preferences or chosen_art not in cur_user_preferences:
+            print "ADDING CHOSEN ART", chosen_art
+            user_cache.update_preferences(set([chosen_art]), url_slug)
+            new_artist = chosen_art
+            new = 1
+        else:
+            new = 0
+        user_cache.search_results = list()
+
+    if suggested_pl_butt.validate_on_submit():
         if request.form.get("add_button"):
             new_artist = ', '.join(suggested_artists)
             user_cache.update_preferences(set([chosen_art]), url_slug)
