@@ -133,6 +133,8 @@ def get_contributors(festivalId):
                                         'variety': u[6],
                                         'adventurousness': u[7]} for u in d2}
             print (contributors)
+            c_names = [c for c in contributors]
+            contributors['c_names'] = c_names
             all_ready = 1
             for contributor in contributors:
                 if contributors[contributor]['ready'] == 0:
@@ -140,7 +142,6 @@ def get_contributors(festivalId):
                     print ("a contributor isn't ready")
                     break
             all_users.update({'contributors': contributors, 'all_ready': all_ready})
-            print (all_users)
     print ('contributors retrieved from database: {}'.format(all_users))
     return all_users
 
