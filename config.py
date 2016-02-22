@@ -24,7 +24,12 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(minutes=60)
     },
 }
+
 IS_ASYNC = True
+
+CACHE_TYPE = 'redis'
+CACHE_REDIS_HOST = 'localhost'
+CACHE_REDIS_PORT = 6379
 
 
 class BaseConfig(object):

@@ -259,3 +259,72 @@ def delete_expired_session():
                 delete_session.retry(exc=e, countdown=5)
         print "{} sessions have been deleted.".format(len(all_sessions))
     return
+
+def save_artist_preferences(user_id, artist_list, festival_id=None):
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+
+        user_artist_list = []
+        for artist in artist_list:
+            user_artist_list.append([user_id, artist])
+
+        if festival_id is None:
+            q = "INSERT IGNORE INTO festivalArtists\
+                (userId, artist) values (%s, %s)"
+            try:
+                cursor.executemany(q, user_artist_list)
+                connection.commit()
+            except:
+                connection.rollback()
+
+        else:
+            values = (user_id, artist_list, festival_id)
+            q = ("INSERT IGNORE INTO festivalArtists\
+            (userId, artist, festivalId) VALUES (%s, %s, %s)", values)
+            cursor.execute("SELECT (1) FROM festivalArtists WHERE artist=%s\
+                            AND festivalId=%s", (artist_list[0],
+                                                 festivalId))
+            already_here = cursor.fetchall()
+            if already_here:
+                print 'if in here, get out.'
+                return True
+            else: 
+                cursor.execute(q)
+                connection.commit()
+    print ('saved user preferences to database')
+    return
+
+
+def add_user(user_id):
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+        cursor.execute("INSERT IGNORE INTO users (userId) VALUES (%s)", (user_id,))
+        connection.commit()
+        print ('saved user to the database')
+    return
+
+
+def retrieve_preferences(user_id, festival_id=None):
+    key_prefix = '{}-{}.artist_preferences'.format(user_id, festival_id)
+    with app.app_context():
+        if festival_id:
+            festival_id = int(festival_id)
+        connection = mysql.connect()
+        cursor = connection.cursor()
+        print "user_id", user_id
+        print "festival_id", festival_id
+        if not festival_id:
+            print 'ATTEMPTING TO RETRIEVE PREFERENCES WITH USER_ID'
+            cursor.execute('SELECT DISTINCT artist FROM festivalArtists WHERE\
+                            userId=%s', (user_id,))
+            artist_preferences = [artist[0] for artist in cursor.fetchall()]
+        else:
+            print 'ATTEMPTING TO RETRIEVE PREFERENCES WITH USER_ID and FESTIVAL_ID'
+            cursor.execute('SELECT DISTINCT artist FROM festivalArtists WHERE\
+                            userId=%s OR festivalId=%s', (user_id, festival_id,))
+            artist_preferences = [artist[0] for artist in cursor.fetchall()]
+    print artist_preferences
+    return artist_preferences
+
