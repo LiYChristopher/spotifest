@@ -12,8 +12,6 @@ from flask.ext.login import login_user, logout_user, login_required, UserMixin
 from flask.ext.wtf import Form
 from flask import render_template, request, redirect, url_for, session, flash
 
-<<<<<<< HEAD
-=======
 from datetime import datetime
 import redis
 import spotipy
@@ -89,13 +87,16 @@ class UserCache():
         if not isinstance(artists, set):
             raise TypeError('Artist data not a set object.')
         _current_user = str(session.get('user_id'))
+        print "--auth.save_preferences(): _current_user", _current_user
         if not self.artists.get(_current_user):
             self.artists[_current_user] = {}
         self.artists[_current_user][urlSlug] = artists
+        self.display()
         return
 
     def retrieve_preferences(self, urlSlug):
         _current_user = str(session.get('user_id'))
+        self.display()
         if not self.artists.get(_current_user):
             return None
         elif not self.artists[_current_user].get(urlSlug):
@@ -112,12 +113,19 @@ class UserCache():
         print "{} about to be added to cur_preferences".format(artists)
         self.artists[_current_user][urlSlug] = cur_preferences | artists
         print "length after...", len(self.artists[_current_user][urlSlug])
+        self.display()
         return
 
     def delete_preferences(self):
         _current_user = str(session.get('user_id'))
         del self.artists[_current_user]
+        self.display()
         return
+
+    def display(self):
+        print "_"*10, "Cache Log"
+        print "-"*15, "self.artists = {}".format(self.artists)
+        print "_"*15, "self.organizer = {}".format(self.organizer)
 
 
 def festify_logout():
@@ -228,7 +236,6 @@ def home(config=BaseConfig):
 def join(url_slug):
     user_cache.time = datetime.now()
 
-    print ("URLSLUG HERE IS {}".format(url_slug))
     user_cache.cur_festival = db.get_info_from_database(url_slug)
 
     # save current user in the db
@@ -239,9 +246,9 @@ def join(url_slug):
     current_user = load_user(_user).access
     s = spotipy.Spotify(auth=current_user)
     processor = helpers.AsyncAdapter(app)
-    artist_list = processor.get_user_preferences(s)
 
-    # save preferences to database
+    # If user has preferences, load them from DB
+    artist_list = processor.get_user_preferences(s)
     db.save_artist_preferences(_user, artist_list)
 
     if not user_cache.cur_festival:
@@ -249,7 +256,7 @@ def join(url_slug):
                " the code and try again.").format(url_slug))
         return redirect(url_for('home'))
     organizer = user_cache.cur_festival[2]
-    
+
     if organizer != _user:
         try:
             db.save_contributor(user_cache.cur_festival[0], _user)
@@ -257,10 +264,6 @@ def join(url_slug):
             print ("Contributor {} is already in the database.".format(_user))
     else:
         flash("Welcome back to your own festival!")
-    
-    if user_cache.time:
-        time_taken = datetime.now() - user_cache.time 
-    flash (str(time_taken))
 
     return redirect(url_for('festival', url_slug=url_slug))
 
@@ -276,32 +279,26 @@ def new():
     s = spotipy.Spotify(auth=current_user.access)
 
     processor = helpers.AsyncAdapter(app)
-<<<<<<< HEAD
+
     user_cache.save_preferences(processor.get_user_preferences(s), new_url_slug)
     artists = user_cache.retrieve_preferences(new_url_slug)
 
-    if user_cache.retrieve_preferences(new_url_slug):
-        processor.populate_catalog(artists, 3, catalog=new_catalog)
-
-    db.save_to_database(None, current_user.id, None, None,
+    # Save festival
+    db.save_festival(None, current_user.id, None, None,
                         new_catalog.id, new_url_slug)
 
     current_festival = db.get_info_from_database(new_url_slug)
+
+    # If user has preferences, load them from DB
+    artist_list = processor.get_user_preferences(s)
+    db.save_artist_preferences(current_user.id, artist_list)      
+
     festivalId = current_festival[0]
     userId = current_festival[2]
     if app.config['IS_ASYNC']:
         db.save_contributor.apply_async(args=(festivalId, userId),
                                         kwargs={'organizer': 1, 'ready': 1})
     else:
-
-        artist_list = processor.get_user_preferences(s)
-
-        # save preferences to database
-        db.save_artist_preferences(current_user.id, artist_list)
-
-        db.save_to_database(None, current_user.id, None, None,
-                            new_catalog.id, new_url_slug)
-
         user_cache.cur_festival = db.get_info_from_database(urlSlug=new_url_slug)
         print "CURRENT FESTIVAL in NEW", user_cache.cur_festival
 
@@ -334,7 +331,6 @@ def festival(url_slug):
     organizer = user_cache.cur_festival[2]
 
     _user = session.get('user_id')
-    user_cache.artists = db.retrieve_preferences(_user, user_cache.cur_festival[0])
     is_org = True
     # check if organizer & if so, find name
     if organizer != _user:
@@ -358,8 +354,8 @@ def festival(url_slug):
     new = None
     new_artist = None
 
-    current_user = load_user(session.get('user_id')).access
-    s = spotipy.Spotify(auth=current_user)
+    current_user = load_user(session.get('user_id'))
+    s = spotipy.Spotify(auth=current_user.access)
     try:
         if not user_cache.retrieve_preferences(url_slug):
             processor = helpers.AsyncAdapter(app)
@@ -368,7 +364,6 @@ def festival(url_slug):
         else:
             print "CURRENT NUM of ARTISTS", len(user_cache.retrieve_preferences(url_slug))
         processor = helpers.AsyncAdapter(app)
-        print (user_cache.artists)
     except:
         print ("No artists followed found in the user's Spotify account.")
 
@@ -391,6 +386,7 @@ def festival(url_slug):
             cur_user_preferences = user_cache.retrieve_preferences(url_slug)
             if chosen_art not in cur_user_preferences:
                 print "ADDING CHOSEN ART", chosen_art
+                db.save_artist_preferences(current_user.id, [chosen_art], current_festival[0])
                 user_cache.update_preferences(set([chosen_art]), url_slug)
                 new_artist = chosen_art
                 new = 1
@@ -402,12 +398,8 @@ def festival(url_slug):
         if request.form.get("add_button"):
             new_artist = ', '.join(suggested_artists)
             user_cache.update_preferences(set([chosen_art]), url_slug)
-            db.save_artist_preferences(_user, chosen_art, user_cache.cur_festival[0])
+            db.save_artist_preferences(_user, [chosen_art], user_cache.cur_festival[0])
             new = True
-
-    if user_cache.time:
-        time_taken = datetime.now() - user_cache.time 
-    flash (str(time_taken))
 
     return render_template('festival.html', url_slug=url_slug,
                            s_results=user_cache.search_results,
@@ -520,10 +512,6 @@ def results(url_slug):
                                                playlist_url, url_slug])
             else:
                 db.update_festival(name, id_playlist, playlist_url, url_slug)
-
-    if user_cache.time:
-        time_taken = datetime.now() - user_cache.time 
-    flash (str(time_taken))
 
     return render_template('results.html', playlist_url=playlist_url)
 

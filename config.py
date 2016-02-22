@@ -51,6 +51,6 @@ class BaseConfig(object):
         raise Exception('Credentials could not be configured. See credentials.txt.')
 
 MYSQL_DATABASE_USER = 'root'
-MYSQL_DATABASE_DB = 'spotifest'
+MYSQL_DATABASE_DB = 'spotifest2'
 MYSQL_DATABASE_HOST = 'localhost'
 MYSQL_DATABASE_PASSWORD = BaseConfig.MYSQL_PASSWORD

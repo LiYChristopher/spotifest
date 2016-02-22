@@ -16,6 +16,13 @@
 
         <div class="inner cover">
 
+        <!-- Search - flash block -->
+            {% block flash %}
+
+                {{ super() }}
+
+            {% endblock %}
+
         <!-- Organizer avatar and contributor avatar -->
 
         <h1>{{ all_users['organizer']['userId'] }}'s
@@ -31,8 +38,9 @@
                <!--<h3>Contributors</h3>-->
                 <div id='cover-container'>
                 {% for contributor in all_users['contributors'] %}
+                    {{ contributor }}
                     <div id='login-form text'>
-                        <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ contributor }} &size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
+                        <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ contributor }}&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
                         {% if all_users['contributors'][contributor]['ready'] == 1%}
                             <p>...is set!</p>
                         {% endif %}
@@ -43,6 +51,7 @@
             </div>
 
             <!-- Parameters panel -->
+
             <div class="col-sm-4">
 
             <p class="lead">
@@ -134,13 +143,6 @@
 
                     </form>
 
-                <!-- Search - flash block -->
-                {% block flash %}
-
-                    {{ super() }}
-
-                {% endblock %}
-
                 {% elif s_results == false %}
                     <p class="lead">No artists found with the name {{ new_artist }} !</p>
                 {% endif %}
@@ -148,7 +150,7 @@
                 {% if new  == 1 %}
                     <h6 color="green" border=1>{{ new_artist }} added!</h6>
                 {% elif new == 0 %}
-                    <h6 color="red"  border=1>{{ new_artist }} is already here.</h6>
+                    <h6 color="red"  border=1>Artist already in your preferences.</h6>
                 {% endif %}
 
         </div> 

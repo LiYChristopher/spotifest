@@ -1,5 +1,5 @@
-CREATE DATABASE festify2;
-use festify2;
+CREATE DATABASE spotifest2;
+use spotifest2;
 
 CREATE TABLE sessions (
     festivalId int(10) NOT NULL AUTO_INCREMENT,
@@ -39,5 +39,6 @@ CREATE TABLE festivalArtists (
     festivalId int(10),
     CONSTRAINT FOREIGN KEY (userId) REFERENCES users(userId)
         ON DELETE CASCADE,
-    CONSTRAINT FOREIGN KEY (festivalId) REFERENCES sessions(festivalId)
+    CONSTRAINT FOREIGN KEY (festivalId) REFERENCES sessions(festivalId),
+    UNIQUE (userId, artist)
 );

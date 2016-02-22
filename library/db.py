@@ -5,7 +5,7 @@ from pyechonest.catalog import Catalog
 
 
 @celery.task(name='save_festival')
-def save_to_database(festivalName, userId, playlistId,
+def save_festival(festivalName, userId, playlistId,
                      playlistURL, catalogId, urlSlug):
     '''
     saves infromation the data base.
@@ -265,9 +265,7 @@ def save_artist_preferences(user_id, artist_list, festival_id=None):
         connection = mysql.connect()
         cursor = connection.cursor()
 
-        user_artist_list = []
-        for artist in artist_list:
-            user_artist_list.append([user_id, artist])
+        user_artist_list = [[user_id, artist] for artist in artist_list]
 
         if festival_id is None:
             q = "INSERT IGNORE INTO festivalArtists\
@@ -280,17 +278,17 @@ def save_artist_preferences(user_id, artist_list, festival_id=None):
 
         else:
             values = (user_id, artist_list, festival_id)
-            q = ("INSERT IGNORE INTO festivalArtists\
-            (userId, artist, festivalId) VALUES (%s, %s, %s)", values)
+            q = "INSERT IGNORE INTO festivalArtists\
+            (userId, artist, festivalId) VALUES (%s, %s, %s)"
             cursor.execute("SELECT (1) FROM festivalArtists WHERE artist=%s\
                             AND festivalId=%s", (artist_list[0],
-                                                 festivalId))
+                                                 festival_id))
             already_here = cursor.fetchall()
             if already_here:
                 print 'if in here, get out.'
                 return True
             else: 
-                cursor.execute(q)
+                cursor.execute(q, values)
                 connection.commit()
     print ('saved user preferences to database')
     return
@@ -327,4 +325,25 @@ def retrieve_preferences(user_id, festival_id=None):
             artist_preferences = [artist[0] for artist in cursor.fetchall()]
     print artist_preferences
     return artist_preferences
+
+
+def preferences_exist(user_id):
+    ''' Returns 0 or 1, expressing whether or not a user
+        has preferences stored in the database. '''
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+        cursor.execute("SELECT CASE WHEN COUNT(festivalArtists.userId) > 0 then 1 else 0 end\
+                        from festivalArtists WHERE userId=%s", (user_id,))
+        exists = cursor.fetchall()[0][0]
+        return exists
+
+def adjust_preferences(new_preferences, user_id):
+    ''' '''
+    # saved_pref = retrieve_preferences()
+    # for artist in saved_pref
+    #     if artist not in new_preferences:
+            # set up dB connection
+            # cursor.execute('DELETE FROM festivalArtists WHERE artist=%s AND userId=%s', (artist, userId)) 
+    # return
 
