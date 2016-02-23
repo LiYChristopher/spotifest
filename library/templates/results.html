@@ -1,13 +1,15 @@
 {% extends 'base.html'%}
 <!-- standard body block implicitly imported -->
 
-
-<!--Block nav -->
+{% block body %}
+<body class='about-body'>
+             
+<!-- Block Nav-->
+<div class='cover-container'>    
 {% block nav %}
-    
-    {{ super() }}
-
+    {{ super() }}                   
 {% endblock %}
+
 
 {% block content %}
 <div class="inner cover">
@@ -33,10 +35,11 @@
 </div>
 {% endblock %} <!-- content -->
 
-
-<!-- Block footer -->
 {% block footer %}
-
     {{ super() }}
-
 {% endblock %}
+</div>
+
+</body>
+{% endblock %}
+

@@ -118,7 +118,46 @@ p {
   font-weight: 100;
 }
 
+/* Extra small settings for About page */
+@media only screen and (max-width : 480px) {
+  .about-heading {
+    text-shadow: none;
+    color:  #2ebd59;
+    font-size: 24px;
+  }
+  .about-text {
+    color: black;
+    font-style: normal;
+    font-weight: 400;
+    text-shadow: none;
+  }
+  .masthead-brand {
+    color: #fff;
+  }
+  .about-team {
+    color: #fff;
+    background-color: black;
+  }
+}
 
+.about-text {
+  color: black;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+}
+.about-team {
+  background-color: black;
+}
+
+.about-heading {
+  color: #2ebd59;
+  text-shadow: none;
+}
+
+.about-body {
+  background-image: none;
+}  
 
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
@@ -353,8 +392,6 @@ p {
 
 .hot-links {
   position: relative;
-  border: 3px solid #5cb85c;
-  background: black;
   text-align: left;
   padding-left: 10px;
   padding-right: 10px;
@@ -418,32 +455,9 @@ p {
   width: 100%;
 }
 
-.about-heading {
-  color: #2ebd59;
-  text-shadow: none;
-}
-
-.about-body {
-  background-image: none;
-}
-
 .marginless {
   margin-right: 0;
   margin-left: 0;
 }
-
-
-.about-text {
-  color: black;
-  font-style: normal;
-  font-weight: 400;
-  text-shadow: none;
-}
-.about-team {
-  background-color: black;
-}
-
-
-
 
 /* */

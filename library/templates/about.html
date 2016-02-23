@@ -24,7 +24,7 @@
 	<div class='row marginless' style='background-color:white'>
 		<!-- What is Spotifest? -->
 		
-		<div class='col-md-6'>
+		<div class='col-md-6 col-sm-6'>
 			<div class='inner'>
 			<h3 class='about-heading'>What is Spotifest?</h3>
 			<p class='about-text'>
@@ -36,15 +36,14 @@
 			</div>
 		</div>
 		<!-- How does it work? -->
-		<div class='col-md-6'>
+		<div class='col-md-6 col-sm-6'>
 			<div class='inner'>
 			<h3 class='about-heading'>How does it work?</h3>
-			<ul style>
-				<li><p class='about-text'>Everytime you create a festival, we gather all the artists you listen to and follow on Spotify to serve as the basis of your lineup. </p></li>
-				<li><p class='about-text'>If you want, you can tell your friends to help out, by providing them your festival ID, and we'll gather their listening preferences as well. </p></li>
-				<li><p class='about-text'>You and everyone contributing to your festival decide how the festival will turn out by adjusting a set of parameters, based on metrics and analysis done by music data and technology firm Echonest. These settings can make the difference between an electronic dance festival and a bluegrass and folk festival.</p></li>
-				<li><p class='about-text'>We use the Echonest and Spotify APIs to algorithmically stitch together a unique playlist based on all the data you and your friends have provided, which will be available to you to save and listen to either on the browser or on the Spotify desktop client. </p></li>
-			</ul>
+			
+			<p class='about-text'>Everytime you create a festival, we gather all the artists you listen to and follow on Spotify to serve as the basis of your lineup. </p>
+			<p class='about-text'>If you want, you can tell your friends to help out, by providing them your festival ID, and we'll gather their listening preferences as well. </p>
+			<p class='about-text'>You and everyone contributing to your festival decide how the festival will turn out by adjusting a set of parameters, based on metrics and analysis done by music data and technology firm Echonest. These settings can make the difference between an electronic dance festival and a bluegrass and folk festival.</p>
+			<p class='about-text'>We use the Echonest and Spotify APIs to algorithmically stitch together a unique playlist based on all the data you and your friends have provided, which will be available to you to save and listen to either on the browser or on the Spotify desktop client. </p>
 			</div>
 		</div>			
 	</div>
@@ -85,14 +84,13 @@
 		</div>						
 	</div>
 	<!-- Block footer-->
+	{% endblock %} <!-- content -->
 	<div class='about-team'>
 
-{% endblock %} <!-- content -->
+	{% block footer %}
+		{{ super() }}
+	{% endblock %}
 
-{% block footer %}
-	{{ super() }}
-{% endblock %}
-
-</div>
+	</div>
 </body>
 {% endblock %}
