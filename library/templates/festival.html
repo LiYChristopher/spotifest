@@ -50,7 +50,7 @@
           <form action="{{ url_for('results', url_slug=url_slug) }}" method="post">
             <fieldset>
                 {{ params_form.name.label }} <br>
-                {{ params_form.name (id="festival-name", class_="form_control")}} <br>
+                {{ params_form.name (id="festival-name", class_="text-center form-control")}} <br>
             {% else %}
           <form action="{{ url_for('update_parameters', url_slug=url_slug) }}" method="post">
             <fieldset>
