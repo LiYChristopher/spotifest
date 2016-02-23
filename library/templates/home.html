@@ -9,10 +9,6 @@
     </div>
 {% endblock %}
 
-<!-- flash messages -->
-{% block flash %}
-    {{ super() }}
-{% endblock %}
 
 {% block content %}
 <div class="inner cover">
@@ -26,6 +22,10 @@
 
     {% else %}
     <!-- Logged In - Content Center -->
+        <!-- flash messages -->
+        {% block flash %}
+            {{ super() }}
+        {% endblock %}
         <div class="flex-container flex-column">
             <div class="flex-center">
                 <h1 class="cover-heading">Let's start your ideal Festival</h1>
@@ -42,8 +42,12 @@
                     <li> <a href="{{  url_for('festival', url_slug=user_festivals['contributor'][festival_id]['url_slug']) }}"> {{ user_festivals['contributor']['user_id']}}'s {{ user_festivals['contributor'][festival_id]['festival_name'] }}</a>
                 {% endfor %}</ul>
                 {% else %}
-                    <h1>Did you know?</h1>
+                <div class="panel panel-default" style='background:transparent'>
+                    <div class="inner">
+                    <h3>Did you know?</h3>
                     You can organize a festival playlist with your friends. Create a festival and spread the word to anyone you want!
+                    </div>
+                </div>
                 {% endif %}
 
             </div>
@@ -79,18 +83,16 @@
 
     {% endif %}
 
-
-
-
+</div>
 <!-- Footer -->
+<div class="mastfoot">
 {% block footer %}
-    <div class="mastfoot">
-        {{ super() }}
-    </div>
-{% endblock %}  
-           
+    {{ super() }}
+{% endblock %} 
+</div> 
+
 
         
 {% endblock %}
 
-
+ 

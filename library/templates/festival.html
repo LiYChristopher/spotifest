@@ -1,20 +1,26 @@
 {% extends 'base.html' %}
 <!-- standard body block implicitly imported -->
 
-<!-- Navblock -->
+{% block body %}
+<body class='about-body'>
+             
+<!-- Block Nav-->
+<div class='cover-container'>    
 {% block nav %}
-<div class="masthead clearfix">
-    {{ super() }}
-</div>
+    {{ super() }}                   
 {% endblock %}
+
 
 {% block content %}
 <div class="inner cover">
 
     <!-- Organizer avatar and contributor avatar -->
-    <h1>{{ all_users['organizer']['userId'] }}'s
+    <h3>{{ all_users['organizer']['userId'] }}'s
         {% if is_org == true %} festival 
-        {% else %} {{ festival_name }} {% endif %}</h1>
+        {% else %} {{ festival_name }} {% endif %}</h3>
+    <h6>Invite others to your festival by sharing this festival ID:
+        <span style='color:#ffb366'>{{ url_slug }}</span>
+    </h6>
     <div class ='row'>
 
         <!-- Contributors -->
@@ -44,7 +50,7 @@
           <form action="{{ url_for('results', url_slug=url_slug) }}" method="post">
             <fieldset>
                 {{ params_form.name.label }} <br>
-                {{ params_form.name (id="festival-name", class_="form_control")}} <br>
+                {{ params_form.name (id="festival-name", class_="text-center form-control")}} <br>
             {% else %}
           <form action="{{ url_for('update_parameters', url_slug=url_slug) }}" method="post">
             <fieldset>
@@ -145,7 +151,8 @@
                 <h6 color="red"  border=1>{{ new_artist }} is already here.</h6>
             {% endif %}
 
-    </div> 
+        </div> 
+    </div>
     <!--
         {% if artists %}
             <h3>These artists grace you with their presence:</h3>
@@ -161,13 +168,13 @@
             <h3> We haven't been able to find any artists yet! <br>
         {% endif %}
     -->
+    {% endblock %} <!-- content -->
 
 </div>
-{% endblock %} <!-- content -->
-
-<!-- Block Footer-->
-{% block footer %}
 <div class="mastfoot">
-    {{ super() }}
-</div>
+    {% block footer %}
+        {{ super() }}
+    {% endblock %}
+</div> 
+</body>
 {% endblock %}
