@@ -117,7 +117,7 @@
             {% endblock %}
 
         <!-- Parameters panel -->
-        <p class="lead">
+            <p class="lead">
             {% if is_org == true %}
           <form action="{{ url_for('results', url_slug=url_slug) }}" method="post">
             <fieldset>
@@ -205,7 +205,7 @@
     {% if s_results %}
         <ul id="selectartist" class="dropdown" style="width:200px;color:black;">
             <div style="clear:both;">
-            <li><input type="button" value=" Found artists"></input>
+            <li><input type="button" class="btn btn-success btn-lg" value="Found artists"></input>
                 <ul><form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
             {% for artist in s_results %}
                 <li><input name="selectartist" type="submit" value="{{artist}}"></input></li>
