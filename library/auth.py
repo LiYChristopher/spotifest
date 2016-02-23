@@ -337,8 +337,8 @@ def festival(url_slug):
 
     elif suggested_pl_butt.validate_on_submit():
         if request.form.get("add_button"):
-            new_artist = ', '.join(suggested_artists)
-            user_cache.update_preferences(set([chosen_art]), url_slug)
+            new_artist = ', '.join(helpers.suggested_artists)
+            user_cache.update_preferences(set(new_artist), url_slug)
             new = True
 
     return render_template('festival.html', url_slug=url_slug,
