@@ -28,18 +28,22 @@ def save_to_database(festivalName, userId, playlistId,
 
 
 @celery.task(name='update_festival', ignore_result=True)
-def update_festival(festivalName, playlistId, playlistURL, urlSlug):
-    values = (festivalName, playlistId, playlistURL, urlSlug)
+def update_festival(festivalName, urlSlug, playlistId=None, playlistURL=None):
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
-        cursor.execute("UPDATE sessions SET festivalName=%s, playlistId=%s,\
+        if playlistId and playlistURL:
+            values = (festivalName, playlistId, playlistURL, urlSlug)
+            cursor.execute("UPDATE sessions SET festivalName=%s, playlistId=%s,\
                         playlistURL=%s WHERE urlSlug=%s",
                         (festivalName, playlistId, playlistURL, urlSlug))
+        else:
+            values = (festivalName, urlSlug)
+            cursor.execute("UPDATE sessions SET festivalName=%s, WHERE urlSlug=%s",
+                        (festivalName, urlSlug))
         connection.commit()
         print 'saved to database'
     return
-
 
 def update_parameters(festivalId, userId, hotttnesss, danceability,
                       energy, variety, advent):
@@ -50,10 +54,10 @@ def update_parameters(festivalId, userId, hotttnesss, danceability,
     energy = float(energy)
     variety = float(variety)
     advent = float(advent)
+    values = (hotttnesss, danceability, energy, variety, advent, festivalId, userId)
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
-        values = (hotttnesss, danceability, energy, variety, advent, festivalId, userId)
         print "THESE ARE VALUES", values
         cursor.execute("UPDATE contributors SET hotness=%s, danceability=%s, energy=%s,\
                         variety=%s, adventurousness=%s, ready=1 WHERE festivalId=%s AND userId=%s", values)

@@ -219,11 +219,7 @@
         <ul id="selectartist" class="dropdown" style="width:200px;color:black;">
             <div style="clear:both;">
             <li><input type="button" class="btn btn-success btn-lg" value="Found artists"></input>
-<<<<<<< HEAD
                 <ul><form id="selectartist" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
-=======
-                <ul><form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
->>>>>>> finished?
             {% for artist in s_results %}
                 <li><input name="selectartist" type="submit" value="{{artist}}"></input></li>
             {% endfor %}
