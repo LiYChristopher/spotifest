@@ -185,7 +185,7 @@
     <form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
         {{ suggested_pl_butt.hidden_tag() }}
         {{ suggested_pl_butt.add_button(class_="btn btn-success") }}
-
+    </form>
     <p class="login-page">
         <!-- Search messages  -->
         {% if s_results == false %}
@@ -196,17 +196,19 @@
             <span color="red">{{ new_artist }} is already here.</span>
         {% endif %}
     </p>
-        {{ searchform.hidden_tag() }}
+        
         <div style="display:inline-block;">
+            <form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
+            {{ searchform.hidden_tag() }}
             {{ searchform.artist_search(role="form", class_="form-inline", style="color:black;")}}
             {{ searchform.submit_search(id="search-artist", class_="btn btn-success") }}
-   </form>
+            </form>
     <p>
     {% if s_results %}
         <ul id="selectartist" class="dropdown" style="width:200px;color:black;">
             <div style="clear:both;">
             <li><input type="button" class="btn btn-success btn-lg" value="Found artists"></input>
-                <ul><form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
+                <ul><form id="selectartist" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
             {% for artist in s_results %}
                 <li><input name="selectartist" type="submit" value="{{artist}}"></input></li>
             {% endfor %}
@@ -214,9 +216,9 @@
             </div>
         </ul>
     {% endif %}     
-
-    </p>
     </form>
+    </p>
+    
  
           
 
