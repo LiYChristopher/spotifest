@@ -10,8 +10,6 @@ from flask import session, flash
 
 from flask.ext.login import login_user, logout_user, login_required, UserMixin
 from flask.ext.wtf import Form
-
-
 from flask import render_template, request, redirect, url_for, session, flash
 
 import spotipy
@@ -101,7 +99,7 @@ class UserCache():
             raise TypeError('Artist data not a set object.')
         cur_preferences = self.artists[_current_user][urlSlug]
         print "length before...", len(cur_preferences)
-        print "{} about to be added to cur_preferences".format(artists)
+        print "{} about to be added to cur_preferences..".format(artists)
         self.artists[_current_user][urlSlug] = cur_preferences | artists
         print "length after...", len(self.artists[_current_user][urlSlug])
         return
@@ -319,17 +317,15 @@ def festival(url_slug):
     params_form = frontend_helpers.ParamsForm()
 
     if searchform.validate_on_submit():
-        if request.form.get("submit_search"):
-            s_artist = searchform.artist_search.data
-            user_cache.search_results = helpers.search_artist_echonest(s_artist)
-            art_select.artist_display.choices = user_cache.search_results
-            print (user_cache.search_results)
-
-
+        s_artist = searchform.artist_search.data
+        user_cache.search_results = helpers.search_artist_echonest(s_artist)
+        art_select.artist_display.choices = user_cache.search_results
+        print (user_cache.search_results)
 
     if request.form.get("selectartist"):
         chosen_art = request.form.get("selectartist")
         cur_user_preferences = user_cache.retrieve_preferences(url_slug)
+        new_artist = chosen_art
 
         if not cur_user_preferences or chosen_art not in cur_user_preferences:
             print "ADDING CHOSEN ART", chosen_art
@@ -372,13 +368,17 @@ def update_parameters(url_slug):
     processor = helpers.AsyncAdapter(app)
     processor.populate_catalog(artists, 3, catalog=catalog)
 
-    festivalId = db.get_info_from_database(url_slug)[0]
+    get_festival = db.get_info_from_database(url_slug)
+    festivalId = get_festival[0]
+    festival_org = get_festival[2]
     h = request.form.get('hotttnesss')
     d = request.form.get('danceability')
     e = request.form.get('energy')
     v = request.form.get('variety')
     a = request.form.get('adventurousness')
-    db.update_parameters(festivalId, _user, h, d, e, v, a)
+    if _user == festival_org:
+        name = request.form.get('name')
+        db.update_parameters(festivalId, _user, h, d, e, v, a)
     flash("You've pitched the perfect festival to the organizer." +
           " Now we wait.")
     return redirect(url_for('festival', url_slug=url_slug))
@@ -450,10 +450,10 @@ def results(url_slug):
             playlist_url = ('https://embed.spotify.com/?uri=spotify:user:'
                             '{}:playlist:{}'.format(u_id, id_pl))
             if app.config['IS_ASYNC'] is True:
-                db.update_festival.apply_async(args=[name, id_playlist,
-                                               playlist_url, url_slug])
+                db.update_festival.apply_async(args=[name, url_slug, id_playlist,
+                                               playlist_url])
             else:
-                db.update_festival(name, id_playlist, playlist_url, url_slug)
+                db.update_festival(name, url_slug, id_playlist, playlist_url)
             return render_template('results.html', playlist_url=playlist_url,
                                    enough_data=enough_data)
 
