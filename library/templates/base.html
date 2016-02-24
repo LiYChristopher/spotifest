@@ -24,7 +24,6 @@
       <link rel="stylesheet" type="text/css" href="/static/stylesheet.css">
       <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
       <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-      <script src="/static/ie-emulation-modes-warning.js"></script>
 
       <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
       <!--[if lt IE 9]>
@@ -69,17 +68,17 @@
 
           {% endblock %} <!-- flash -->
 
-        {% endblock %} <!-- content -->
-
-
         {% block footer %}
             <div class="inner">
                 <p style="color:#2EBD59">Spotifest's code on <a href="https://github.com/LiYChristopher/festify">GitHub</a>.</p>
+                <p> Powered by Spotify and Echonest. </p>
             </div>
         {% endblock %}
 
-  </div>
-  </div>
+        {% endblock %} <!-- content -->
+
+      </div>
+    </div>
   </div>
 
 {% endblock %}
@@ -88,6 +87,7 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/static/ie-emulation-modes-warning.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}" ></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
