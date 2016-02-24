@@ -288,11 +288,11 @@ def festival(url_slug):
         all_users = db.get_contributors(current_festival[0])
         if all_users is None:
             flash(("Festival '{}' is having problems. Please check with the "
-                "organizer. Try again later.").format(url_slug))
+                "organizer. Try again later or create a new festival!").format(url_slug))
             return redirect(url_for('home'))
     except:
         flash(("Festival '{}' is having problems. Please check with the "
-                "organizer. Try again later.").format(url_slug))
+                "organizer. Try again later or create a new festival!.").format(url_slug))
         return redirect(url_for('home'))
 
     new = None
@@ -315,6 +315,10 @@ def festival(url_slug):
     suggested_pl_butt = frontend_helpers.SuggestedPlaylistButton()
     art_select = frontend_helpers.ArtistSelect(request.form)
     params_form = frontend_helpers.ParamsForm()
+
+    saved_params = db.get_parameters(_user, url_slug)
+    frontend_helpers.populate_params(params_form, saved_params)
+
 
     if searchform.validate_on_submit():
         s_artist = searchform.artist_search.data
@@ -365,8 +369,6 @@ def update_parameters(url_slug):
     catalog_id = current_festival[5]
     catalog = helpers.Catalog(catalog_id)
     artists = user_cache.retrieve_preferences(url_slug)
-    processor = helpers.AsyncAdapter(app)
-    processor.populate_catalog(artists, 3, catalog=catalog)
 
     get_festival = db.get_info_from_database(url_slug)
     festivalId = get_festival[0]
@@ -378,9 +380,17 @@ def update_parameters(url_slug):
     a = request.form.get('adventurousness')
     if _user == festival_org:
         name = request.form.get('name')
-        db.update_parameters(festivalId, _user, h, d, e, v, a)
-    flash("You've pitched the perfect festival to the organizer." +
-          " Now we wait.")
+        db.update_festival(name, url_slug)
+    db.update_parameters(festivalId, _user, h, d, e, v, a)
+
+    if artists:
+        processor = helpers.AsyncAdapter(app)
+        processor.populate_catalog(artists, 3, catalog=catalog)
+        flash_message = ("You've pitched the perfect festival to the organizer." +
+                        " Now we wait.")
+    else:
+        flash_message = "You haven't contributed artists, but your style is pitched!"
+    flash(flash_message)
     return redirect(url_for('festival', url_slug=url_slug))
 
 

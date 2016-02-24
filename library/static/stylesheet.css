@@ -190,6 +190,11 @@ p {
   padding: 30px;
 }
 
+/* to the front */
+.front {
+  z-index: 1000;
+}
+
 /*
  * Header
  */
@@ -257,6 +262,7 @@ p {
 .mastfoot {
   color: #999; /* IE8 proofing */
   color: #5CB85C;
+  z-index: 10;
 }
 
 
@@ -269,6 +275,7 @@ p {
   .masthead {
     position: fixed;
     top: 0;
+    z-index: 10;
   }
   .mastfoot {
     position: fixed;
@@ -349,10 +356,6 @@ p {
 }
 
 
-
-
-
-
 #festival-name {
     color:black;
     margin-bottom: 10px;
@@ -389,8 +392,7 @@ p {
 
 .flex-center {
   order: 0;
-  max-width: 300px;
-  min-width: 300px;
+  z-index: 900;
   margin-right: auto;
   margin-left: auto;
   /* border-style: solid;*/
@@ -412,6 +414,14 @@ p {
   padding-top: 5px;
   padding-bottom: 5px;
   font-weight: bold;
+}
+
+.params-box {
+  max-width: 200px;
+}
+
+.dark-transparent {
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .over-top {
@@ -475,7 +485,7 @@ p {
 }
 
 
-.dropdown { margin: 0; padding: 0; list-style: none; width:150px; z-index: 1000;
+.dropdown { margin: 0; padding: 0; list-style: none; width:150px;
   }
 ul.dropdown                         { position: relative;}
 ul.dropdown li                      { margin: 0; padding: 0; list-style: none; margin: 0; padding: 0;  float: left; zoom: 1; }

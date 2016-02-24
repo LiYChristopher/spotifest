@@ -65,6 +65,34 @@ def update_parameters(festivalId, userId, hotttnesss, danceability,
         print "updated settings for user."
     return
 
+def get_parameters(user_id, url_slug):
+    '''
+    return a list with all the saved parameters
+    for a certain urlSlug
+    '''
+    print "URL SLUG IS {}".format(url_slug)
+    with app.app_context():
+        connection = mysql.connect()
+        cursor = connection.cursor()
+        cursor.execute("SELECT c.hotness, c.danceability, c.energy, c.variety,"
+            "c.adventurousness FROM contributors as c INNER JOIN sessions as s on "
+            "c.festivalId = s.festivalId WHERE (c.userId = '{}' and s.urlSlug = '{}')" 
+            .format(user_id, url_slug))
+        data = cursor.fetchall()
+        if not data[0][0]:
+            return None
+        print 'DATA', data
+        print '{}'.format(data[0])
+
+        h = int(data[0][0])
+        d = int(data[0][1])
+        e = int(data[0][2])
+        v = int(data[0][3])
+        a = int(data[0][4])
+
+        values = [h, d, e, v, a]
+        return values
+
 
 @celery.task(name='save_contributor', ignore_result=True)
 def save_contributor(festivalId, userId, ready=0, hotness=None,
@@ -105,22 +133,21 @@ def get_contributors(festivalId):
         print ("Database can't be reached")
         return None
     else:
-        if d1:
-            print ("going into the if now")
-            all_users = {'organizer': {'userId': str(d1[0][1]),
-                                   'ready': int(d1[0][2]),
-                                   'hotness': (d1[0][3]),
-                                   'danceability': (d1[0][4]),
-                                   'energy': (d1[0][5]),
-                                   'variety': (d1[0][6]),
-                                   'adventurousness': (d1[0][7])}}
-            print ("going out of the if now")
-        else:
+        if not d1[0][0]:
             print ("There is no organizer assigned.")
             return None
+        print ("going into the if now")
+        all_users = {'organizer': {'userId': str(d1[0][1]),
+                               'ready': int(d1[0][2]),
+                               'hotness': (d1[0][3]),
+                               'danceability': (d1[0][4]),
+                               'energy': (d1[0][5]),
+                               'variety': (d1[0][6]),
+                               'adventurousness': (d1[0][7])}}
+        print ("going out of the if now")
         print (all_users)
 
-    try:
+    try: #fetching the contributors
         cursor.execute("SELECT * FROM contributors WHERE\
                        (festivalId = %s AND organizer = 0)", (festivalId,))
         d2 = cursor.fetchall()
@@ -128,7 +155,6 @@ def get_contributors(festivalId):
         print ("Database can't be reached..")
         return None
     else:
-        print (d2)
         if d2:
             contributors = {str(u[1]): {'ready': int(u[2]),
                                         'hotness': u[3],
@@ -139,15 +165,16 @@ def get_contributors(festivalId):
             print (contributors)
             c_names = [c for c in contributors]
             contributors['c_names'] = c_names
+            print (c_names)
             all_ready = 1
-            for contributor in contributors:
+            for contributor in contributors['c_names']:
                 if contributors[contributor]['ready'] == 0:
                     all_ready = 0
                     print ("a contributor isn't ready")
                     break
             all_users.update({'contributors': contributors, 'all_ready': all_ready})
-    print ('contributors retrieved from database: {}'.format(all_users))
-    return all_users
+        print ('contributors retrieved from database: {}'.format(all_users))
+        return all_users
 
 
 def get_info_from_database(urlSlug):
@@ -161,7 +188,7 @@ def get_info_from_database(urlSlug):
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
         data = cursor.fetchall()
-        if not data:
+        if not data[0][0]:
             return None
         print 'DATA', data
         festivalId = int(data[0][0])
@@ -175,23 +202,17 @@ def get_info_from_database(urlSlug):
 
         return values
 
-
 def get_user_festivals(user_id):
     '''
     return the festivals the user is involved in
     '''
     connection = mysql.get_db()
     cursor = connection.cursor()
-    query1 = str(("SELECT contributors.festivalId, sessions.festivalName, sessions.userId, "
-            "sessions.urlSlug, contributors.organizer FROM contributors "
-            "INNER JOIN sessions ON contributors.festivalId=sessions.festivalId"
-            "WHERE contributors.userId = %s", (user_id,)))
     query = ("SELECT c.userId, s.festivalId, s.festivalName, s.urlSlug, "
         "c.organizer FROM sessions as s INNER JOIN contributors as c on "
         "s.festivalId = c.festivalId  where s.festivalId = c.festivalId "
         "and c.userId = '{}'".format(user_id))
 
-    print "this is the query {}".format(query)
     cursor.execute(query)
     d = cursor.fetchall()
     print (d)
