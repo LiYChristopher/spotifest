@@ -474,19 +474,6 @@ p {
   margin-left: 0;
 }
 
-.about-text {
-  color: black;
-  font-style: normal;
-  font-weight: 400;
-  text-shadow: none;
-
-}
-
-.about-team {
-  background-color: black;
-}
-
-
 
 .dropdown { margin: 0; padding: 0; list-style: none; width:150px; z-index: 1000;
   }
@@ -518,6 +505,4 @@ ul.dropdown ul li input {
   opacity: 1;
   text-decoration: none;
   border: none;}
-
-
 

@@ -31,17 +31,28 @@
 
 
 
+<!-- Block Nav-->
+ 
+
+
+
+
 <!-- Navblock -->
 {% block nav %}
-    {{ super() }}                   
+<div class="masthead clearfix">
+    {{ super() }} 
+</div>
+
 {% endblock %}
+
+
+
 
 
 {% block content %}
 <div class="inner cover">
 
-
-        <!-- Organizer avatar and contributor avatar -->
+    <!-- Organizer avatar and contributor avatar -->
     <div class='flex-container flex-row' style="height:200px; align-items:flex-end;">
         <div class='flex-left'>
         {% if 'contributors' in all_users %}
@@ -225,9 +236,6 @@
     </div>
 
 
-    
-
-
 
     <!--
         {% if artists %}
@@ -245,13 +253,17 @@
         {% endif %}
     -->
 
-    </div> 
 
+
+
+
+
+    </div> 
 </div>
+{% endblock %}
+
+{% block footer %}
 <div class="mastfoot">
-    {% block footer %}
-        {{ super() }}
-    {% endblock %}
+    {{ super() }}
 </div> 
-</body>
 {% endblock %}
