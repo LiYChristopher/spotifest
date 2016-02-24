@@ -122,7 +122,7 @@
             </ul> -->
         </div>
 
-        <div class="flex-center">
+        <div class="flex-center params-box">
             {% block flash %}
                 {{ super() }}
             {% endblock %}
@@ -140,15 +140,15 @@
             {% endif %}
 
             {{ params_form.danceability.label }}
-            {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)", style="width:100%;")}}
             {{ params_form.hotttnesss.label}}
-            {{ params_form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ params_form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)", style="width:100%;")}}
             {{ params_form.energy.label }}
-            {{ params_form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ params_form.energy(min=0, max=1, oninput="outputUpdate(value)", style="width:100%;")}}
             {{ params_form.variety.label }}
-            {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
+            {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)", style="width:100%;")}}
             {{ params_form.adventurousness.label }}
-            {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)")}} 
+            {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)", style="width:100%;")}} 
 
             {% if not is_org %}
                 {% if all_users['contributors'][user]['ready'] == 0 %}
@@ -171,11 +171,12 @@
                     <form id="login-form" action="{{ url_for('results', url_slug=url_slug) }}" method="post">
                    <p>Not everyone has shared their vibes! Are you sure?"</p> 
                     <p><input id="festivalSubmit" class="btn btn-primary btn-lg" type="submit" value="Generate" placeholder="placeholder" /></p>
-                </form>
+                    </form>
          
                     {% else %}
                     <form id="login-form" action="{{ url_for('results', url_slug=url_slug) }}" method="post">
-                        <p style='text-decoration:none'><input class="btn btn-success btn-lg" type="submit" value="Everyone's ready, let's do this" /></p>
+                        <p>Everyone's ready, let's do this!</p>
+                        <p style='text-decoration:none'><input class="btn btn-success btn-lg" type="submit" value="Generate" /></p>
                     </form>
 
                     {% endif %}  
@@ -184,56 +185,53 @@
                 {% endif %}
             {% endif %}         
             </fieldset>
-          </form>
+        </form>
         </p>      
-    </div>
+        </div>
 
 
-     <!-- Search -->
-    <div class="flex-right" style="width:300px; margin-left:auto;text-align:center;">
-    <p id="search-artist" class="login-page">Would you like to invite more artists?</p>
+        <!-- Search -->
+        <div class="flex-right" style="width:300px; margin-left:auto;text-align:center;">
+        <p id="search-artist" class="login-page">Would you like to invite more artists?</p>
 
-    <form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
-        {{ suggested_pl_butt.hidden_tag() }}
-        {{ suggested_pl_butt.add_button(class_="btn btn-success") }}
-    </form>
-    <p class="login-page">
-        <!-- Search messages  -->
-        {% if s_results == false %}
-            <span class="lead">No artists found with the name {{ new_artist }}!</span>
-        {% elif new == 1 %}
-            <span color="green">{{ new_artist }} added!</span>
-        {% elif new == 0 %}
-            <span color="red">{{ new_artist }} is already here.</span>
-        {% endif %}
-    </p>
-        
-        <div style="display:inline-block;">
-            <form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
-            {{ searchform.hidden_tag() }}
-            {{ searchform.artist_search(role="form", class_="form-inline", style="color:black;")}}
-            {{ searchform.submit_search(id="search-artist", class_="btn btn-success") }}
-            </form>
-    <p>
-    {% if s_results %}
-        <ul id="selectartist" class="dropdown" style="width:200px;color:black;">
-            <div style="clear:both;">
-            <li><input type="button" class="btn btn-success btn-lg" value="Found artists"></input>
-                <ul><form id="selectartist" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
-            {% for artist in s_results %}
-                <li><input name="selectartist" type="submit" value="{{artist}}"></input></li>
-            {% endfor %}
-                </li></ul>
+        <form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
+            {{ suggested_pl_butt.hidden_tag() }}
+            {{ suggested_pl_butt.add_button(class_="btn btn-success") }}
+        </form>
+        <p class="login-page">
+            <!-- Search messages  -->
+            {% if s_results == false %}
+                <span class="lead">No artists found with the name {{ new_artist }}!</span>
+            {% elif new == 1 %}
+                <span color="green">{{ new_artist }} added!</span>
+            {% elif new == 0 %}
+                <span color="red">{{ new_artist }} is already here.</span>
+            {% endif %}
+        </p>
+            
+            <div style="display:inline-block;">
+                <form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
+                {{ searchform.hidden_tag() }}
+                {{ searchform.artist_search(role="form", class_="form-inline", style="color:black;")}}
+                {{ searchform.submit_search(id="search-artist", class_="btn btn-success") }}
+                </form>
+            <p>
+            {% if s_results %}
+            <ul id="selectartist" class="dropdown" style="width:200px;color:black;">
+                <div style="clear:both;">
+                <li><input type="button" class="btn btn-success btn-lg" value="Found artists"></input>
+                    <ul><form id="selectartist" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
+                {% for artist in s_results %}
+                    <li><input name="selectartist" type="submit" value="{{artist}}"></input></li>
+                {% endfor %}
+                    </li></ul>
+                </div>
+            </ul>
+            {% endif %}
             </div>
-        </ul>
-    {% endif %}     
-    </form>
-    </p>
-    
- 
-          
-
-    </div>
+        </form>
+        </p>
+        </div>
 
 
     <!--

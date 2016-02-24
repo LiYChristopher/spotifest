@@ -5,6 +5,8 @@ from wtforms import (StringField, SubmitField, SelectField,
                     validators)
 from wtforms.fields.html5 import DecimalRangeField
 from wtforms.widgets import Select
+from db import get_parameters
+
 
 class SearchForm(Form):
     artist_search = StringField("artist_search",
@@ -39,6 +41,15 @@ class ParamsForm(Form):
                                         default=0.5)
     ready_butt = SubmitField("Propose Vision")
     unready_butt = SubmitField("Change Vision")
+
+
+def populate_params(params_form, saved_params):
+    if saved_params:
+        params_form.danceability.value = saved_params[0]
+        params_form.hotttnesss.value = saved_params[1]       
+        params_form.energy.value = saved_params[2]
+        params_form.variety.value = saved_params[3]
+        params_form.adventurousness.value = saved_params[4]
 
 
 class SuggestedPlaylistButton(Form):
