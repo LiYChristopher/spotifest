@@ -490,10 +490,10 @@ ul.dropdown li:hover                { position: relative;}
 */
 ul.dropdown ul            { overflow-x: hidden; overflow-y: auto; max-height: 300px; margin: 0; padding: 0; width: 220px; visibility: hidden; position: absolute; }
 
-ul.dropdown ul li           { margin: 0; padding: 0; font-weight: normal; opacity:0.4; color: #000;
+ul.dropdown ul li           { margin: 0; padding: 0; font-weight: normal; opacity:1; color: #000;
                     border-bottom: 1px solid #ccc; float: none; }
 ul.dropdown ul li input:hover {
-  background-color: grey;
+  background-color: rgba(128, 128, 128, 0.4);
  }
 
                                     /* IE 6 & 7 Needs Inline Block */
@@ -502,7 +502,8 @@ ul.dropdown ul li input {
   border-right: none; 
   width: 100%; 
   display: inline-block; 
-  opacity: 1;
+  /* opacity: 1;*/
+  background-color: rgba(255, 255, 255, 0.4);
   text-decoration: none;
   border: none;}
 
