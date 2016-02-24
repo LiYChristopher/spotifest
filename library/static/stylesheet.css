@@ -385,6 +385,8 @@ p {
 
 .flex-left {
   order: -1;
+  /* margin-right: auto;
+  margin-left: auto; */
   /*overflow-x: hidden;*/
   /* border-style: solid;*/
   width: 200px;
@@ -403,6 +405,8 @@ p {
   order: 1;
   order-style: solid;
   width: 200px;
+  /* margin-right: auto;
+  margin-left: auto; */
   /* border-style: solid;*/
 }
 

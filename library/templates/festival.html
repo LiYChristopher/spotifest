@@ -75,10 +75,13 @@
 
         <div class='flex-center'>
             <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ all_users['organizer']['userId'] }}&size=detail&theme=dark" width="300" height="56" scrolling="no" frameborder="0" style="vertical-align: middle; border:none; overflow:hidden;" allowtransparency="true"></iframe>
-            <h1>{{ all_users['organizer']['userId'] }}'s
+            <h3>{{ all_users['organizer']['userId'] }}'s
             {% if is_org == true %} festival 
             {% else %} {{ festival_name }} 
-            {% endif %}</h1>
+            {% endif %}</h3>
+            <h6>Invite others to your festival by sharing this festival ID:
+            <span style='color:#ffb366'>{{ url_slug }}</span>
+            </h6>
         </div>
 
 
