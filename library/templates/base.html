@@ -37,12 +37,12 @@
   <body>
     <div class="site-wrapper">
       <div class="site-wrapper-inner">
-        <div class="cover-container">
+        <div class="cover-container site-flex-container">
 
         <!-- Navblock-->
         {% block nav %}
-        
-            <div class="inner front">
+            <div class="flex--1" style="height:40px;">
+              <div class="masthead clearfix front">
               <h3 class="masthead-brand">Spotifest</h3>
               <nav>
                 <ul class="nav masthead-nav">
@@ -51,8 +51,10 @@
                 </ul>
               </nav>
             </div>
+            </div>
         {% endblock %}
 
+        <div class="flex-0">
         {% block content %}
 
           <!-- Flashblock -->
@@ -68,18 +70,20 @@
 
           {% endblock %} <!-- flash -->
 
+        {% endblock %} <!-- content -->
+
+      </div>
+
         {% block footer %}
-            <div class="inner front">
+            <div class="inner front mastfoot flex-1" style="flex: 0 1 40px">
                 <p style="color:#2EBD59">Spotifest's code on <a href="https://github.com/LiYChristopher/festify">GitHub</a>.</p>
                 <p> Powered by Spotify and Echonest. </p>
             </div>
         {% endblock %}
 
-        {% endblock %} <!-- content -->
-
-      </div>
     </div>
   </div>
+</div>
 
 {% endblock %}
 

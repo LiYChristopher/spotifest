@@ -86,11 +86,6 @@ body {
 }
 
 body {
-  height: 100%;
-  background-color: #333;
-}
-
-body {
   color: #fff;
   text-align: center;
   text-shadow: 1px 2px 3px rgba(0,0,0,.5);
@@ -173,12 +168,14 @@ p {
   height: 100%; /* For at least Firefox */
   min-height: 100%;
   background-image: url('/static/background.png');
+  overflow-y: hidden;
   -webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.5);
           box-shadow: inset 0 0 100px rgba(0,0,0,.5);
 }
 .site-wrapper-inner {
   display: table-cell;
   vertical-align: top;
+  min-height:100%;
 }
 .cover-container {
   margin-right: auto;
@@ -262,8 +259,9 @@ p {
 .mastfoot {
   color: #999; /* IE8 proofing */
   color: #5CB85C;
-  z-index: 10;
 }
+
+
 
 
 /*
@@ -278,9 +276,9 @@ p {
     z-index: 10;
   }
   .mastfoot {
-    position: fixed;
     bottom: 0;
   }
+
   /* Start the vertical centering */
   .site-wrapper-inner {
     vertical-align: middle;
@@ -295,7 +293,7 @@ p {
 
 @media (min-width: 992px) {
   .masthead,
-  .mastfoot,
+
   .cover-container {
     width: 900px;
   }
@@ -361,18 +359,26 @@ p {
     margin-bottom: 10px;
 }
 
+
+
 /* Flexbox CSS */
 
 .flex-container {
-  position: relative; top: 25%;
+
   display: flex;
   align-items: flex-start;
   /* border-style: solid;*/
   width: auto;
   justify-content: space-between;
-  text-align: right;
+  align: right;
   margin-right: auto;
   margin-left: auto;
+}
+
+.site-flex-container {
+  display:flex;
+  flex-direction: column;
+  min-height:100%;
 }
 
 .flex-row {
@@ -383,8 +389,28 @@ p {
   flex-direction: column;
 }
 
-.flex-left {
+
+.flex--1 {
   order: -1;
+}
+
+.flex-0 {
+  order: 0;
+}
+
+.flex-1 {
+  order: 1;
+}
+
+.flex-2 {
+  order: 2;
+}
+
+.flex-3 {
+  order: 3;
+}
+
+.flex-left {
   /* margin-right: auto;
   margin-left: auto; */
   /*overflow-x: hidden;*/
@@ -393,7 +419,6 @@ p {
 }
 
 .flex-center {
-  order: 0;
   z-index: 900;
   margin-right: auto;
   margin-left: auto;
@@ -402,7 +427,6 @@ p {
 }
 
 .flex-right {
-  order: 1;
   order-style: solid;
   width: 200px;
   /* margin-right: auto;
@@ -415,13 +439,13 @@ p {
   text-align: left;
   padding-left: 10px;
   padding-right: 10px;
-  padding-top: 5px;
+
   padding-bottom: 5px;
   font-weight: bold;
 }
 
 .params-box {
-  max-width: 200px;
+  min-width:240px;
 }
 
 .dark-transparent {
@@ -521,3 +545,8 @@ ul.dropdown ul li input {
   text-decoration: none;
   border: none;}
 
+.contributors .text {
+    width: 100%;
+    float: right;
+    margin-bottom: 2%;
+}

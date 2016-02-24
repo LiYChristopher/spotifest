@@ -279,7 +279,10 @@ def festival(url_slug):
     # check if organizer & if so, find name
     if organizer != _user:
         is_org = False
-        festival_name = current_festival[1]
+        if current_festival[1]:
+            festival_name =  current_festival[1]
+        else:
+            festival_name = "Spotifest 2016"
     elif organizer == _user:
         is_org = True
         festival_name = None
