@@ -10,6 +10,8 @@ from flask import session, flash
 
 from flask.ext.login import login_user, logout_user, login_required, UserMixin
 from flask.ext.wtf import Form
+
+
 from flask import render_template, request, redirect, url_for, session, flash
 
 import spotipy
