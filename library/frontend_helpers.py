@@ -1,21 +1,22 @@
 # Frontend helpers
-from flask_wtf import Form
+#from flask_wtf import Form
+from flask.ext.wtf import Form
 from wtforms import (StringField, SubmitField, SelectField,
                     validators)
 from wtforms.fields.html5 import DecimalRangeField
 from wtforms.widgets import Select
 
-
 class SearchForm(Form):
-    artist_search = StringField('search_artist',
+    artist_search = StringField("artist_search",
                                 validators=[validators.DataRequired()])
-    submit = SubmitField("Search")
 
+    submit_search = SubmitField("Search")
 
 class ArtistSelect(Form):
     artist_display = SelectField('artist_options', coerce=int,
                                  option_widget=Select(multiple=False))
-    confirm_button = SubmitField("Add!")
+    confirm_select = SubmitField("Add")
+
 
 
 class ParamsForm(Form):

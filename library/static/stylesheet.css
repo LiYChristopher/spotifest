@@ -348,6 +348,11 @@ p {
     margin-top: 10px;
 }
 
+
+
+
+
+
 #festival-name {
     color:black;
     margin-bottom: 10px;
@@ -359,7 +364,7 @@ p {
   position: relative; top: 25%;
   display: flex;
   align-items: flex-start;
-  /*border-style: solid;*/
+  /* border-style: solid;*/
   width: auto;
   justify-content: space-between;
   text-align: right;
@@ -378,16 +383,17 @@ p {
 .flex-left {
   order: -1;
   /*overflow-x: hidden;*/
-  /*border-style: solid;*/
+  /* border-style: solid;*/
   width: 200px;
 }
 
 .flex-center {
   order: 0;
-
+  max-width: 300px;
+  min-width: 300px;
   margin-right: auto;
   margin-left: auto;
-  /*border-style: solid;*/
+  /* border-style: solid;*/
   text-align: center;
 }
 
@@ -395,6 +401,7 @@ p {
   order: 1;
   order-style: solid;
   width: 200px;
+  /* border-style: solid;*/
 }
 
 .hot-links {
@@ -467,4 +474,35 @@ p {
   margin-left: 0;
 }
 
-/* */
+
+.dropdown { margin: 0; padding: 0; list-style: none; width:150px; z-index: 1000;
+  }
+ul.dropdown                         { position: relative;}
+ul.dropdown li                      { margin: 0; padding: 0; list-style: none; margin: 0; padding: 0;  float: left; zoom: 1; }
+
+
+ul.dropdown li:last-child input         { border-right: none; } /* Doesn't work in IE */
+ul.dropdown li.hover,
+ul.dropdown li:hover                { position: relative;}
+
+/*
+  LEVEL TWO
+*/
+ul.dropdown ul            { overflow-x: hidden; overflow-y: auto; max-height: 300px; margin: 0; padding: 0; width: 220px; visibility: hidden; position: absolute; }
+
+ul.dropdown ul li           { margin: 0; padding: 0; font-weight: normal; opacity:0.4; color: #000;
+                    border-bottom: 1px solid #ccc; float: none; }
+ul.dropdown ul li input:hover {
+  background-color: grey;
+ }
+
+                                    /* IE 6 & 7 Needs Inline Block */
+ul.dropdown ul li input {
+  text-align: left;
+  border-right: none; 
+  width: 100%; 
+  display: inline-block; 
+  opacity: 1;
+  text-decoration: none;
+  border: none;}
+
