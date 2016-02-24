@@ -1,0 +1,45 @@
+{% extends 'base.html'%}
+<!-- standard body block implicitly imported -->
+
+{% block body %}
+<body class='about-body'>
+             
+<!-- Block Nav-->
+<div class='cover-container'>    
+{% block nav %}
+    {{ super() }}                   
+{% endblock %}
+
+
+{% block content %}
+<div class="inner cover">
+    <!-- Other messages -->
+    {% if enough_data == false %}
+
+        <h3 style="color:white;" class="cover-heading">
+            You don't have that many saved artists yet.. let us help you!
+        </h3>
+        <br>
+
+    {% else %}
+
+        <h3 style="color:white;" class="cover-heading">Enjoy the show!</h3>
+        <br>
+
+    {% endif %}
+
+    <!-- Results Playlist -->
+    <div class='embed-responsive embed-responsive-4by3'>
+       <iframe class="embed-responsive-item" src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>
+    </div>
+</div>
+{% endblock %} <!-- content -->
+
+{% block footer %}
+    {{ super() }}
+{% endblock %}
+</div>
+
+</body>
+{% endblock %}
+

@@ -1,0 +1,76 @@
+PIP
+===
+pip install -r requirements.txt
+
+Celery and Redis
+================
+Install redis onto your computer. Prior to running, in the command-line:
+redis-server
+
+and then another tab
+
+	celery worker -A library.celery -I config -c 3 --loglevel=info
+
+and another tab for scheduled deletion of sessions:
+
+	celery beat —-app library.celery
+
+-A - Points to app/celery location
+-I - Imports modules (this is where config links for redis are)
+-c - # of concurrent processes - play around with this based on your computer processing power
+--loglevel=info - debug messages
+
+AS OF 20160216 —-
+
+- Intro of eventlet to asynchronous task queue
+- Running celery as a daemon
+
+I’m experimenting with using `eventlet`, a “green thread” based task processor that we can use to spawn and execute tasks on threads that aren’t bound to CPU/cores. So instead of three workers, we can have thousands without the overhead. 
+
+			--- Requirements ---
+
+	pip install eventlet (added to requirements.txt)
+
+                        --- TO START CELERY ---
+
+        celery worker -A library.celery -I config -P eventlet -c 1000 —-loglevel=info
+
+To run celery in the background, so that you can see logs but continue to use the same terminal window for other things, simply append a `&` at the end of the terminal command:
+
+        celery worker -A library.celery -I config -P eventlet -c 1000 —-loglevel=info &
+
+                        --- TO KILL CELERY ---
+Wait to finish tasks:
+
+        ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill
+
+Don't wait to finish tasks:
+
+        ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill -9
+
+
+
+To run celery as a daemon, see details here:
+
+http://michal.karzynski.pl/blog/2014/05/18/setting-up-an-asynchronous-task-queue-for-django-using-celery-redis/
+
+
+DATABASE
+========
+
+- Install mysql on your computer
+  hopefully version mysql  Ver 14.14 Distrib 5.6.28
+
+- Keep user as root with no password
+
+- Run script mysqlScript.sql on your database :
+  mysql -uroot -p < mysqlScript.sql
+  This will create the database
+
+  Ubuntu needs sudo apt-get install libmysqlclient-dev
+
+
+CREDENTIALS
+===========
+
+Get the file credentials.txt on your repo

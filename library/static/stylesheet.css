@@ -1,0 +1,508 @@
+/*
+ * Globals
+ */
+
+
+#login {
+    list-style: none;
+    height: 40px;
+    text-align: center;
+
+}
+
+#login a {
+    text-decoration: none;
+    color: white;
+    background-color: #2ebd59;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    padding: 10px 20px;
+
+}
+
+
+#login-form  {
+    position: absolute;
+    margin-top: 9px;
+    display: none;
+    float: left;
+    clear: both;
+    background-color: transparent;
+    padding: 0 2% 2% 2%;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+
+#login-form .text {
+    width: 100%;
+    float: right;
+    margin-bottom: 2%;
+}
+
+
+#login-form .submit {
+    float: right;
+}
+
+
+#flash {
+    color: red;
+}
+
+
+/* Links */
+a,
+a:focus,
+a:hover {
+  color: #fff;
+}
+
+/* Custom default button */
+.btn-default,
+.btn-default:hover,
+.btn-default:focus {
+  color: #333;
+  text-shadow: none; /* Prevent inheritence from `body` */
+  background-color: #2ebd59;
+  border: 1px solid #fff;
+}
+
+.btn-success {
+  background-color: #2ebd59;
+  text-shadow: 1px 2px 3px rgba(0,0,0,.5);
+}
+
+/*
+ * Base structure
+ */
+
+html,
+body {
+  height: 100%;
+  background-color: #333;
+}
+
+body {
+  height: 100%;
+  background-color: #333;
+}
+
+body {
+  color: #fff;
+  text-align: center;
+  text-shadow: 1px 2px 3px rgba(0,0,0,.5);
+}
+
+h1{
+  font-weight:bolder;
+  color:#ffffff;
+  margin: 5px;
+}
+
+h2 {
+  color:rgb(255, 255, 255);
+  font-size: 14px;
+  font-style: oblique;
+  font-weight: bold;
+  margin: 5px;
+}
+
+p {
+  color:rgb(255, 255, 255);
+  font-size: 14px;
+  font-style: oblique;
+  font-weight: 100;
+}
+
+/* Extra small settings for About page */
+@media only screen and (max-width : 480px) {
+  body {
+    max-width: 100%;
+  }
+  .row {
+    margin-right: 0;
+    margin-left: 0;
+  }
+  .about-heading {
+    text-shadow: none;
+    color:  #2ebd59;
+    font-size: 24px;
+  }
+  .about-text {
+    color: black;
+    font-style: normal;
+    font-weight: 400;
+    text-shadow: none;
+  }
+  .masthead-brand {
+    color: #fff;
+  }
+  .about-team {
+    color: #fff;
+    background-color: black;
+  }
+}
+
+.about-text {
+  color: black;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+}
+.about-team {
+  background-color: black;
+}
+
+.about-heading {
+  color: #2ebd59;
+  text-shadow: none;
+}
+
+.about-body {
+  background-image: none;
+}  
+
+
+/* Extra markup and styles for table-esque vertical and horizontal centering */
+.site-wrapper {
+  display: table;
+  width: 100%;
+  height: 100%; /* For at least Firefox */
+  min-height: 100%;
+  background-image: url('/static/background.png');
+  -webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+          box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+}
+.site-wrapper-inner {
+  display: table-cell;
+  vertical-align: top;
+}
+.cover-container {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Padding for spacing */
+.inner {
+  padding: 30px;
+}
+
+/*
+ * Header
+ */
+.masthead-brand {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.masthead-nav > li {
+  display: inline-block;
+}
+.masthead-nav > li + li {
+  margin-left: 20px;
+}
+.masthead-nav > li > a {
+  padding-right: 0;
+  padding-left: 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff; /* IE8 proofing */
+  color: rgba(255,255,255,.75);
+  border-bottom: 2px solid transparent;
+}
+.masthead-nav > li > a:hover,
+.masthead-nav > li > a:focus {
+  background-color: transparent;
+  border-bottom-color: #a9a9a9;
+  border-bottom-color: rgba(255,255,255,.25);
+}
+.masthead-nav > .active > a,
+.masthead-nav > .active > a:hover,
+.masthead-nav > .active > a:focus {
+  color: #fff;
+  border-bottom-color: #fff;
+}
+
+@media (min-width: 768px) {
+  .masthead-brand {
+    float: left;
+  }
+  .masthead-nav {
+    float: right;
+  }
+}
+
+
+/*
+ * Cover
+ */
+
+.cover {
+  padding: 0 20px;
+}
+.cover .btn-lg {
+  padding: 10px 20px;
+  background-color: #2ebd59;
+  font-weight: bold;
+}
+
+
+/*
+ * Footer
+ */
+
+.mastfoot {
+  color: #999; /* IE8 proofing */
+  color: #5CB85C;
+}
+
+
+/*
+ * Affix and center
+ */
+
+@media (min-width: 768px) {
+  /* Pull out the header and footer */
+  .masthead {
+    position: fixed;
+    top: 0;
+  }
+  .mastfoot {
+    position: fixed;
+    bottom: 0;
+  }
+  /* Start the vertical centering */
+  .site-wrapper-inner {
+    vertical-align: middle;
+  }
+  /* Handle the widths */
+  .masthead,
+  .mastfoot,
+  .cover-container {
+    width: 100%; /* Must be percentage or pixels for horizontal alignment */
+  }
+}
+
+@media (min-width: 992px) {
+  .masthead,
+  .mastfoot,
+  .cover-container {
+    width: 900px;
+  }
+}
+
+/* row and column */
+
+@media (min-width: 544px) {
+  .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
+    float: left;
+  }
+
+.col-sm-5 {
+    width: 41.666667%;
+  }
+
+.row {
+  margin-right: -.9375rem;
+  margin-left: -.9375rem;
+}
+
+.row::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+/* */
+
+.login-buttons {
+    display: inline;
+}
+
+.lead-buttons {
+    position: absolute;
+    left: 50%;
+    top:50%;
+}
+
+.login-page {
+}
+
+.create-join {
+    text-align: center;
+    margin-top: 5%;
+}
+
+.create-join ul {
+    list-style-type: none;
+
+}
+
+#festi-text {
+    color: black;
+}
+
+#search-artist {
+    margin-top: 10px;
+}
+
+
+
+
+
+
+#festival-name {
+    color:black;
+    margin-bottom: 10px;
+}
+
+/* Flexbox CSS */
+
+.flex-container {
+  position: relative; top: 25%;
+  display: flex;
+  align-items: flex-start;
+  /* border-style: solid;*/
+  width: auto;
+  justify-content: space-between;
+  text-align: right;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-left {
+  order: -1;
+  /*overflow-x: hidden;*/
+  /* border-style: solid;*/
+  width: 200px;
+}
+
+.flex-center {
+  order: 0;
+  max-width: 300px;
+  min-width: 300px;
+  margin-right: auto;
+  margin-left: auto;
+  /* border-style: solid;*/
+  text-align: center;
+}
+
+.flex-right {
+  order: 1;
+  order-style: solid;
+  width: 200px;
+  /* border-style: solid;*/
+}
+
+.hot-links {
+  position: relative;
+  text-align: left;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-weight: bold;
+}
+
+.over-top {
+  position: relative; top: -20px;
+}
+
+.hanging-in {
+  position: relative; top: 100px;
+}
+
+.hot-links > ul {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+.hot-links > ul > li {
+  text-align: left;
+  background: #5cb85c;
+  border-radius: 4px;
+  margin: 0;
+  margin-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+
+}
+.hot-links > ul > li:hover {
+  background-color: #449d44;
+}
+.hot-links > ul > li > a:hover {
+  text-decoration: none;
+}
+
+.rcorners {
+  border-radius: 10px;
+}
+
+.lg-background {
+  background: #5cb85c;
+}
+
+.img-circle {
+  height: 150px;
+ }
+
+.full-width {
+  position: relative;
+  width: 100%;
+  left: 0;
+}
+
+.overlaid-text {
+  position: absolute;
+  top: 200px;
+  left: 0px;
+  width: 100%;
+}
+
+.marginless {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+
+.dropdown { margin: 0; padding: 0; list-style: none; width:150px; z-index: 1000;
+  }
+ul.dropdown                         { position: relative;}
+ul.dropdown li                      { margin: 0; padding: 0; list-style: none; margin: 0; padding: 0;  float: left; zoom: 1; }
+
+
+ul.dropdown li:last-child input         { border-right: none; } /* Doesn't work in IE */
+ul.dropdown li.hover,
+ul.dropdown li:hover                { position: relative;}
+
+/*
+  LEVEL TWO
+*/
+ul.dropdown ul            { overflow-x: hidden; overflow-y: auto; max-height: 300px; margin: 0; padding: 0; width: 220px; visibility: hidden; position: absolute; }
+
+ul.dropdown ul li           { margin: 0; padding: 0; font-weight: normal; opacity:0.4; color: #000;
+                    border-bottom: 1px solid #ccc; float: none; }
+ul.dropdown ul li input:hover {
+  background-color: grey;
+ }
+
+                                    /* IE 6 & 7 Needs Inline Block */
+ul.dropdown ul li input {
+  text-align: left;
+  border-right: none; 
+  width: 100%; 
+  display: inline-block; 
+  opacity: 1;
+  text-decoration: none;
+  border: none;}
+
