@@ -1,114 +1,80 @@
 {% extends 'base.html' %}
+<!-- standard body block implicitly imported -->
 
 {% block scripts %}
     {{ super() }}
 <script>
     $(function(){
-
     $("ul.dropdown li").hover(function(){
-
         $(this).addClass("hover");
         $('ul:first',this).css('visibility', 'visible');
-
     }, function(){
-
         $(this).removeClass("hover");
         $('ul:first',this).css('visibility', 'hidden');
-
     });
-
     $("ul.dropdown li ul li:has(ul)").find("a:first").append(" &raquo; ");
-
 });
 </script>
 {% endblock %}
 
-
-
-
-<!-- standard body block implicitly imported -->
-
-
-
-
+{% block body %}
+<body class='about-body'>
+             
 <!-- Block Nav-->
- 
-
-
-
-
-<!-- Navblock -->
+<div class='cover-container'>    
 {% block nav %}
-
-    {{ super() }} 
-
-
+    {{ super() }}                   
 {% endblock %}
-
-
-
 
 
 {% block content %}
 <div class="inner cover">
+        <div class='row' style='margin-top:20px'>
+
+            <!-- Contributors -->
+            <div class="col-sm-4">   
+                <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ all_users['organizer']['userId'] }}&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
+            </div>
+            {% if 'contributors' in all_users %}
+               <!--<h3>Contributors</h3>-->
+                <div id='cover-container'>
+                {% for contributor in all_users['contributors'] %}
+                    <div class='col-sm-4' id='login-form text'>
+                        <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ contributor }}&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
+                        {% if all_users['contributors'][contributor]['ready'] == 1%}
+                            <p>...is set!</p>
+                        {% endif %}
+                    </div> 
+                {% endfor %}
+                </div>
+            {% endif %}
+            </div>
+        </div>
 
     <!-- Organizer avatar and contributor avatar -->
-    <div class='flex-container flex-column' style="height:200px; align-items:flex-end;">
-        <div class='flex-0' style="left:0;" width="100%">
-            <div class='flex-container flex-row' style="align-items:fles-start;">
-                    {% for name in all_users['contributors']['c_names'] %}
-                    <div class='contributors text flex-0'>
-                    <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ name }}&size=detail&theme=dark" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
-                    {% if all_users['contributors'][name]['ready'] == 1%}
-                        <p>...is set!</p>
-                    {% endif %}
-                    </div>
-                    {% endfor %}
-             </div>   
-             <br>
-        </div>
-    
+    <h3>{{ all_users['organizer']['userId'] }}'s
+        {% if is_org == true %} festival 
+        {% else %} {{ festival_name }} {% endif %}</h3>
+    <h6>Invite others to your festival by sharing this festival ID:
+        <span style='color:#ffb366'>{{ url_slug }}</span>
+    </h6>
 
-        <div class='flex-center flex-1'>
-            <iframe src="https://embed.spotify.com/follow/1/?uri=spotify:user:{{ all_users['organizer']['userId'] }}&size=detail&theme=dark" width="300" height="56" scrolling="no" frameborder="0" style="vertical-align: middle; border:none; overflow:hidden;" allowtransparency="true"></iframe>
-            <h3>{{ all_users['organizer']['userId'] }}'s
-            {% if is_org == true %} festival 
-            {% else %} {{ all_users['organizer'][] }} 
-            {% endif %}</h3>
-            <h6>Invite others to your festival by sharing this festival ID:
-            <span style='color:#ffb366'>{{ url_slug }}</span>
-            </h6>
-        </div>
-    </div>
-
-    <div class="flex-container flex-row" style="padding-top:20px">
-
-        <div class="flex-left flex-0" style='margin-right:auto;width:300px;'>&nbsp;
-           <!--Contributor to
-            <ul>
-                <li> <a>New jazz festival</a></li>
-                <li> <a>Hip hop battles</a></li>
-                <li> <a>Tester</a></li>
-                <li> <a>Something</a></li>
-            </ul> -->
-        </div>
-
-        <div class="flex-center flex-1 params-box">
-            {% block flash %}
-                {{ super() }}
-            {% endblock %}
-
+        <div class='row'>
+        <div class="col-sm-4"></div>
         <!-- Parameters panel -->
-            <p class="lead">
+        <div class="col-sm-4">
+
+        <p class="lead">
             {% if is_org == true %}
           <form action="{{ url_for('results', url_slug=url_slug) }}" method="post">
             <fieldset>
                 {{ params_form.name.label }} <br>
-                {{ params_form.name (id="festival-name", class_="text-center form-control")}} <br>
+                {{ params_form.name (class_="text-center form-control")}} <br>
             {% else %}
           <form action="{{ url_for('update_parameters', url_slug=url_slug) }}" method="post">
             <fieldset>
             {% endif %}
+
             {{ params_form.danceability.label }}
             {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
             {{ params_form.hotttnesss.label}}
@@ -139,14 +105,13 @@
                     <a class="btn btn-success btn-lg" href="#" margin-right="40px" type="button">Contributors not ready</a>
 
                     <form id="login-form" action="{{ url_for('results', url_slug=url_slug) }}" method="post">
-                   <p>Not everyone has shared their vibes! Are you sure?</p> 
+                   <p>Not everyone has shared their vibes! Are you sure?"</p> 
                     <p><input id="festivalSubmit" class="btn btn-primary btn-lg" type="submit" value="Generate" placeholder="placeholder" /></p>
-                    </form>
+                </form>
          
                     {% else %}
                     <form id="login-form" action="{{ url_for('results', url_slug=url_slug) }}" method="post">
-                        <p>Everyone's ready, let's do this!</p>
-                        <p style='text-decoration:none'><input class="btn btn-success btn-lg" type="submit" value="Generate" /></p>
+                        <p style='text-decoration:none'><input class="btn btn-success btn-lg" type="submit" value="Everyone's ready, let's do this" /></p>
                     </form>
 
                     {% endif %}  
@@ -155,78 +120,79 @@
                 {% endif %}
             {% endif %}         
             </fieldset>
-        </form>
+          </form>
         </p>      
-        </div>
-
+        </div>   
 
         <!-- Search -->
-        <div class="flex-right flex-2" style="width:300px; margin-left:auto;text-align:center;padding-left:25px;">
-        <p id="search-artist" class="login-page">Would you like to invite more artists?</p>
+        <div class="col-sm-4">
 
-        <form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
-            {{ suggested_pl_butt.hidden_tag() }}
-            {{ suggested_pl_butt.add_button(class_="btn btn-success") }}
-        </form>
-        <p class="login-page">
-            <!-- Search messages  -->
-            {% if s_results == false %}
-                <span class="lead">No artists found with the name {{ new_artist }}!</span>
-            {% elif new == 1 %}
-                <span color="green">{{ new_artist }} added!</span>
-            {% elif new == 0 %}
-                <span color="red">{{ new_artist }} is already here.</span>
-            {% endif %}
-        </p>
-            
-            <div style="display:inline-block;bottom:0;">
-                <form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
-                {{ searchform.hidden_tag() }}
-                {{ searchform.artist_search(role="form", class_="form-inline", style="color:black;")}}
-                {{ searchform.submit_search(id="search-artist", class_="btn btn-success") }}
-                </form>
-            <p>
-            {% if s_results %}
-            <ul id="selectartist" class="dropdown" style="width:200px;color:black;">
-                <div style="clear:both;">
-                <li><input type="button" class="btn btn-success btn-lg" value="Found artists"></input>
-                    <ul><form id="selectartist" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
-                {% for artist in s_results %}
-                    <li><input name="selectartist" type="submit" value="{{artist}}"></input></li>
-                {% endfor %}
-                    </li></ul>
+             <p id="search-artist">Would you like to invite more artists?</p>
+
+            <form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
+                {{ suggested_pl_butt.hidden_tag() }}
+                {{ suggested_pl_butt.add_button(class_="btn btn-success") }}
+            </form>
+            <p class="login-page">
+                <!-- Search messages  -->
+                {% if s_results == false %}
+                    <span class="lead">No artists found with the name {{ new_artist }}!</span>
+                {% elif new == 1 %}
+                    <span color="green">{{ new_artist }} added!</span>
+                {% elif new == 0 %}
+                    <span color="red">{{ new_artist }} is already here.</span>
+                {% endif %}
+            </p>
+                
+                <div style="display:inline-block;bottom:0;">
+                    <form id="searchfuncs" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
+                    {{ searchform.hidden_tag() }}
+                    <row>
+                    <col class='col-md-6'>
+                    {{ searchform.artist_search(role="form", class_="form-inline", style="color:black;")}}
+                    {{ searchform.submit_search(id="search-artist", class_="btn btn-success btn-sm") }}
+                    </col>
+                    </row>
+                    </form>
+                <p>
+                <!-- Search Results -->
+                {% if s_results %}
+                <ul id="selectartist" class="dropdown" style="width:200px;color:black;">
+                    <div style="clear:both;">
+                    <li><input type="button" class="btn btn-success btn-md" value="Found artists"></input>
+                        <ul><form id="selectartist" action="{{ url_for('festival', url_slug=url_slug)}}" method="POST">
+                    {% for artist in s_results %}
+                        <li><input name="selectartist" type="submit" value="{{artist}}"></input></li>
+                    {% endfor %}
+                        </li></ul>
+                    </div>
+                </ul>
+                {% endif %}
                 </div>
-            </ul>
-            {% endif %}
-            </div>
-        </form>
-        </p>
-        </div>
-
-
+            </form>
+            </p>
+        </div> 
+    </div>
     <!--
-         if artists 
+        {% if artists %}
             <h3>These artists grace you with their presence:</h3>
             
-             for artist in artists 
+            {% for artist in artists %}
                 <li>
-                     artist 
+                    {{ artist }}
                 </li>
-             endfor 
+            {% endfor %}
             
-         else 
+        {% else %}
             <h3> We haven't been able to find any artists yet! <br>
-         endif 
+        {% endif %}
     -->
+    {% endblock %} <!-- content -->
 
-
-
-
-
-
-    </div> 
 </div>
-
-
-
+    <!-- Footer -->
+    {% block footer %}
+        {{ super() }}
+    {% endblock %}
+</body>
 {% endblock %}

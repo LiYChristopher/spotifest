@@ -289,6 +289,7 @@ def festival(url_slug):
     # fetch contributors: the 0th term = the main organizer!
     try:
         all_users = db.get_contributors(current_festival[0])
+        print "all_users", all_users
         if all_users is None:
             flash(("Festival '{}' is having problems. Please check with the "
                 "organizer. Try again later or create a new festival!").format(url_slug))
