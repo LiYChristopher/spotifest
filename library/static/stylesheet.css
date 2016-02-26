@@ -52,7 +52,6 @@
     color: red;
 }
 
-
 /* Links */
 a,
 a:focus,
@@ -178,7 +177,7 @@ p {
   ul.dropdown ul { 
     overflow-x: hidden;
     overflow-y: auto; 
-    max-height: 300px; 
+    max-height: 150px; 
     margin: 0; 
     padding: 0; 
     width: 220px; 
@@ -486,6 +485,10 @@ p {
   position: relative; top: -20px;
 }
 
+.dark-transparent {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
 .hanging-in {
   position: relative; top: 100px;
 }
@@ -541,7 +544,6 @@ p {
   margin-right: 0;
   margin-left: 0;
 }
-
 
 .dropdown { 
   margin: 0;

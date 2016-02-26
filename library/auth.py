@@ -346,8 +346,7 @@ def festival(url_slug):
 
     if suggested_pl_butt.validate_on_submit():
         if request.form.get("add_button"):
-            new_artist = ', '.join(suggested_artists)
-            user_cache.update_preferences(set([new_artist]), url_slug)
+            user_cache.update_preferences(helpers.suggested_artists, url_slug)
             new = True
 
     return render_template('festival.html', url_slug=url_slug,
@@ -444,11 +443,7 @@ def results(url_slug):
         songs_id = processor.process_spotify_ids(50, 10, s, playlist)
 
         if user_cache.festival_id is not None and user_cache.did_user_sel_parameters:
-            '''
-            This will need to be above and we will need
-            to update the catalog instead of creating one
-            or just add this playlist to existent playlist
-            '''
+
             festival_information = db.get_info_from_database(festival_id)
             playlist_url = festival_information[4]
             id_playlist = festival_information[3]
