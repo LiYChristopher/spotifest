@@ -17,10 +17,16 @@
 </script>
 {% endblock %}
 
+{% block body %}
+  <body>
+    <div class="site-wrapper">
+      <div class="site-wrapper-inner">
+        <div class="cover-container">
+
 
              
 <!-- Block Nav-->
-<div class='cover-container'>    
+   
 {% block nav %}
     {{ super() }}                   
 {% endblock %}
@@ -198,4 +204,9 @@
         {{ super() }}
     {% endblock %}
 
+      </div>
+    </div>
+  </div>
+</body>
+{% endblock %}
 
