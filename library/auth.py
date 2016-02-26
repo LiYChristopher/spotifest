@@ -99,7 +99,7 @@ class UserCache():
             raise TypeError('Artist data not a set object.')
         cur_preferences = self.artists[_current_user][urlSlug]
         print "length before...", len(cur_preferences)
-        print "{} about to be added to cur_preferences".format(artists)
+        print "{} about to be added to cur_preferences..".format(artists)
         self.artists[_current_user][urlSlug] = cur_preferences | artists
         print "length after...", len(self.artists[_current_user][urlSlug])
         return
@@ -279,20 +279,24 @@ def festival(url_slug):
     # check if organizer & if so, find name
     if organizer != _user:
         is_org = False
-        festival_name = current_festival[1]
+        if current_festival[1]:
+            festival_name =  current_festival[1]
+        else:
+            festival_name = "Spotifest 2016"
     elif organizer == _user:
         is_org = True
         festival_name = None
     # fetch contributors: the 0th term = the main organizer!
     try:
         all_users = db.get_contributors(current_festival[0])
+        print "all_users", all_users
         if all_users is None:
             flash(("Festival '{}' is having problems. Please check with the "
-                "organizer. Try again later.").format(url_slug))
+                "organizer. Try again later or create a new festival!").format(url_slug))
             return redirect(url_for('home'))
     except:
         flash(("Festival '{}' is having problems. Please check with the "
-                "organizer. Try again later.").format(url_slug))
+                "organizer. Try again later or create a new festival!.").format(url_slug))
         return redirect(url_for('home'))
 
     new = None
@@ -316,29 +320,33 @@ def festival(url_slug):
     art_select = frontend_helpers.ArtistSelect(request.form)
     params_form = frontend_helpers.ParamsForm()
 
+    saved_params = db.get_parameters(_user, url_slug)
+    frontend_helpers.populate_params(params_form, saved_params)
+
+
     if searchform.validate_on_submit():
         s_artist = searchform.artist_search.data
         user_cache.search_results = helpers.search_artist_echonest(s_artist)
         art_select.artist_display.choices = user_cache.search_results
+        print (user_cache.search_results)
 
-    if art_select.artist_display.data:
-        if art_select.is_submitted():
-            option_n = int(art_select.artist_display.data) - 1
-            chosen_art = user_cache.search_results[option_n][1]
-            cur_user_preferences = user_cache.retrieve_preferences(url_slug)
-            if chosen_art not in cur_user_preferences:
-                print "ADDING CHOSEN ART", chosen_art
-                user_cache.update_preferences(set([chosen_art]), url_slug)
-                new_artist = chosen_art
-                new = 1
-            else:
-                new = 0
-            # user_cache.search_results = list()
+    if request.form.get("selectartist"):
+        chosen_art = request.form.get("selectartist")
+        cur_user_preferences = user_cache.retrieve_preferences(url_slug)
+        new_artist = chosen_art
 
-    elif suggested_pl_butt.validate_on_submit():
+        if not cur_user_preferences or chosen_art not in cur_user_preferences:
+            print "ADDING CHOSEN ART", chosen_art
+            user_cache.update_preferences(set([chosen_art]), url_slug)
+            new_artist = chosen_art
+            new = 1
+        else:
+            new = 0
+        user_cache.search_results = list()
+
+    if suggested_pl_butt.validate_on_submit():
         if request.form.get("add_button"):
-            new_artist = ', '.join(helpers.suggested_artists)
-            user_cache.update_preferences(set(new_artist), url_slug)
+            user_cache.update_preferences(helpers.suggested_artists, url_slug)
             new = True
 
     return render_template('festival.html', url_slug=url_slug,
@@ -364,18 +372,28 @@ def update_parameters(url_slug):
     catalog_id = current_festival[5]
     catalog = helpers.Catalog(catalog_id)
     artists = user_cache.retrieve_preferences(url_slug)
-    processor = helpers.AsyncAdapter(app)
-    processor.populate_catalog(artists, 3, catalog=catalog)
 
-    festivalId = db.get_info_from_database(url_slug)[0]
+    get_festival = db.get_info_from_database(url_slug)
+    festivalId = get_festival[0]
+    festival_org = get_festival[2]
     h = request.form.get('hotttnesss')
     d = request.form.get('danceability')
     e = request.form.get('energy')
     v = request.form.get('variety')
     a = request.form.get('adventurousness')
+    if _user == festival_org:
+        name = request.form.get('name')
+        db.update_festival(name, url_slug)
     db.update_parameters(festivalId, _user, h, d, e, v, a)
-    flash("You've pitched the perfect festival to the organizer." +
-          " Now we wait.")
+
+    if artists:
+        processor = helpers.AsyncAdapter(app)
+        processor.populate_catalog(artists, 3, catalog=catalog)
+        flash_message = ("You've pitched the perfect festival to the organizer." +
+                        " Now we wait.")
+    else:
+        flash_message = "You haven't contributed artists, but your style is pitched!"
+    flash(flash_message)
     return redirect(url_for('festival', url_slug=url_slug))
 
 
@@ -425,11 +443,7 @@ def results(url_slug):
         songs_id = processor.process_spotify_ids(50, 10, s, playlist)
 
         if user_cache.festival_id is not None and user_cache.did_user_sel_parameters:
-            '''
-            This will need to be above and we will need
-            to update the catalog instead of creating one
-            or just add this playlist to existent playlist
-            '''
+
             festival_information = db.get_info_from_database(festival_id)
             playlist_url = festival_information[4]
             id_playlist = festival_information[3]
@@ -445,10 +459,10 @@ def results(url_slug):
             playlist_url = ('https://embed.spotify.com/?uri=spotify:user:'
                             '{}:playlist:{}'.format(u_id, id_pl))
             if app.config['IS_ASYNC'] is True:
-                db.update_festival.apply_async(args=[name, id_playlist,
-                                               playlist_url, url_slug])
+                db.update_festival.apply_async(args=[name, url_slug, id_playlist,
+                                               playlist_url])
             else:
-                db.update_festival(name, id_playlist, playlist_url, url_slug)
+                db.update_festival(name, url_slug, id_playlist, playlist_url)
             return render_template('results.html', playlist_url=playlist_url,
                                    enough_data=enough_data)
 

@@ -202,9 +202,8 @@ def search_artist_echonest(name):
     if results is False:
         return results
     else:
-        sorted_results = sorted([art.name for art in results])
-        int_results = [(x, sorted_results[x]) for x in xrange(1, len(sorted_results))]
-    return int_results
+        results = sorted([art.name for art in results])
+    return results
 
 
 def create_playlist(spotipy, user_id, name_playlist):

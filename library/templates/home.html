@@ -36,20 +36,19 @@
 
         <div class="flex-container flex-row">
             <div class="flex-left hot-links rcorners over-top">
+                  <div class="panel panel-default dark-transparent">
+                    <div class="inner">
                 {% if user_festivals['contributor'] %}
                     <br>Contributor to:
                     <ul>{% for festival_id in user_festivals['contributor'] %}
                     <li> <a href="{{  url_for('festival', url_slug=user_festivals['contributor'][festival_id]['url_slug']) }}"> {{ user_festivals['contributor']['user_id']}}'s {{ user_festivals['contributor'][festival_id]['festival_name'] }}</a>
                 {% endfor %}</ul>
                 {% else %}
-                <div class="panel panel-default" style='background:transparent'>
-                    <div class="inner">
                     <h3>Did you know?</h3>
                     You can organize a festival playlist with your friends. Create a festival and spread the word to anyone you want!
+                {% endif %}
                     </div>
                 </div>
-                {% endif %}
-
             </div>
 
             <div class="flex-center">
@@ -61,7 +60,7 @@
                     <a class="btn btn-success btn-lg" href="#" type="button">Join Festival  </a>
                     <form id="login-form" action="{{ url_for('home') }}" method="post">
                         <p><input id="festi-text" class="text" type="text" name="festival_id" placeholder="Festival ID" /></p>
-                        <p><input class="btn btn-success btn-lg" id="festivalSubmit" type="submit" value="Submit" /></p>
+                        <p><input class="btn btn-primary btn-lg" z id="festivalSubmit" type="submit" value="Submit" /></p>
                     </form>
                 </nav>
             </div>
@@ -94,5 +93,3 @@
 
         
 {% endblock %}
-
- 

@@ -43,7 +43,9 @@
         {% block nav %}
         
             <div class="inner">
+              <a href="{{ url_for('home') }}">
               <h3 class="masthead-brand">Spotifest</h3>
+              </a>
               <nav>
                 <ul class="nav masthead-nav">
                   <li><a href="{{ url_for('home') }}">Home</a></li>
@@ -70,8 +72,8 @@
 
         {% block footer %}
             <div class="inner">
-                <p style="color:#2EBD59">Spotifest's code on <a href="https://github.com/LiYChristopher/festify">GitHub</a>.</p>
-                <p> Powered by Spotify and Echonest. </p>
+                <p>Spotifest's code on <a style="color:#2EBD59" href="https://github.com/LiYChristopher/festify">GitHub</a>.</p>
+                <p> Powered by <a style="color:#2EBD59" href="https://developer.spotify.com/web-api/">Spotify</a> and <a style="color:#2EBD59" href="http://developer.echonest.com/">Echonest</a>.</p>
             </div>
         {% endblock %}
 
@@ -95,4 +97,5 @@
     {% endblock %}
 
 </html>
+
 
