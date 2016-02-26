@@ -242,6 +242,11 @@ p {
   background-image: none;
 }  
 
+@media(min-width: 300px) {
+  .dark-transparent {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+}
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
 .site-wrapper {
@@ -500,10 +505,6 @@ p {
 
 .over-top {
   position: relative; top: -20px;
-}
-
-.dark-transparent {
-  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .hanging-in {
