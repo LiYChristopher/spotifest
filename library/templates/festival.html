@@ -18,10 +18,15 @@
 {% endblock %}
 
 {% block body %}
-<body class='about-body'>
+  <body>
+    <div class="site-wrapper">
+      <div class="site-wrapper-inner">
+        <div class="cover-container">
+
+
              
 <!-- Block Nav-->
-<div class='cover-container'>    
+   
 {% block nav %}
     {{ super() }}                   
 {% endblock %}
@@ -198,5 +203,8 @@
     {% block footer %}
         {{ super() }}
     {% endblock %}
+      </div>
+    </div>
+  </div>
 </body>
 {% endblock %}
