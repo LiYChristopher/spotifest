@@ -22,6 +22,7 @@ app.config.from_object('config')
 
 # logging setup
 if not app.debug is True:
+    file_loc = os.path.join(os.getcwd(), 'app_errors.log')
     file_handler = logging.FileHandler('app_errors.log')
     file_handler.setLevel(logging.WARNING)
     formatter = logging.Formatter('%(asctime)s -- %(levelname)s'
