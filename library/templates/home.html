@@ -12,7 +12,10 @@
 
 {% block content %}
 <div class="inner cover">
-
+    <!-- flash messages -->
+    {% block flash %}
+        {{ super() }}
+    {% endblock %}
     {% if login == false %}
             <h1 class="cover-heading">Is it festival season yet?</h1>
             <p class="login-page">Don't wait - put together your own using your and your friends' music preferences.</p>
@@ -22,10 +25,6 @@
 
     {% else %}
     <!-- Logged In - Content Center -->
-        <!-- flash messages -->
-        {% block flash %}
-            {{ super() }}
-        {% endblock %}
         <div class="flex-container flex-column">
             <div class="flex-center">
                 <h1 class="cover-heading">Let's start your ideal Festival</h1>
