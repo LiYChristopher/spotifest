@@ -7,6 +7,7 @@ from flask import Flask
 from flask.ext.login import LoginManager
 from flask.ext.mysql import MySQL
 import os
+import sys
 
 # enable greenthreads
 eventlet.monkey_patch()
@@ -22,9 +23,11 @@ app.config.from_object('config')
 
 # logging setup
 if not app.debug is True:
-    file_loc = os.path.join(os.getcwd(), 'app_errors.log')
-    file_handler = logging.FileHandler('app_errors.log')
-    file_handler.setLevel(logging.WARNING)
+    file_loc = app.config.get('APP_LOG_PATH')
+    if not file_loc:
+    	raise IOError("Please specify path for app_error.logs")
+    file_handler = logging.FileHandler(file_loc)
+    file_handler.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s -- %(levelname)s'
                                   '< line %(lineno)d %(module)s.%(funcName)s >: %(message)s')
     file_handler.setFormatter(formatter)
