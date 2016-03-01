@@ -13,6 +13,7 @@ from . import celery
 
 from config import BaseConfig
 import os
+import re
 import datetime
 import base64
 import hashlib
@@ -314,9 +315,22 @@ def get_songs_id(spotipy, playlist, offset):
 
 def generate_urlslug(user_id):
     ''' Create URL slug based on md5 hash of: user_id,
-    current time, and unique base64 3 byte tag.'''
-
+    current time, and unique base64 3 byte tag.
+    '''
     unique = base64.b64encode(os.urandom(3))
     slug_hash = hashlib.md5(user_id + str(datetime.datetime.now()) + unique)
     new_url_slug = slug_hash.hexdigest()[:7]
     return new_url_slug
+
+
+def sanitize_url_slug(url_slug):
+    ''' Miscellaneous helper to sort out non-alphanumeric
+    characters in input. Intended for use for auth.join
+    '''
+    if url_slug.isalnum():
+        return url_slug
+    process = re.findall(r'[A-Za-z0-9]', url_slug, re.I)
+    sanitized = ''.join(process)
+    print "Sanitized url_slug is: ", sanitized
+    return sanitized
+

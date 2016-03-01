@@ -7,10 +7,8 @@ from pyechonest.catalog import Catalog
 @celery.task(name='save_festival')
 def save_to_database(festivalName, userId, playlistId,
                      playlistURL, catalogId, urlSlug):
-    '''
-    saves infromation the data base.
-    festivalId will be created automatically
-    '''
+    ''' Executes an insert query for festival
+    information on sessions table in dB.'''
     festivalName = str(festivalName)
     userId = str(userId)
     playlistId = str(playlistId)
@@ -20,15 +18,19 @@ def save_to_database(festivalName, userId, playlistId,
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO sessions (festivalName, userId, playlistId, playlistURL, catalogId, urlSlug)\
+        cursor.execute("INSERT INTO sessions (festivalName, userId, playlistId,\
+                        playlistURL, catalogId, urlSlug)\
                         VALUES (%s, %s, %s, %s, %s, %s)", values)
         connection.commit()
-        print 'saved to database'
+        app.logger.warning("DB -- Festival at '{}'"
+                           "saved to database".format(urlSlug))
     return
 
 
 @celery.task(name='update_festival', ignore_result=True)
 def update_festival(festivalName, urlSlug, playlistId=None, playlistURL=None):
+    ''' Executes an update query for festival
+    information on sessions table in dB.'''
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
@@ -42,11 +44,15 @@ def update_festival(festivalName, urlSlug, playlistId=None, playlistURL=None):
             cursor.execute("UPDATE sessions SET festivalName=%s, WHERE urlSlug=%s",
                         (festivalName, urlSlug))
         connection.commit()
-        print 'saved to database'
+        app.logger.warning("DB -- values saved to festival '{}'.".format(urlSlug))
     return
+
 
 def update_parameters(festivalId, userId, hotttnesss, danceability,
                       energy, variety, advent):
+    ''' Executes an update query for parameter input 
+    on contributors table. 
+    '''
     festivalId = int(festivalId)
     userId = str(userId)
     hotttnesss = float(hotttnesss)
@@ -58,31 +64,28 @@ def update_parameters(festivalId, userId, hotttnesss, danceability,
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
-        print "THESE ARE VALUES", values
         cursor.execute("UPDATE contributors SET hotness=%s, danceability=%s, energy=%s,\
                         variety=%s, adventurousness=%s, ready=1 WHERE festivalId=%s AND userId=%s", values)
         connection.commit()
-        print "updated settings for user."
+        app.logger.warning("DB -- parameter settings updated for "
+                           "user '{}' in festival '{}'".format(userId, festivalId))
     return
 
+
 def get_parameters(user_id, url_slug):
+    ''' Executes a select query on contributors table,
+    retrieving parameter for user at festival located at url_slug.
     '''
-    return a list with all the saved parameters
-    for a certain urlSlug
-    '''
-    print "URL SLUG IS {}".format(url_slug)
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
         cursor.execute("SELECT c.hotness, c.danceability, c.energy, c.variety,"
             "c.adventurousness FROM contributors as c INNER JOIN sessions as s on "
-            "c.festivalId = s.festivalId WHERE (c.userId = '{}' and s.urlSlug = '{}')" 
+            "c.festivalId = s.festivalId WHERE (c.userId = '{}' and s.urlSlug = '{}')"
             .format(user_id, url_slug))
         data = cursor.fetchall()
         if not data[0][0]:
             return None
-        print 'DATA', data
-        print '{}'.format(data[0])
 
         h = int(data[0][0])
         d = int(data[0][1])
@@ -91,6 +94,8 @@ def get_parameters(user_id, url_slug):
         a = int(data[0][4])
 
         values = [h, d, e, v, a]
+        app.logger.warning("DB - parameters retrieved for"
+                           "'{}' at '{}'".format(user_id, url_slug))
         return values
 
 
@@ -98,99 +103,94 @@ def get_parameters(user_id, url_slug):
 def save_contributor(festivalId, userId, ready=0, hotness=None,
                      danceability=None, energy=None, variety=None, advent=None,
                      organizer=0):
-    '''
-    requires festivalId and userId,
-    saves whatever else you also put in it in the contributor table
+    ''' Executes insert query on contributors table for
+    new contributor at festival at festivalId
     '''
     festivalId = int(festivalId)
     userId = str(userId)
     values = (festivalId, userId, ready, hotness,
               danceability, energy, variety, advent, organizer)
 
-    print ("Saving contributor {} to festival {}".format(userId, festivalId))
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
         cursor.execute("INSERT INTO contributors VALUES\
                        (%s, %s, %s, %s, %s, %s, %s, %s, %s)", values)
         connection.commit()
-        print 'saved to database'
+        app.logger.warning("DB - Saved contributor {} to"
+                           "festival {}".format(userId, festivalId))
     return
 
 
 def get_contributors(festivalId):
-    '''
-    return a list with all the contributors id of
-    the festival. THE FIRST contributor == organizer
+    ''' Executes select query on contributors table for
+    contributors for festival at festivalId (this includes the owner)
     '''
     connection = mysql.get_db()
     cursor = connection.cursor()
     try:
         cursor.execute("SELECT * FROM contributors WHERE\
                        (festivalId = %s AND organizer = 1)", (festivalId,))
-        d1 = cursor.fetchall()
+        _org = cursor.fetchall()
     except:
-        print ("Database can't be reached")
+        app.logger.error("SQL Query failed - check dB schema.")
         return None
     else:
-        if not d1[0][0]:
-            print ("There is no organizer assigned.")
+        if not _org[0][0]:
+            app.logger.error("DB -- No organizer found"
+                             " for festival at'{}'".format(festivalId))
             return None
-        print ("going into the if now")
-        all_users = {'organizer': {'userId': str(d1[0][1]),
-                               'ready': int(d1[0][2]),
-                               'hotness': (d1[0][3]),
-                               'danceability': (d1[0][4]),
-                               'energy': (d1[0][5]),
-                               'variety': (d1[0][6]),
-                               'adventurousness': (d1[0][7])}}
-        print ("going out of the if now")
-        print (all_users)
-
-    try: #fetching the contributors
+        all_users = {'organizer': {'userId': str(_org[0][1]),
+                                   'ready': int(_org[0][2]),
+                                   'hotness': (_org[0][3]),
+                                   'danceability': (_org[0][4]),
+                                   'energy': (_org[0][5]),
+                                   'variety': (_org[0][6]),
+                                   'adventurousness': (_org[0][7])}}
+    #fetching the contributors
+    try: 
         cursor.execute("SELECT * FROM contributors WHERE\
                        (festivalId = %s AND organizer = 0)", (festivalId,))
-        d2 = cursor.fetchall()
+        _ctbrs = cursor.fetchall()
     except:
-        print ("Database can't be reached..")
+        app.logger.error("DB -- No organizer found"
+                         " for festival at'{}'".format(festivalId))
         return None
     else:
-        if d2:
-            contributors = {str(u[1]): {'ready': int(u[2]),
-                                        'hotness': u[3],
-                                        'danceability': u[4],
-                                        'energy': u[5],
-                                        'variety': u[6],
-                                        'adventurousness': u[7]} for u in d2}
-            print (contributors)
+        if _ctbrs:
+            contributors = {str(user[1]): {'ready': int(user[2]),
+                                        'hotness': user[3],
+                                        'danceability': user[4],
+                                        'energy': user[5],
+                                        'variety': user[6],
+                                        'adventurousness': user[7]} for user in _ctbrs}
             c_names = [c for c in contributors]
             contributors['c_names'] = c_names
-            print (c_names)
             all_ready = 1
             for contributor in contributors['c_names']:
                 if contributors[contributor]['ready'] == 0:
                     all_ready = 0
-                    print ("a contributor isn't ready")
+                    app.logger.warning("DB - At least 1 user isn't"
+                                       " ready in festival '{}'".format(festivalId))
                     break
+
             all_users.update({'contributors': contributors, 'all_ready': all_ready})
-        print ('contributors retrieved from database: {}'.format(all_users))
+        app.logger.warning("All users are in "
+                           "festival '{}' are '{}'".format(festivalId, all_users))
         return all_users
 
 
 def get_info_from_database(urlSlug):
+    ''' Executes select query on sessions table
+    for festival information at urlSlug.
     '''
-    return a list with all the information from the
-    database for a certain festival id
-    '''
-    print "URL SLUG IS {}".format(urlSlug)
     with app.app_context():
         connection = mysql.connect()
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM sessions WHERE urlSlug = %s", (urlSlug,))
         data = cursor.fetchall()
-        if not data[0][0]:
+        if not data:
             return None
-        print 'DATA', data
         festivalId = int(data[0][0])
         festivalName = str(data[0][1])
         userId = str(data[0][2])
@@ -199,12 +199,12 @@ def get_info_from_database(urlSlug):
         catalogId = str(data[0][5])
         values = [festivalId, festivalName, userId,
                   playlistId, playlistURL, catalogId]
-
+        app.logger.warning("Info for festival '{}' retrieved.".format(urlSlug))
         return values
 
 def get_user_festivals(user_id):
-    '''
-    return the festivals the user is involved in
+    ''' Executes select query on contributors table
+    for festival info where user at user_id is a contributor.
     '''
     connection = mysql.get_db()
     cursor = connection.cursor()
@@ -215,23 +215,25 @@ def get_user_festivals(user_id):
 
     cursor.execute(query)
     d = cursor.fetchall()
-    print (d)
-    organized_festivals = {u[1]: {'festival_name': u[2], 'url_slug': u[3]} for u in d if u[4] == 1}
-    print (" organized festivals", organized_festivals)
-    contributed_festivals = {u[1]: {'festival_name': u[2], 'url_slug': u[3], 'user_id': u[0]} for u in d if u[4] == 0}
-    print ("  contributed", contributed_festivals)
+    organized_festivals = {u[1]: {'festival_name': u[2], 'url_slug': u[3]}
+                           for u in d if u[4] == 1}
+    contributed_festivals = {u[1]: {'festival_name': u[2], 'url_slug': u[3], 'user_id': u[0]}
+                             for u in d if u[4] == 0}
+    app.logger.warning("'{}' organized: '{}'".format(user_id, organized_festivals))
+    app.logger.warning("'{}' contributed: '{}'".format(user_id, contributed_festivals))
     user_festivals = {}
+
     if organized_festivals:
         user_festivals = {'organizer': organized_festivals}
     if contributed_festivals:
         user_festivals.update({'contributor': contributed_festivals})
-    print ("these are the festivals the user is involved in {}".format(user_festivals))
+    app.logger.warning("All festivals involved in: '{}'".format(user_festivals))
     return user_festivals
 
 
 def get_average_parameters(festivalId):
-    '''
-    return list of the average parameters for a festival
+    ''' Executes average function for all parameter inputs
+    associated with a festival at festivalId.
     '''
     with app.app_context():
         connection = mysql.get_db()
@@ -242,19 +244,20 @@ def get_average_parameters(festivalId):
                             from contributors where festivalId = %s", (festivalId,))
             data = cursor.fetchall()
         except:
-            print 'error getting average parameters from the DB'
+            app.logger.error("Error while retrieving averages. Check dB schema.")
             return None
         average_parameters = [float(data[0][0]), float(data[0][1]),
                               float(data[0][2]), float(data[0][3]),
                               float(data[0][4])]
-        print 'Average Parameter : ' + str(average_parameters)
+        app.logger.warning("Average Parameters for"
+                           "festival '{}': {}".format(festivalId, average_parameters))
         return average_parameters
 
 
 @celery.task(name='delete_session', ignore_result=True)
 def delete_session(urlSlug):
-    '''
-    removes festival and catalog object from database and API key, respectively.
+    ''' Celery task that removes festival and catalog object
+    from database and API key, respectively.
     '''
     with app.app_context():
         connection = mysql.connect()
@@ -271,6 +274,9 @@ def delete_session(urlSlug):
 
 @celery.task(name='routine_deletion_expired', ignore_result=True)
 def delete_expired_session():
+    ''' Celery task that wraps around task.delete_session. This task
+    runs according to celery_beat_schedule defined in config.
+    '''
     with app.app_context():
         time_now = datetime.datetime.now()
         connection = mysql.connect()
@@ -283,5 +289,5 @@ def delete_expired_session():
                 delete_session(session[0])
             except Exception, e:
                 delete_session.retry(exc=e, countdown=5)
-        print "{} sessions have been deleted.".format(len(all_sessions))
+        app.logger.warning("{} sessions have been deleted.".format(len(all_sessions)))
     return
