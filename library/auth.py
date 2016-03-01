@@ -164,7 +164,7 @@ def before_request():
     ''' Attempts to refresh user OAuth login by exchanging refresh token
     for new_access auth token. If login has gone stale, will simply logout. '''
     refresh()
-    if not session.get('user_id') and not load_user(session.get('user_id')):
+    if session.get('user_id') and not load_user(session.get('user_id')):
         app.logger.warning("Refresh Failed; User '{}' not found "
                            "- possibly invalid token. Logging out".format(session.get('user_id')))
         spotifest_logout()
@@ -316,7 +316,7 @@ def festival(url_slug):
     if organizer != _user:
         is_org = False
         if current_festival[1]:
-            festival_name =  current_festival[1]
+            festival_name = current_festival[1]
         else:
             festival_name = "Spotifest 2016"
     elif organizer == _user:

@@ -13,6 +13,11 @@
         $('ul:first',this).css('visibility', 'hidden');
     });
     $("ul.dropdown li ul li:has(ul)").find("a:first").append(" &raquo; ");
+    });
+</script>
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); 
 });
 </script>
 {% endblock %}
@@ -83,16 +88,17 @@
       <form action="{{ url_for('update_parameters', url_slug=url_slug) }}" method="post">
         <fieldset>
         {% endif %}
-
-        {{ params_form.danceability.label }}
+        <h6>For more information on acoustic attributes,
+            please visit <a href="http://developer.echonest.com/acoustic-attributes.html">Echonest</a></h6>
+        <span data-toggle="tooltip" data-placement="top"title='Tempo, rhythm stability, beat strength and overall regularity.'>{{ params_form.danceability.label }}</span>
         {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
-        {{ params_form.hotttnesss.label}}
+        <span data-toggle="tooltip" data-placement="top"title="Popularity and overall 'buzz' surrounding an artist. Derived from social media and play count data.">{{ params_form.hotttnesss.label}}</span>
         {{ params_form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
-        {{ params_form.energy.label }}
+        <span data-toggle="tooltip" data-placement="top"title="Perceptual measure of intensity and powerful activity released throughout the track. Typical energetic tracks feel fast, loud, and noisy.">{{ params_form.energy.label }}</span>
         {{ params_form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
-        {{ params_form.variety.label }}
+        <span data-toggle="tooltip" data-placement="top"title="Variety of artists to be included, independent of your taste profile.">{{ params_form.variety.label }}</span>
         {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
-        {{ params_form.adventurousness.label }}
+        <span data-toggle="tooltip" data-placement="top"title="Based on your taste profile, stick to old favorites or go exploring.">{{ params_form.adventurousness.label }}
         {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)")}} 
 
         {% if not is_org %}

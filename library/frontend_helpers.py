@@ -1,5 +1,4 @@
 # Frontend helpers
-#from flask_wtf import Form
 from flask.ext.wtf import Form
 from wtforms import (StringField, SubmitField, SelectField,
                     validators)
@@ -9,19 +8,23 @@ from db import get_parameters
 
 
 class SearchForm(Form):
+    '''Form for Echonest search on festival page.'''
     artist_search = StringField("artist_search",
                                 validators=[validators.DataRequired()])
 
     submit_search = SubmitField("Search")
 
+
 class ArtistSelect(Form):
+    '''Select an artist fetched from search form query.'''
     artist_display = SelectField('artist_options', coerce=int,
                                  option_widget=Select(multiple=False))
     confirm_select = SubmitField("Add")
 
 
-
 class ParamsForm(Form):
+    '''Form for festival page, interactive 
+    Echonest parameters.'''
     name = StringField('Name', [validators.DataRequired()],
                        default='Spotifest 2016')
     danceability = DecimalRangeField('Danceability',
@@ -44,6 +47,7 @@ class ParamsForm(Form):
 
 
 def populate_params(params_form, saved_params):
+    '''Load saved parameters from dB.'''
     if saved_params:
         params_form.danceability.value = saved_params[0]
         params_form.hotttnesss.value = saved_params[1]       
