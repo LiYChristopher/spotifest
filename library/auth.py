@@ -151,7 +151,9 @@ def refresh():
         r = requests.post(oauth.OAUTH_TOKEN_URL, data=payload, headers=headers)
         new_access = r.json()['access_token']
         current_user.access = new_access
-        app.logger.warning("Current users signed in: {}".format(User.users))
+        for u in User.users.values():
+            app.logger.warning(u.__dict__)
+            #app.logger.warning("Current user:{}, {}".format(u.id, u.access))
     else:
         return redirect(url_for('home'))
     return
@@ -162,7 +164,7 @@ def before_request():
     ''' Attempts to refresh user OAuth login by exchanging refresh token
     for new_access auth token. If login has gone stale, will simply logout. '''
     refresh()
-    if session.get('user_id') and not load_user(session.get('user_id')):
+    if not session.get('user_id') and not load_user(session.get('user_id')):
         app.logger.warning("Refresh Failed; User '{}' not found "
                            "- possibly invalid token. Logging out".format(session.get('user_id')))
         spotifest_logout()

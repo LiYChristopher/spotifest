@@ -37,12 +37,12 @@ def update_festival(festivalName, urlSlug, playlistId=None, playlistURL=None):
         if playlistId and playlistURL:
             values = (festivalName, playlistId, playlistURL, urlSlug)
             cursor.execute("UPDATE sessions SET festivalName=%s, playlistId=%s,\
-                        playlistURL=%s WHERE urlSlug=%s",
-                        (festivalName, playlistId, playlistURL, urlSlug))
+                           playlistURL=%s WHERE urlSlug=%s",
+                           (festivalName, playlistId, playlistURL, urlSlug))
         else:
             values = (festivalName, urlSlug)
             cursor.execute("UPDATE sessions SET festivalName=%s, WHERE urlSlug=%s",
-                        (festivalName, urlSlug))
+                           (festivalName, urlSlug))
         connection.commit()
         app.logger.warning("DB -- values saved to festival '{}'.".format(urlSlug))
     return
@@ -159,11 +159,11 @@ def get_contributors(festivalId):
     else:
         if _ctbrs:
             contributors = {str(user[1]): {'ready': int(user[2]),
-                                        'hotness': user[3],
-                                        'danceability': user[4],
-                                        'energy': user[5],
-                                        'variety': user[6],
-                                        'adventurousness': user[7]} for user in _ctbrs}
+                                           'hotness': user[3],
+                                           'danceability': user[4],
+                                           'energy': user[5],
+                                           'variety': user[6],
+                                           'adventurousness': user[7]} for user in _ctbrs}
             c_names = [c for c in contributors]
             contributors['c_names'] = c_names
             all_ready = 1
