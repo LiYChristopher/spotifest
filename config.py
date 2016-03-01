@@ -3,7 +3,7 @@ from datetime import timedelta
 import os
 
 
-DEBUG = True
+DEBUG = False
 SECRET_KEY = 'this_is_a_secret'
 # path = os.path.abspath('credentials.txt')
 # os.chdir(path[:-15])
