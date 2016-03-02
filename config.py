@@ -38,7 +38,7 @@ class BaseConfig(object):
         REDIRECT_URI = str(cred.readline().split('>')[1].replace('\n', ''))
         ECHONEST_API_KEY = str(cred.readline().split('>')[1].replace('\n', ''))
         MYSQL_PASSWORD = str(cred.readline().split('>')[1].replace('\n', ''))
-	APP_LOG_PATH = file_path('app_errors.log')	
+        APP_LOG_PATH = file_path('app_errors.log')	
 
     if not CLIENT_ID or not CLIENT_SECRET or not REDIRECT_URI:
         raise Exception('Credentials could not be configured. See credentials.txt.')

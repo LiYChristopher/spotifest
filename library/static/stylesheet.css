@@ -569,3 +569,7 @@ p {
   list-style: none;
   width:150px;
   }
+
+.tooltip {
+  width: 125%;
+}
