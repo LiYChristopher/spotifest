@@ -331,6 +331,7 @@ p {
   }
   .masthead-nav {
     float: right;
+    z-index: -1;
   }
 }
 
@@ -392,6 +393,13 @@ p {
     width: 900px;
   }
 }
+
+
+/* modal adjustment */
+.modal-dark {
+    background-color: #333;
+}
+
 
 /* row and column */
 
