@@ -397,6 +397,7 @@ p {
 
 /* modal adjustment */
 .modal-dark {
+    font-style: normal;
     background-color: #333;
 }
 

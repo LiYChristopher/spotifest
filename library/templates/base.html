@@ -50,7 +50,7 @@
                 <ul class="nav masthead-nav">
                   <li><a href="{{ url_for('home') }}">Home</a></li>
                   <li><a href="{{ url_for('about') }}">About</a></li>
-                  <li><a href="#" data-toggle="modal" data-target="#info_modal">?</a></li>
+                  <li><a href="#" data-toggle="modal" data-target="#info_modal"> ? </a></li>
                 </ul>
               </nav>
 
@@ -89,45 +89,54 @@
 
 
 {% endblock %}
-      <!-- Modal -->
-      <div class="modal fade" id="info_modal" role="dialog">
-        <div class="modal-dialog">
-        
-          <!-- Modal content-->
-          <div class="modal-content modal-dark">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Welcome to Spotifest</h4>
-              <p class="modal-title">Spotify account required. <a href="{{ oauth }}" target="_blank">Create a Spotify account</a></p>
-            </div>
-            <div class="modal-body ">
-              <p>Totally in Jukebox-style, we help you create a Spotify playlist based on your unique taste within 2 minutes! Make a playlist for yourself, share that playlist with friends, or make one <i>together with friends.</i></p>
+<!-- Modal -->
+<div class="modal fade" id="info_modal" role="dialog">
+  <div class="modal-dialog">
+  
+    <!-- Modal content-->
+<div class="modal-content modal-dark">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Welcome to Spotifest</h4>
+    <p class="modal-title">Spotify account required. <a href="{{ oasuth }}" target="_blank">Create a Spotify account</a></p>
+  </div>
+  <div class="modal-body">
+    <p>In Jukebox-style, we help you create a Spotify playlist based on your unique taste within 2 minutes! Make a playlist for yourself, share that playlist with friends, or make one <i>together with friends.</i></p>
 
-              <img class='img-responsive center-block' src='/static/help_imgs/create_festival.jpg'></img>
+    <h2 name="create_festival">Creating a playlist<h2>
 
-              <p name="create_festival">To create a new playlist, click "create festival". If a friend shared a festival ID with you, you can enter the ID instead under "join festival".</p>
+    <p>To create a new playlist, click "create festival". If a friend shared a festival ID with you, you can enter the ID instead under "join festival".</p>
 
-              <p>By analyzing the artists you follow on Spotify, and those you have in your Spotify playlists, we carefully and ingeniously create your unique taste profile. No taste is the same! Once carefully crafted, we'll guide you through to the Festival page, where you can further customize what you are in the mood for:</p>
+    <img class='img-responsive center-block' src='/static/help_imgs/create_festival.jpg'></img>
 
-              <p name="modify_festival">Whether you joined a festival or started one by yourself, you can now add more artists to the taste-profile mix, adjust various parameters to suit your current mood, and click generate / propose vision when you're set!</p>
+    <p>By analyzing the artists you follow on Spotify, and those you have in your Spotify playlists, we carefully and ingeniously create your unique taste profile. No taste is the same! Once carefully crafted, we'll guide you through to the Festival page, where you can further customize what you are in the mood for:</p>
 
-              <img class='img-responsive center-block' src='/static/help_imgs/modify_festival.jpg'></img>
+    <h2 name="modify_festival">Finetuning preferences for a festival</h2>
 
-              <p>If you're still waiting for friends to join, share the festival ID with them, and refresh the page once they've joined. As you can see below, once they are set you will know!</p>
+    <p name="modify_festival">Whether you joined a festival or started one by yourself, you can now add more artists to the taste-profile mix, adjust various parameters to suit your current mood, and click generate / propose vision when you're set!</p>
 
-              <img class='img-responsive center-block' src='/static/help_imgs/joint_festival.jpg'></img>
+    <img class='img-responsive center-block' src='/static/help_imgs/modify_festival.jpg'></img>
 
-              <p>Solo or together, your generated playlist is sure to provide you an interesting playlist for you to enjoy and share!</p>
+    <h2 name="joint_festival">Joint Festivals</h2>
 
-              <h2>Accessibility Requirements</h2>
-              ???
-              <h2>Disclaimer</h2>
-              ????
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-success btn-md" data-dismiss="modal">Close</button>
-            </div>
+    <p>If you're still waiting for friends to join, share the festival ID with them (see image below), and refresh the page once they've joined. As you can see below, once they are set you will know!</p>
 
+    <img class='img-responsive center-block' src='/static/help_imgs/joint_festival.jpg'></img>
+
+    <p>All contributors' artists will be combined, and your parameters averaged to truly create a festival that belongs to you all.</p>
+
+    <p>Solo or together, your generated playlist is sure to provide you an interesting playlist for you to enjoy and share!</p>
+
+    <h2>Disclaimer</h2>
+    <p>The Spotifest team is not responsible for generated playlists that do not fit your taste. We attempt to provide fuel to expand tastes. Ergo, you're bound to find music out of your comfort zone. We're countin on it.</p>
+
+    <p>Neither is the Spotifest team responsible for friends leaving a party early because they <i>feel</i> their taste isn't represented. Trust us: it is. Not everybody is comfortable with their own style. We sympathize.</p>
+
+    <p>The service providers are responsible for awesome playlists - but not the behaviour they may incite. Play safe, be nice.</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success btn-md" data-dismiss="modal">Close</button>
+  </div>
 </body>
 
 
