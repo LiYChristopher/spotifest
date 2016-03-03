@@ -25,7 +25,7 @@ app.config.from_object('config')
 if not app.debug is True:
     file_loc = app.config.get('APP_LOG_PATH')
     if not file_loc:
-    	raise IOError("Please specify path for app_error.logs")
+        raise IOError("Please specify path for app_error.logs")
     file_handler = logging.FileHandler(file_loc)
     file_handler.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s -- %(levelname)s'

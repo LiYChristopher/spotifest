@@ -17,7 +17,10 @@ import re
 import datetime
 import base64
 import hashlib
+import logging
 
+
+logger = logging.getLogger('library')
 
 config.ECHO_NEST_API_KEY = BaseConfig.ECHONEST_API_KEY
 
@@ -126,7 +129,8 @@ class AsyncAdapter(object):
                           for _ in xrange(num_tasks))()
 
         if populated.successful():
-            print 'Catalog now has {} items.'.format(len(catalog.get_item_dicts(results=100)))
+            logger.warning('Catalog now has'
+                           '{} items.'.format(len(catalog.get_item_dicts(results=100))))
         return
 
     def non_async_populate_catalog(self, artists, catalog):
@@ -212,7 +216,7 @@ def create_playlist(spotipy, user_id, name_playlist):
     Creates a spotify playlist for user at user_id.
     '''
     spotipy.user_playlist_create(user_id, name_playlist, public=True)
-    print 'playlist created'
+    logger.warning("..... Playlist created")
     return
 
 
@@ -222,7 +226,7 @@ def add_songs_to_playlist(spotipy, user_id, playlist_id, id_songs):
     into a specified playlist.
     '''
     spotipy.user_playlist_add_tracks(user_id, playlist_id, id_songs)
-    print 'songs added to playlist'
+    logger.warning("..... All songs added to playlist.")
     return
 
 
@@ -236,7 +240,8 @@ def get_id_from_playlist(spotipy, user_id, name_playlist):
     for playlist in playlists['items']:
         if playlist['name'] == name_playlist:
             return playlist['id']
-    return 'Could not find id of new playlist'
+    logger.warning('..... Could not find ID of new playlist.')
+    return 
 
 
 def insert_to_catalog(catalog, item):
@@ -269,7 +274,7 @@ def seed_playlist(catalog, danceability=0.5, hotttnesss=0.5,
                          min_energy=energy, variety=variety, adventurousness=adventurousness,
                          distribution='focused', artist_pick='song_hotttnesss-desc',
                          sort='artist_familiarity-desc', results=results)
-    print 'songs in playslist', len(pl)
+    logger.warning('..... Songs in playslist: {}'.format(len(pl)))
     return pl
 
 
@@ -286,6 +291,7 @@ def random_catalog(artists, limit=15, catalog=None):
         choice = random.choice(artists)
         artists.remove(choice)
         insert_to_catalog(catalog, choice)
+    logger.warning('..... Catalog (or catalog chunk) generated')
     return catalog
 
 
@@ -331,6 +337,5 @@ def sanitize_url_slug(url_slug):
         return url_slug
     process = re.findall(r'[A-Za-z0-9]', url_slug, re.I)
     sanitized = ''.join(process)
-    print "Sanitized url_slug is: ", sanitized
     return sanitized
 

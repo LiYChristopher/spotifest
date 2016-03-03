@@ -38,6 +38,8 @@ oauth = oauth_prep(BaseConfig, scope)
 
 
 class User(UserMixin):
+    ''' User class used by Flask-Login to manage/track user's within 
+    session cookie. Primary ID is the user's Spotify ID.'''
 
     users = {}
 
@@ -57,7 +59,19 @@ class User(UserMixin):
             return None
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    ''' Retrieves user from User.users.'''
+    return User.get(user_id)
+
+
 class UserCache():
+    ''' Global cache that's used to temporarily store a variety of different
+    user data while they are interacting with site, including festival preferences
+    and festival search results. A temporary data structure that will be replaced
+    in the future with a sturdier MySQL schema.
+
+    includes CRUD functions for storage of user preference's by festival. '''
     def __init__(self, artists=set(), hotness=None, danceability=None, enery=None,
                  energy=None, variety=None, adventurousness=None, organizer=0,
                  search_results=list(), festival_name=None):
@@ -98,10 +112,10 @@ class UserCache():
         if not isinstance(artists, set):
             raise TypeError('Artist data not a set object.')
         cur_preferences = self.artists[_current_user][urlSlug]
-        app.logger.warning("update pref - length before...{}".format(len(cur_preferences)))
-        app.logger.warning("update pref - {} about to be added to cur_preferences..".format(artists))
+        app.logger.warning("Update pref - length before...{}".format(len(cur_preferences)))
+        app.logger.warning("Update pref - {} about to be added to cur_preferences..".format(artists))
         self.artists[_current_user][urlSlug] = cur_preferences | artists
-        app.logger.warning("update pref -  length after...{}".format(
+        app.logger.warning("Update pref -  length after...{}".format(
                            len(self.artists[_current_user][urlSlug])))
         return
 
@@ -111,7 +125,9 @@ class UserCache():
         return
 
 
-def festify_logout():
+def spotifest_logout():
+    ''' Removes user from session cookie via Flask-Login's 
+    logout_user function. User preferences are deleted from user_cache.'''
     if load_user(session.get('user_id')):
         user_cache.delete_preferences()
     logout_user()
@@ -120,18 +136,12 @@ def festify_logout():
 user_cache = UserCache()
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.get(user_id)
-
-
 @login_manager.needs_refresh_handler
 def refresh():
-    '''
-    Manages exchange of refresh_token for a new access_token, if
+    ''' Manages exchange of refresh_token for a new access_token, if
     a user is logged in, allowing user to stay logged in for a long time.
     '''
-    current_user = User.get(session.get('user_id'))
+    current_user = load_user(session.get('user_id'))
     if current_user:
         re_auth_in = BaseConfig.CLIENT_ID + ':' + BaseConfig.CLIENT_SECRET
         re_auth = base64.b64encode(re_auth_in)
@@ -141,6 +151,9 @@ def refresh():
         r = requests.post(oauth.OAUTH_TOKEN_URL, data=payload, headers=headers)
         new_access = r.json()['access_token']
         current_user.access = new_access
+        for u in User.users.values():
+            app.logger.warning(u.__dict__)
+            #app.logger.warning("Current user:{}, {}".format(u.id, u.access))
     else:
         return redirect(url_for('home'))
     return
@@ -148,17 +161,20 @@ def refresh():
 
 @app.before_request
 def before_request():
+    ''' Attempts to refresh user OAuth login by exchanging refresh token
+    for new_access auth token. If login has gone stale, will simply logout. '''
     refresh()
     if session.get('user_id') and not load_user(session.get('user_id')):
         app.logger.warning("Refresh Failed; User '{}' not found "
                            "- possibly invalid token. Logging out".format(session.get('user_id')))
-        festify_logout()
+        spotifest_logout()
     return
 
 
 def login(config=BaseConfig, oauth=oauth):
-    '''prompts user to login via OAuth2 through Spotify
-    this shows up in index.html
+    ''' Returns URL that allows user to sign in with Spotify credentials. Uses
+    spotipy's OAuth2 interface to populate request URL with payload specified
+    in Spotify API.
     '''
     payload = {'client_id': oauth.client_id,
                'response_type': 'code',
@@ -181,8 +197,8 @@ def home(config=BaseConfig):
 
     render home.html
     '''
-
     code = request.args.get('code')
+    print "Code - ", code
     active_user = session.get('user_id')
     if request.method == 'GET':
         if not code and not active_user:
@@ -301,7 +317,7 @@ def festival(url_slug):
     if organizer != _user:
         is_org = False
         if current_festival[1]:
-            festival_name =  current_festival[1]
+            festival_name = current_festival[1]
         else:
             festival_name = "Spotifest 2016"
     elif organizer == _user:
@@ -332,9 +348,8 @@ def festival(url_slug):
             artists = processor.get_user_preferences(s)
             user_cache.save_preferences(artists, url_slug)
         else:
-            _num_artist_msg = "Current # of artists for user '{}' - '{}'".format(_user,
-                                                         len(user_cache.retrieve_preferences(url_slug)))
-            app.logger.warning(_num_artist_msg)
+            app.logger.warning("Current # of artists for "
+                               "user '{}' - '{}'".format(_user, len(user_cache.retrieve_preferences(url_slug))))
     except:
         app.logger.warning("No artists followed found in the user's Spotify account.")
 
@@ -503,11 +518,13 @@ def results(url_slug):
 
 @app.route('/about')
 def about():
+    ''' Renders about page. '''
     return render_template('about.html')
 
 
 @app.errorhandler(401)
 def access_blocked(error):
+    ''' If user is not logged in, redirect to home and flash message.'''
     auth_url = login()
     flash('Please login with your Spotify account before continuing!')
     return render_template('home.html', login=False, oauth=auth_url)
