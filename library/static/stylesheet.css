@@ -149,10 +149,6 @@ p {
 
 }
 
-.tooltip {
-  width: 125%;
-}
-
 
 /* Extra small settings for Search*/
 @media only screen and (min-width : 300px) {
@@ -417,8 +413,21 @@ p {
     text-align: left;
     padding-left: 10px;
     padding-right: 10px;
+    margin-left: 0;
 }
 
+.modal-body em {
+    font-style: italic;
+}
+
+.modal-body li {
+  margin-left: 15px;
+}
+
+.modal-footer .center { /* doesn't workkkk */
+  margin-left: 50%;
+  margin-right: 50%;
+}
 
 /* row and column */
 

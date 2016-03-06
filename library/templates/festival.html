@@ -20,6 +20,19 @@ $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip(); 
 });
 </script>
+
+<script>
+var options = {
+    placement: function (context, source) {
+        if ($(window).width() < 700) {
+            return "bottom";
+        } else {
+            return "right";
+        }
+    }
+};
+$("[data-toggle=tooltip]").tooltip(options);
+</script>
 {% endblock %}
 
 {% block body %}
@@ -91,25 +104,25 @@ $(document).ready(function(){
         <h6>For more information on acoustic attributes,
             please visit <a href="http://developer.echonest.com/acoustic-attributes.html">Echonest</a></h6>
         <!-- Danceability -->
-        <span id='tt' data-toggle="tooltip" data-placement="right" title='Tempo, rhythm stability, beat strength and overall regularity.'>{{ params_form.danceability.label }}
+        <div id='tt' data-toggle="tooltip" title='Tempo, rhythm stability, beat strength and overall regularity.'>{{ params_form.danceability.label }}
         {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
-        </span>
+        </div>
         <!-- Hotttnesss -->
-        <span id='tt' data-toggle="tooltip" data-placement="right" title="Popularity and overall 'buzz' surrounding an artist. Derived from social media and play count data.">{{ params_form.hotttnesss.label}}
+        <div id='tt' data-toggle="tooltip" data-placement="right" title="Popularity and overall 'buzz' surrounding an artist. Derived from social media and play count data.">{{ params_form.hotttnesss.label}}
         {{ params_form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
-        </span>
+        </div>
         <!-- Energy -->
-        <span id='tt' data-toggle="tooltip" data-placement="right" title="Perceptual measure of intensity and powerful activity released throughout the track. Typical energetic tracks feel fast, loud, and noisy.">{{ params_form.energy.label }}
+        <div id='tt' data-toggle="tooltip" data-placement="right" title="Perceptual measure of intensity and powerful activity released throughout the track. Typical energetic tracks feel fast, loud, and noisy.">{{ params_form.energy.label }}
         {{ params_form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
-        </span>
+        </div>
         <!-- Variety -->
-        <span id='tt' data-toggle="tooltip" data-placement="right" title="Variety of artists to be included, independent of your taste profile.">{{ params_form.variety.label }}
+        <div id='tt' data-toggle="tooltip" data-placement="right" title="Variety of artists to be included, independent of your taste profile.">{{ params_form.variety.label }}
         {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
-        </span>
+        </div>
         <!-- Adventurousness -->
-        <span id='tt' data-toggle="tooltip" data-placement="right" title="Based on your taste profile, stick to old favorites or go exploring.">{{ params_form.adventurousness.label }}
+        <div id='tt' data-toggle="tooltip" data-placement="right" title="Based on your taste profile, stick to old favorites or go exploring.">{{ params_form.adventurousness.label }}
         {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)")}}
-        </span>
+        </div>
 
         {% if not is_org %}
             {% if all_users['contributors'][user]['ready'] == 0 %}
@@ -215,10 +228,12 @@ $(document).ready(function(){
     {% endblock %} <!-- content -->
 
 </div>
+
     <!-- Footer -->
     {% block footer %}
         {{ super() }}
     {% endblock %}
+
 
       </div>
     </div>
