@@ -424,11 +424,6 @@ p {
   margin-left: 15px;
 }
 
-.modal-footer .center { /* doesn't workkkk */
-  margin-left: 50%;
-  margin-right: 50%;
-}
-
 /* row and column */
 
 @media (min-width: 544px) {
