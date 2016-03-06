@@ -1,0 +1,204 @@
+{
+  "artists" : {
+    "items" : [ {
+      "external_urls" : {
+        "spotify" : "https://open.spotify.com/artist/0oSGxfWSnnOXhD2fKuz2Gy"
+      },
+      "followers" : {
+        "href" : null,
+        "total" : 1249753
+      },
+      "genres" : [ "art rock", "glam rock", "permanent wave" ],
+      "href" : "https://api.spotify.com/v1/artists/0oSGxfWSnnOXhD2fKuz2Gy",
+      "id" : "0oSGxfWSnnOXhD2fKuz2Gy",
+      "images" : [ {
+        "height" : 1000,
+        "url" : "https://i.scdn.co/image/6efa04809a6358a5da0e701d24449cfb8348ebf5",
+        "width" : 1000
+      }, {
+        "height" : 640,
+        "url" : "https://i.scdn.co/image/76e50c6493a4173e5294374ae88be0ce42ed091e",
+        "width" : 640
+      }, {
+        "height" : 200,
+        "url" : "https://i.scdn.co/image/c74188cfa692266ce5d61790d8b00880980bef20",
+        "width" : 200
+      }, {
+        "height" : 64,
+        "url" : "https://i.scdn.co/image/0fc6cc36af66813555cc969755a1a30488758e2a",
+        "width" : 64
+      } ],
+      "name" : "David Bowie",
+      "popularity" : 86,
+      "type" : "artist",
+      "uri" : "spotify:artist:0oSGxfWSnnOXhD2fKuz2Gy"
+    }, {
+      "external_urls" : {
+        "spotify" : "https://open.spotify.com/artist/1vSN1fsvrzpbttOYGsliDr"
+      },
+      "followers" : {
+        "href" : null,
+        "total" : 413552
+      },
+      "genres" : [ ],
+      "href" : "https://api.spotify.com/v1/artists/1vSN1fsvrzpbttOYGsliDr",
+      "id" : "1vSN1fsvrzpbttOYGsliDr",
+      "images" : [ {
+        "height" : 1000,
+        "url" : "https://i.scdn.co/image/500e9caeb05f25c9a31a7b8c287ced73637d1c07",
+        "width" : 1000
+      }, {
+        "height" : 640,
+        "url" : "https://i.scdn.co/image/1ba287a894f5b563dd460b58aa8aad863db8de1b",
+        "width" : 640
+      }, {
+        "height" : 200,
+        "url" : "https://i.scdn.co/image/c68b29fdaca9e3dc3271f6177c6116e7839564e3",
+        "width" : 200
+      }, {
+        "height" : 64,
+        "url" : "https://i.scdn.co/image/8e6ab405b8a0f40b886797d9ebb51ccbc9268fc3",
+        "width" : 64
+      } ],
+      "name" : "Tori Kelly",
+      "popularity" : 79,
+      "type" : "artist",
+      "uri" : "spotify:artist:1vSN1fsvrzpbttOYGsliDr"
+    }, {
+      "external_urls" : {
+        "spotify" : "https://open.spotify.com/artist/3TVXtAsR1Inumwj472S9r4"
+      },
+      "followers" : {
+        "href" : null,
+        "total" : 5045912
+      },
+      "genres" : [ "indie r&b", "pop rap" ],
+      "href" : "https://api.spotify.com/v1/artists/3TVXtAsR1Inumwj472S9r4",
+      "id" : "3TVXtAsR1Inumwj472S9r4",
+      "images" : [ {
+        "height" : 997,
+        "url" : "https://i.scdn.co/image/d90899d09be8083e52f87d9f6a30fd5750bc0a4d",
+        "width" : 1000
+      }, {
+        "height" : 638,
+        "url" : "https://i.scdn.co/image/068ae749ee9825fcecc1a0f82ead09aaa8440228",
+        "width" : 640
+      }, {
+        "height" : 199,
+        "url" : "https://i.scdn.co/image/94c531c2ed71ce23d704d7f63a168c0287bbbb23",
+        "width" : 200
+      }, {
+        "height" : 64,
+        "url" : "https://i.scdn.co/image/d1d6016c698703ba4933461ff5acbfe112877b48",
+        "width" : 64
+      } ],
+      "name" : "Drake",
+      "popularity" : 99,
+      "type" : "artist",
+      "uri" : "spotify:artist:3TVXtAsR1Inumwj472S9r4"
+    }, {
+      "external_urls" : {
+        "spotify" : "https://open.spotify.com/artist/3sb3yLRnhW2L2ulU93eKfl"
+      },
+      "followers" : {
+        "href" : null,
+        "total" : 10088
+      },
+      "genres" : [ ],
+      "href" : "https://api.spotify.com/v1/artists/3sb3yLRnhW2L2ulU93eKfl",
+      "id" : "3sb3yLRnhW2L2ulU93eKfl",
+      "images" : [ {
+        "height" : 700,
+        "url" : "https://i.scdn.co/image/c43e71c999e64f39a1678b64fddc6c2b09dad6fe",
+        "width" : 1000
+      }, {
+        "height" : 448,
+        "url" : "https://i.scdn.co/image/9ac6dfc564e845ddcf5ba0c5e38bf3dab24b1114",
+        "width" : 640
+      }, {
+        "height" : 140,
+        "url" : "https://i.scdn.co/image/2df1869e9820c341a28eb4dd8fd6984a1ae57d85",
+        "width" : 200
+      }, {
+        "height" : 45,
+        "url" : "https://i.scdn.co/image/fb567d5fb9ecfd4357d6993b69adbb3c591ea8d4",
+        "width" : 64
+      } ],
+      "name" : "Beacon",
+      "popularity" : 53,
+      "type" : "artist",
+      "uri" : "spotify:artist:3sb3yLRnhW2L2ulU93eKfl"
+    }, {
+      "external_urls" : {
+        "spotify" : "https://open.spotify.com/artist/4KEI2PqhlvbAdqlolRTTrp"
+      },
+      "followers" : {
+        "href" : null,
+        "total" : 13809
+      },
+      "genres" : [ ],
+      "href" : "https://api.spotify.com/v1/artists/4KEI2PqhlvbAdqlolRTTrp",
+      "id" : "4KEI2PqhlvbAdqlolRTTrp",
+      "images" : [ {
+        "height" : 432,
+        "url" : "https://i.scdn.co/image/df45489277025379c6722ccf286fb9045899f991",
+        "width" : 648
+      }, {
+        "height" : 427,
+        "url" : "https://i.scdn.co/image/1bb4ac611b67163557690d7ca783d98c5e46e8a4",
+        "width" : 640
+      }, {
+        "height" : 133,
+        "url" : "https://i.scdn.co/image/80531f609967357b16741a990a72c994cc80055b",
+        "width" : 200
+      }, {
+        "height" : 43,
+        "url" : "https://i.scdn.co/image/a85fd029b3a3776f0c1b678dfaf13ad3139123be",
+        "width" : 64
+      } ],
+      "name" : "Sun Glitters",
+      "popularity" : 42,
+      "type" : "artist",
+      "uri" : "spotify:artist:4KEI2PqhlvbAdqlolRTTrp"
+    }, {
+      "external_urls" : {
+        "spotify" : "https://open.spotify.com/artist/65dGLGjkw3UbddUg2GKQoZ"
+      },
+      "followers" : {
+        "href" : null,
+        "total" : 52226
+      },
+      "genres" : [ ],
+      "href" : "https://api.spotify.com/v1/artists/65dGLGjkw3UbddUg2GKQoZ",
+      "id" : "65dGLGjkw3UbddUg2GKQoZ",
+      "images" : [ {
+        "height" : 676,
+        "url" : "https://i.scdn.co/image/9267165e05e45e475ceb831b3a89adc2ae26f4fa",
+        "width" : 670
+      }, {
+        "height" : 646,
+        "url" : "https://i.scdn.co/image/f86472c0cc23aec14ec9a9911dd6c96c849f2e7a",
+        "width" : 640
+      }, {
+        "height" : 202,
+        "url" : "https://i.scdn.co/image/a9dadda4031a6fba0828f788a48152298fd76ed8",
+        "width" : 200
+      }, {
+        "height" : 65,
+        "url" : "https://i.scdn.co/image/da981c24107322b58aa0b32f7780a71ccec03a01",
+        "width" : 64
+      } ],
+      "name" : "BadBadNotGood",
+      "popularity" : 58,
+      "type" : "artist",
+      "uri" : "spotify:artist:65dGLGjkw3UbddUg2GKQoZ"
+    } ],
+    "next" : null,
+    "total" : 6,
+    "cursors" : {
+      "after" : null
+    },
+    "limit" : 20,
+    "href" : "https://api.spotify.com/v1/me/following?type=artist&limit=20"
+  }
+}

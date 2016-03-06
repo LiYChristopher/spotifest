@@ -1,0 +1,85 @@
+{
+  "href" : "https://api.spotify.com/v1/users/festify_test/playlists?offset=0&limit=20",
+  "items" : [ {
+    "collaborative" : false,
+    "external_urls" : {
+      "spotify" : "http://open.spotify.com/user/festify_test/playlist/6XJMOkea7hHCM2Dq10LBqO"
+    },
+    "href" : "https://api.spotify.com/v1/users/festify_test/playlists/6XJMOkea7hHCM2Dq10LBqO",
+    "id" : "6XJMOkea7hHCM2Dq10LBqO",
+    "images" : [ {
+      "height" : 640,
+      "url" : "https://mosaic.scdn.co/640/c4d302dfd080c0e54c4b6fd10ea8d6fa0ed86c1161ab735db6940ccedd6fd6f0db6d861fa9885ed7da2bff05866c25cde2e03a87f65ae637c5ed8195eb04c9696795755d0a27e3a73ed7d7438496cea0",
+      "width" : 640
+    }, {
+      "height" : 300,
+      "url" : "https://mosaic.scdn.co/300/c4d302dfd080c0e54c4b6fd10ea8d6fa0ed86c1161ab735db6940ccedd6fd6f0db6d861fa9885ed7da2bff05866c25cde2e03a87f65ae637c5ed8195eb04c9696795755d0a27e3a73ed7d7438496cea0",
+      "width" : 300
+    }, {
+      "height" : 60,
+      "url" : "https://mosaic.scdn.co/60/c4d302dfd080c0e54c4b6fd10ea8d6fa0ed86c1161ab735db6940ccedd6fd6f0db6d861fa9885ed7da2bff05866c25cde2e03a87f65ae637c5ed8195eb04c9696795755d0a27e3a73ed7d7438496cea0",
+      "width" : 60
+    } ],
+    "name" : "Bonnarroo 2017",
+    "owner" : {
+      "external_urls" : {
+        "spotify" : "http://open.spotify.com/user/festify_test"
+      },
+      "href" : "https://api.spotify.com/v1/users/festify_test",
+      "id" : "festify_test",
+      "type" : "user",
+      "uri" : "spotify:user:festify_test"
+    },
+    "public" : true,
+    "snapshot_id" : "/pP1QHr4aJfnBV74G9OGU1zwZ9u4X0LDFUzsHD+NSWKV0dbqTW+tNYR0G9nQSo9W",
+    "tracks" : {
+      "href" : "https://api.spotify.com/v1/users/festify_test/playlists/6XJMOkea7hHCM2Dq10LBqO/tracks",
+      "total" : 48
+    },
+    "type" : "playlist",
+    "uri" : "spotify:user:festify_test:playlist:6XJMOkea7hHCM2Dq10LBqO"
+  }, {
+    "collaborative" : false,
+    "external_urls" : {
+      "spotify" : "http://open.spotify.com/user/festify_test/playlist/0IMs1kZrxMGyohDSXVVrAR"
+    },
+    "href" : "https://api.spotify.com/v1/users/festify_test/playlists/0IMs1kZrxMGyohDSXVVrAR",
+    "id" : "0IMs1kZrxMGyohDSXVVrAR",
+    "images" : [ {
+      "height" : 640,
+      "url" : "https://mosaic.scdn.co/640/33c4f37628c8291da941f6d297afbfaf0b09e13456f950c8851fed754b0bed5d7c2b2f4b16b848cc425e817f7dfeaf0365707739e8e257e7d9cffbd785236cc12312fac9405206c25bd38479e63a04d6",
+      "width" : 640
+    }, {
+      "height" : 300,
+      "url" : "https://mosaic.scdn.co/300/33c4f37628c8291da941f6d297afbfaf0b09e13456f950c8851fed754b0bed5d7c2b2f4b16b848cc425e817f7dfeaf0365707739e8e257e7d9cffbd785236cc12312fac9405206c25bd38479e63a04d6",
+      "width" : 300
+    }, {
+      "height" : 60,
+      "url" : "https://mosaic.scdn.co/60/33c4f37628c8291da941f6d297afbfaf0b09e13456f950c8851fed754b0bed5d7c2b2f4b16b848cc425e817f7dfeaf0365707739e8e257e7d9cffbd785236cc12312fac9405206c25bd38479e63a04d6",
+      "width" : 60
+    } ],
+    "name" : "test_1",
+    "owner" : {
+      "external_urls" : {
+        "spotify" : "http://open.spotify.com/user/festify_test"
+      },
+      "href" : "https://api.spotify.com/v1/users/festify_test",
+      "id" : "festify_test",
+      "type" : "user",
+      "uri" : "spotify:user:festify_test"
+    },
+    "public" : true,
+    "snapshot_id" : "/IYKqQtJbMs7kZeJzzR0d8yKk4kWKoehaPK7mCKenKx68W/0/LH02XTpPS9V8En1",
+    "tracks" : {
+      "href" : "https://api.spotify.com/v1/users/festify_test/playlists/0IMs1kZrxMGyohDSXVVrAR/tracks",
+      "total" : 48
+    },
+    "type" : "playlist",
+    "uri" : "spotify:user:festify_test:playlist:0IMs1kZrxMGyohDSXVVrAR"
+  } ],
+  "limit" : 20,
+  "next" : null,
+  "offset" : 0,
+  "previous" : null,
+  "total" : 2
+}
