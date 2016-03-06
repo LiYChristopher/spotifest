@@ -50,7 +50,8 @@
                 <ul class="nav masthead-nav">
                   <li><a href="{{ url_for('home') }}">Home</a></li>
                   <li><a href="{{ url_for('about') }}">About</a></li>
-                  <li><a href="#" data-toggle="modal" data-target="#info_modal"> ? </a></li>
+                  <li ><a href="#" data-toggle="modal" data-target="#info_modal"><span class="
+glyphicon glyphicon-question-sign"></span></a></li>
                 </ul>
               </nav>
 
@@ -98,12 +99,12 @@
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">&times;</button>
     <h4 class="modal-title">Welcome to Spotifest</h4>
-    <p class="modal-title">Spotify account required. <a href="{{ oasuth }}" target="_blank">Create a Spotify account</a></p>
+    <p class="modal-title">Spotify account required. <a href="{{ oauth }}" style="color:#2EBD59" target="_blank">Create a Spotify account</a></p>
   </div>
   <div class="modal-body">
     <p>In Jukebox-style, we help you create a Spotify playlist based on your unique taste within 2 minutes! Make a playlist for yourself, share that playlist with friends, or make one <i>together with friends.</i></p>
 
-    <h2 name="create_festival">Creating a playlist<h2>
+    <h2>Creating a playlist</h2>
 
     <p>To create a new playlist, click "create festival". If a friend shared a festival ID with you, you can enter the ID instead under "join festival".</p>
 

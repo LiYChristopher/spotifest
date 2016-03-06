@@ -397,9 +397,18 @@ p {
 
 /* modal adjustment */
 .modal-dark {
-    font-style: normal;
     background-color: #333;
 }
+
+.model-header {
+  text-align: middle;
+}
+
+.modal-body * {
+    font-style: normal;
+    text-align: left;
+}
+
 
 
 /* row and column */
