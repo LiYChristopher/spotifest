@@ -143,6 +143,14 @@ p {
     color: #fff;
     background-color: black;
   }
+  .tooltip {
+      width: 100%;
+    }    
+
+}
+
+.tooltip {
+  width: 125%;
 }
 
 
@@ -407,8 +415,9 @@ p {
 .modal-body * {
     font-style: normal;
     text-align: left;
+    padding-left: 10px;
+    padding-right: 10px;
 }
-
 
 
 /* row and column */

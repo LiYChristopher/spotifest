@@ -91,23 +91,23 @@ $(document).ready(function(){
         <h6>For more information on acoustic attributes,
             please visit <a href="http://developer.echonest.com/acoustic-attributes.html">Echonest</a></h6>
         <!-- Danceability -->
-        <span data-toggle="tooltip" data-placement="right" title='Tempo, rhythm stability, beat strength and overall regularity.'>{{ params_form.danceability.label }}
+        <span id='tt' data-toggle="tooltip" data-placement="right" title='Tempo, rhythm stability, beat strength and overall regularity.'>{{ params_form.danceability.label }}
         {{ params_form.danceability(min=0, max=1, oninput="outputUpdate(value)")}}
         </span>
         <!-- Hotttnesss -->
-        <span data-toggle="tooltip" data-placement="right" title="Popularity and overall 'buzz' surrounding an artist. Derived from social media and play count data.">{{ params_form.hotttnesss.label}}
+        <span id='tt' data-toggle="tooltip" data-placement="right" title="Popularity and overall 'buzz' surrounding an artist. Derived from social media and play count data.">{{ params_form.hotttnesss.label}}
         {{ params_form.hotttnesss(min=0, max=1, oninput="outputUpdate(value)")}}
         </span>
         <!-- Energy -->
-        <span data-toggle="tooltip" data-placement="right" title="Perceptual measure of intensity and powerful activity released throughout the track. Typical energetic tracks feel fast, loud, and noisy.">{{ params_form.energy.label }}
+        <span id='tt' data-toggle="tooltip" data-placement="right" title="Perceptual measure of intensity and powerful activity released throughout the track. Typical energetic tracks feel fast, loud, and noisy.">{{ params_form.energy.label }}
         {{ params_form.energy(min=0, max=1, oninput="outputUpdate(value)")}}
         </span>
         <!-- Variety -->
-        <span data-toggle="tooltip" data-placement="right" title="Variety of artists to be included, independent of your taste profile.">{{ params_form.variety.label }}
+        <span id='tt' data-toggle="tooltip" data-placement="right" title="Variety of artists to be included, independent of your taste profile.">{{ params_form.variety.label }}
         {{ params_form.variety(min=0, max=1, oninput="outputUpdate(value)")}}
         </span>
         <!-- Adventurousness -->
-        <span data-toggle="tooltip" data-placement="right" title="Based on your taste profile, stick to old favorites or go exploring.">{{ params_form.adventurousness.label }}
+        <span id='tt' data-toggle="tooltip" data-placement="right" title="Based on your taste profile, stick to old favorites or go exploring.">{{ params_form.adventurousness.label }}
         {{ params_form.adventurousness(min=0, max=1, oninput="outputUpdate(value)")}}
         </span>
 
