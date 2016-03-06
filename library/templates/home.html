@@ -35,17 +35,17 @@
 
         <div class="flex-container flex-row">
             <div class="flex-left hot-links rcorners over-top">
-                  <div class="panel panel-default dark-transparent">
+                <div class="panel panel-default dark-transparent">
                     <div class="inner">
-                {% if user_festivals['contributor'] %}
-                    <br>Contributor to:
-                    <ul>{% for festival_id in user_festivals['contributor'] %}
-                    <li> <a href="{{  url_for('festival', url_slug=user_festivals['contributor'][festival_id]['url_slug']) }}"> {{ user_festivals['contributor']['user_id']}}'s {{ user_festivals['contributor'][festival_id]['festival_name'] }}</a>
-                {% endfor %}</ul>
-                {% else %}
-                    <h3>Did you know?</h3>
-                    You can organize a festival playlist with your friends. Create a festival and spread the word to anyone you want!
-                {% endif %}
+                        {% if user_festivals['contributor'] %}
+                            <br>Contributor to:
+                            <ul>{% for festival_id in user_festivals['contributor'] %}
+                            <li> <a href="{{  url_for('festival', url_slug=user_festivals['contributor'][festival_id]['url_slug']) }}"> {{ user_festivals['contributor']['user_id']}}'s {{ user_festivals['contributor'][festival_id]['festival_name'] }}</a>
+                        {% endfor %}</ul>
+                        {% else %}
+                            <h3>Did you know?</h3>
+                            You can organize a festival playlist with your friends. Create a festival and spread the word to anyone you want!
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -55,7 +55,6 @@
                 <a href="{{ url_for('new') }}"><input name="submit" class="btn btn-success btn-lg" value="Create Festival" type="button"></input></a>
 
                 <nav class="create-join" id="login">
-
                     <a class="btn btn-success btn-lg" href="#" type="button">Join Festival  </a>
                     <form id="login-form" action="{{ url_for('home') }}" method="post">
                         <p><input id="festi-text" class="text" type="text" name="festival_id" placeholder="Festival ID" /></p>
@@ -64,30 +63,32 @@
                 </nav>
             </div>
 
-            {% if 'organizer' in user_festivals %}
-                <div class="flex-right hot-links rcorners over-top">
-                    {{ user_id }}'s festivals:
-                    <ul>
-                        {% for festival_id in user_festivals['organizer'] %}
-                        <li> <a href="{{  url_for('festival', url_slug=user_festivals['organizer'][festival_id]['url_slug']) }}"> {{ user_festivals['organizer'][festival_id]['festival_name'] }}</a>
-                        {% endfor %}
-                    </ul>
-                </div>
+        {% if 'organizer' in user_festivals %}
+            <div class="flex-right hot-links rcorners over-top">
+                {{ user_id }}'s festivals:
+                <ul>
+                    {% for festival_id in user_festivals['organizer'] %}
+                    <li> <a href="{{  url_for('festival', url_slug=user_festivals['organizer'][festival_id]['url_slug']) }}"> {{ user_festivals['organizer'][festival_id]['festival_name'] }}</a>
+                    {% endfor %}
+                </ul>
+            </div>
 
-            {% else %}
-                <div class="flex-right over-top">
-                </div>
-            {% endif %}
-
+        {% else %}
+            <div class="flex-right over-top">
+            </div>
+        {% endif %}
+        </div>
     {% endif %}
 
 </div>
+
 <!-- Footer -->
 <div class="mastfoot">
 {% block footer %}
     {{ super() }}
 {% endblock %} 
 </div> 
+
 
 
         

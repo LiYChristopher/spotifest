@@ -143,6 +143,10 @@ p {
     color: #fff;
     background-color: black;
   }
+  .tooltip {
+      width: 100%;
+    }    
+
 }
 
 
@@ -331,6 +335,7 @@ p {
   }
   .masthead-nav {
     float: right;
+    z-index: -1;
   }
 }
 
@@ -391,6 +396,32 @@ p {
   .cover-container {
     width: 900px;
   }
+}
+
+
+/* modal adjustment */
+.modal-dark {
+    background-color: #333;
+}
+
+.model-header {
+  text-align: middle;
+}
+
+.modal-body * {
+    font-style: normal;
+    text-align: left;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 0;
+}
+
+.modal-body em {
+    font-style: italic;
+}
+
+.modal-body li {
+  margin-left: 15px;
 }
 
 /* row and column */
@@ -569,3 +600,7 @@ p {
   list-style: none;
   width:150px;
   }
+
+.tooltip {
+  width: 125%;
+}

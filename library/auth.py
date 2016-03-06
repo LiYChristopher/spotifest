@@ -198,6 +198,7 @@ def home(config=BaseConfig):
     render home.html
     '''
     code = request.args.get('code')
+    print "Code - ", code
     active_user = session.get('user_id')
     if request.method == 'GET':
         if not code and not active_user:
