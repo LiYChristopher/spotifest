@@ -1,6 +1,5 @@
 from mock import Mock, patch
-from flask import request
-import cPickle as pickle
+from flask import request, url_for, redirect, session
 import unittest
 import library
 import os
@@ -10,7 +9,7 @@ import json
 class HelperTests(unittest.TestCase):
 
 	@classmethod
-	def setUp(cls):
+	def setUpClass(cls):
 		class Spotipy(object):
 
 			def __init__(self, test_dir_name):
@@ -47,7 +46,7 @@ class HelperTests(unittest.TestCase):
 		return
 
 	@classmethod
-	def tearDown(cls):
+	def tearDownClass(cls):
 		del cls.spotipy
 		return
 
@@ -97,54 +96,91 @@ class AuthTests(unittest.TestCase):
 			  'redirect_uri.return_value': 'http://google.com'}
 
 	@classmethod
-	@patch('library.auth.oauth',  autospec=True, **config)
-	def setUp(cls, oauth):
-		cls.oauth = oauth
-		cls.oauth.OAUTH_AUTHORIZE_URL = 'https://accounts.spotify.com/authorize'
-		cls.oauth.client_id = 'test_client_id'
-		cls.oauth.redirect_uri = 'test_redirect_uri'
-		cls.oauth.scope = ['user-library-read', 'playlist-read-collaborative',
-         					'user-follow-read', 'playlist-modify-public']
+	@patch('library.db', autospec=True)
+	def setUpClass(cls, db):
+		cls.db = db
+		cls.db.save_to_database.return_value = None
+		cls.db.get_parameters.return_value = [0.5]*5
+		cls.db.get_info_from_database.return_value = [99, 'Best Fest 2016', 'spotifester',
+		                                              None, None, None]
+		library.app.config['IS_ASYNC'] = False
 		library.app.config['TESTING'] = True
-		print library.app.config
-		cls.app = library.app.test_client()
+		with library.app.app_context():
+			cls.app = library.app.test_client()
  		return
 
 	@classmethod
-	def tearDown(cls):
-		del cls.oauth
+	def tearDownClass(cls):
 		del cls.app
 		return
 
-	def test_login(self):
+	@patch('library.auth.oauth',  autospec=True, **config)
+	def test_login(self, oauth):
 		''' auth.login(config=BaseConfig, oauth=oauth)'''
+		self.oauth = oauth
+		self.oauth.OAUTH_AUTHORIZE_URL = 'https://accounts.spotify.com/authorize'
+		self.oauth.client_id = 'test_client_id'
+		self.oauth.redirect_uri = 'test_redirect_uri'
+		self.oauth.scope = ['user-library-read', 'playlist-read-collaborative',
+         					'user-follow-read', 'playlist-modify-public']
 		res = library.auth.login(oauth=self.oauth)
 		self.assertEqual(res, "https://accounts.spotify.com/authorize?"
-			                  "scope=user-library-read&" 
+			                  "scope=user-library-read&"
 			                  "scope=playlist-read-collaborative&scope=user-follow-read&" 
 			                  "scope=playlist-modify-public&redirect_uri=test_redirect_uri&"
 			                  "response_type=code&client_id=test_client_id")
+		del self.oauth
 
-	def test_server_home(self):
+	def test_join_not_logged_in(self):
+		''' @app.route('/festival/join/<url_slug>', methods=['GET'])
+			@login_required
+			def join(url_slug)'''
+
+		with library.app.test_request_context('/festival/join/FFFFF'):
+			res = self.app.get(url_for('join', url_slug='FFFFF'),
+				               follow_redirects=False)
+			self.assertEqual(res.status_code, 200)
+
+	def test_server_home_logged_in(self):
 		''' SERVER FUNCTIONALITY @app.route('/', methods=['POST', 'GET'])
 			@app.route('/home', methods=['POST', 'GET'])
 			def home(config=BaseConfig)'''
-		status = self.app.get('/').status_code
-		self.assertEqual(status, 200)
+		# need to figure out efficient way to handle session transactions
+		# or better way of handling logins
 		return
 
-	def test_template_home(self):
+	def test_template_home_not_logged_in(self):
 		''' FRONTEND CONTENT @app.route('/', methods=['POST', 'GET'])
 			@app.route('/home', methods=['POST', 'GET'])
 			def home(config=BaseConfig)'''
+		status = self.app.get('/').status_code	
 		content = self.app.get('/').get_data()
-		div_count = content.count('<div')
-		div_close_count = content.count('</div>')
+		# status code
+		self.assertEqual(status, 200)
 		# divs equal
+		div_count = content.count('<div')
+		div_close_count = content.count('</div>')    
 		self.assertEqual(div_count, div_close_count)
 		# OAuth in homepage
 		self.assertIn("https://accounts.spotify.com/authorize?scope=playlist-modify-public"
 			          "+playlist-read-collaborative+user-follow-read+user-library-read&amp;", content)
+		return
+
+	def test_template_festival_not_logged_in(self):
+		''' FRONTEND CONTENT @app.route('/', methods=['POST', 'GET'])
+			@app.route('/home', methods=['POST', 'GET'])
+			def home(config=BaseConfig)'''
+		status = self.app.get('/festival/2jkasf').status_code
+		content = self.app.get('/festival/2jkasf').get_data()
+		# status code
+		self.assertEqual(status, 200)
+		# divs equal
+		div_count = content.count('<div')
+		div_close_count = content.count('</div>')
+		self.assertEqual(div_count, div_close_count)
+		# Login message
+		self.assertIn("Please login with your Spotify "
+			          "account before continuing", content)
 		return
 
 	def test_about(self):

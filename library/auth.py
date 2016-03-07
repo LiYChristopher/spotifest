@@ -163,6 +163,9 @@ def refresh():
 def before_request():
     ''' Attempts to refresh user OAuth login by exchanging refresh token
     for new_access auth token. If login has gone stale, will simply logout. '''
+    if app.config.get('TESTING'):
+        if app.config['TESTING'] is True:
+            return None
     refresh()
     if session.get('user_id') and not load_user(session.get('user_id')):
         app.logger.warning("Refresh Failed; User '{}' not found "
@@ -302,12 +305,13 @@ def festival(url_slug):
      - prepares page forms that populate page
     '''
     current_festival = db.get_info_from_database(url_slug)
-    user_cache.cur_festival_id = current_festival[0]
+
     if not current_festival:
         flash(("Festival '{}' does not exist! Please check"
                "the code and try again.").format(url_slug))
         return redirect(url_for('home'))
 
+    user_cache.cur_festival_id = current_festival[0]
     organizer = current_festival[2]
     _user = session.get('user_id')
     app.logger.warning("User '{}' accessing festival '{}'".format(_user,

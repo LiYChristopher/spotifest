@@ -2,15 +2,9 @@
 from datetime import timedelta
 import os
 
-
+SERVER_NAME = 'localhost'
 DEBUG = False
-SECRET_KEY = 'this_is_a_secret'
-# path = os.path.abspath('credentials.txt')
-# os.chdir(path[:-15])
-
-#def full_path(file):
-#    path = os.path.dirname(os.path.abspath(__file__))
-#    return os.path.join(path, file)
+SECRET_KEY = os.urandom(24)
 
 # Celery config
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
