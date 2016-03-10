@@ -1,44 +1,45 @@
 {% extends 'base.html'%}
+<!-- standard body block implicitly imported -->
 
-<div class="site-wrapper">
-    <div class="site-wrapper-inner">
-        <div class="cover-container">
+{% block body %}
+<body class='about-body'>
+             
+<!-- Block Nav-->
+<div class='cover-container'>    
+{% block nav %}
+    {{ super() }}                   
+{% endblock %}
 
-            <!--Block nav -->
-            {% block nav %}
-                
-                {{ super() }}
 
-            {% endblock %}
+{% block content %}
+<div class="inner cover">
+    <!-- Other messages -->
+    {% if enough_data == false %}
 
-            <!-- Other messages -->
-            {% if enough_data == false %}
+        <h3 style="color:white;" class="cover-heading">
+            You don't have that many saved artists yet.. let us help you!
+        </h3>
+        <br>
 
-                <h3 style="color:white;" class="cover-heading">
-                    You don't have that many saved artists yet.. let us help you!
-                </h3>
-                <br>
+    {% else %}
 
-            {% else %}
+        <h3 style="color:white;" class="cover-heading">Enjoy the show!</h3>
+        <br>
 
-                <h3 style="color:white;" class="cover-heading">Enjoy the show!</h3>
-                <br>
+    {% endif %}
 
-            {% endif %}
-
-            <!-- Results Playlist -->
-            
-               <iframe src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>
-            <!-- Block footer -->
-            {% block footer %}
-
-                {{ super() }}
-
-            {% endblock %}
-
-        </div>
+    <!-- Results Playlist -->
+    <div class='embed-responsive embed-responsive-4by3'>
+       <iframe class="embed-responsive-item" src={{ playlist_url }} width="500" height="580" frameborder="2" allowtransparency="true"></iframe>
     </div>
 </div>
+{% endblock %} <!-- content -->
 
-</body>
-{% endblock %} 
+{% block footer %}
+    {{ super() }}
+{% endblock %}
+</div>
+
+
+{% endblock %}
+

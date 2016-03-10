@@ -24,7 +24,6 @@
       <link rel="stylesheet" type="text/css" href="/static/stylesheet.css">
       <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
       <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-      <script src="/static/ie-emulation-modes-warning.js"></script>
 
       <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
       <!--[if lt IE 9]>
@@ -34,54 +33,127 @@
     {% endblock %}
   </head>
 
-{% block content %}
-
-
+{% block body %}
+  <body>
     <div class="site-wrapper">
-
       <div class="site-wrapper-inner">
+        <div class="cover-container">
 
-        <!-- Flashblock -->
-        {% block flash %}
-
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <p id="flash">{{ message }}</p>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-        {% endblock %}
-
-        {% block nav %}
         <!-- Navblock-->
+        {% block nav %}
+        
             <div class="inner">
+              <a href="{{ url_for('home') }}">
               <h3 class="masthead-brand">Spotifest</h3>
+              </a>
               <nav>
                 <ul class="nav masthead-nav">
                   <li><a href="{{ url_for('home') }}">Home</a></li>
                   <li><a href="{{ url_for('about') }}">About</a></li>
+                  <li ><a href="#" data-toggle="modal" data-target="#info_modal"><span class="
+glyphicon glyphicon-question-sign"></span></a></li>
                 </ul>
               </nav>
+
             </div>
         {% endblock %}
+
+        {% block content %}
+
+          <!-- Flashblock -->
+          {% block flash %}
+
+              {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                      {% for message in messages %}
+                          <p id="flash">{{ message }}</p>
+                      {% endfor %}
+                  {% endif %}
+              {% endwith %}
+
+          {% endblock %} <!-- flash -->
 
         {% block footer %}
             <div class="inner">
-                <p style="color:#2EBD59">Spotifest's code on <a href="https://github.com/LiYChristopher/festify">GitHub</a>.</p>
+                <p>Spotifest's code on <a style="color:#2EBD59" href="https://github.com/LiYChristopher/festify">GitHub</a>.</p>
+                <p> Powered by <a style="color:#2EBD59" href="https://developer.spotify.com/web-api/">Spotify</a> and <a style="color:#2EBD59" href="http://developer.echonest.com/">Echonest</a>.</p>
             </div>
         {% endblock %}
-        </div>
+
+        {% endblock %} <!-- content -->
 
       </div>
+    </div>
+  </div>
+
+
+
 
 {% endblock %}
+<!-- Modal -->
+<div class="modal fade" id="info_modal" role="dialog">
+  <div class="modal-dialog">
+  
+    <!-- Modal content-->
+<div class="modal-content modal-dark">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Welcome to Spotifest</h4>
+    <p class="modal-title">Spotify account required. <a href="{{ oauth }}" style="color:#2EBD59" target="_blank">Create a Spotify account</a></p>
+  </div>
+  <div class="modal-body">
+    <p>We help you create a Spotify playlist based on your unique taste within 2 minutes! Make a playlist for yourself and share it with friends, or make one <em>together with friends.</em></p>
+
+    <h2>Creating a playlist</h2>
+
+    <p>To create a new playlist, click "Create Festival". If a friend shared a festival ID with you, you can enter the ID instead under "Join Festival".</p><br>
+
+    <img class='img-responsive center-block' src='/static/help_imgs/create_festival.jpg'></img><br>
+
+    <p>We put together a unique taste profile based on artists from your saved tracks, artists from your playlists and artists you follow on Spotify. No taste is the same! Once carefully crafted, we'll guide you through to your festival's page, where you can further customize what you are in the mood for.</p>
+
+    <h2 name="modify_festival">Finetuning preferences for a festival</h2>
+
+    <p name="modify_festival">On your festival's page, you can add more artists to the taste profile and adjust various parameters to suit your current mood. Once you're ready you can click "Generate", or "Propose Vision" if you're joining your friend's festival!</p><br>
+
+    <img class='img-responsive center-block' src='/static/help_imgs/modify_festival.jpg'></img><br>
+
+    <h2 name="joint_festival">Joint Festivals</h2>
+
+    <p>If you want the playlist to be even more unique, get your friends involved by sharing the festival ID with them (see image below), and refresh the page once they've joined. </p><br>
+
+    <img class='img-responsive center-block' src='/static/help_imgs/joint_festival.jpg'></img><br>
+
+    <p>All contributors' artist preferences are fused with the pre-existing taste profile, and all parameters are averaged to create a festival that belongs to you all.</p>
+
+    <p>Solo or with friends, your generated playlist is sure to be cohesive and reflective. Enjoy and share.</p>
+
+   <h2>Permissions</h2>
+    <p>To understand your taste, we need access to:</p>
+      <ul>
+        <li>See the artists in your playlists</li>
+        <li>See the artists you follow</li>
+      </ul>
+    <p>If, at the end of the ride, you want to add the generated playlist to your account, we need access to do that. That's it! We don't save access, nor keep record. We save the playlist anonymously in our own database, and you decide if you want it in your own Spotify account.</p>
+
+    <h2>Disclaimer</h2>
+    <p>The Spotifest team is not responsible for generated playlists that do not fit your taste. We attempt to provide fuel to expand tastes. Ergo, you're bound to find music out of your comfort zone. We're actually counting on it.</p>
+
+    <p>Neither is the Spotifest team responsible for friends leaving a party early because they <em>feel</em> their taste isn't represented. Trust us: it is. Not everybody is comfortable with their own style. We sympathize.</p>
+
+    <p>The service providers are responsible for awesome playlists - but not the behaviour they may incite. Play safe, be nice.</p>
+  </div>
+  <div class="modal-footer" style='text-align:center'>
+    <button type="button" class="btn btn-success btn-md center" data-dismiss="modal">Close</button>
+  </div>
+</body>
+
 
     {% block scripts %}
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/static/ie-emulation-modes-warning.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}" ></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -89,4 +161,5 @@
     {% endblock %}
 
 </html>
+
 

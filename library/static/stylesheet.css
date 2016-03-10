@@ -52,7 +52,6 @@
     color: red;
 }
 
-
 /* Links */
 a,
 a:focus,
@@ -87,7 +86,6 @@ body {
 
 body {
   height: 100%;
-  background-image: url('/static/background.png');
   background-color: #333;
 }
 
@@ -118,18 +116,169 @@ p {
   font-weight: 100;
 }
 
+/* Extra small settings for About page */
+@media only screen and (max-width : 480px) {
+  body {
+    max-width: 100%;
+  }
+  .row {
+    margin-right: 0;
+    margin-left: 0;
+  }
+  .about-heading {
+    text-shadow: none;
+    color:  #2ebd59;
+    font-size: 24px;
+  }
+  .about-text {
+    color: black;
+    font-style: normal;
+    font-weight: 400;
+    text-shadow: none;
+  }
+  .masthead-brand {
+    color: #fff;
+  }
+  .about-team {
+    color: #fff;
+    background-color: black;
+  }
+  .tooltip {
+      width: 100%;
+    }    
+
+}
 
 
+/* Extra small settings for Search*/
+@media only screen and (min-width : 300px) {
+  ul.dropdown { 
+    position: relative;
+  }
+
+  ul.dropdown li { 
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    float: left;
+    zoom: 1; 
+  }
+
+  ul.dropdown li:last-child input { 
+    border-right: none; 
+  } /* Doesn't work in IE */
+
+  ul.dropdown li.hover,
+  ul.dropdown li:hover { 
+    position: relative;
+  }
+
+  /*
+    LEVEL TWO
+  */
+  ul.dropdown ul { 
+    overflow-x: hidden;
+    overflow-y: auto; 
+    max-height: 150px; 
+    margin: 0; 
+    padding: 0; 
+    width: 220px; 
+    visibility: hidden; 
+    position: absolute; 
+  }
+
+  ul.dropdown ul li { 
+    margin: 0; 
+    padding: 0; 
+    font-weight: normal; 
+    opacity:1; 
+    color: #000;
+    border-bottom: 1px solid #ccc;
+    float: none; 
+  }
+
+  ul.dropdown ul li input:hover {
+    background-color: rgba(128, 128, 128, 0.4);
+   }
+
+  /* IE 6 & 7 Needs Inline Block */
+  ul.dropdown ul li input {
+    text-align: left;
+    border-right: none; 
+    width: 100%; 
+    display: inline-block; 
+    /* opacity: 1;*/
+    background-color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    border: none;}
+
+  .contributors .text {
+      width: 100%;
+      float: right;
+      margin-bottom: 2%;
+  }
+}
+
+@media only screen and (min-height : 300px) {
+  .mastfoot {
+    position: relative;
+  }
+}
+
+.about-text {
+  color: black;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+}
+.about-team {
+  background-color: black;
+}
+
+.about-heading {
+  color: #2ebd59;
+  text-shadow: none;
+}
+
+.about-body {
+  background-image: none;
+}  
+
+@media(min-width: 300px) {
+  .dark-transparent {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+}
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
 .site-wrapper {
+  position:relative;
   display: table;
   width: 100%;
   height: 100%; /* For at least Firefox */
   min-height: 100%;
+  background: #333;
+  z-index: 0;
+}
+
+.site-wrapper::after {
+  content: "";
+  background: url('/static/background.png');
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: -1;
   -webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.5);
           box-shadow: inset 0 0 100px rgba(0,0,0,.5);
 }
+
+
+
 .site-wrapper-inner {
   display: table-cell;
   vertical-align: top;
@@ -186,6 +335,7 @@ p {
   }
   .masthead-nav {
     float: right;
+    z-index: -1;
   }
 }
 
@@ -248,6 +398,32 @@ p {
   }
 }
 
+
+/* modal adjustment */
+.modal-dark {
+    background-color: #333;
+}
+
+.model-header {
+  text-align: middle;
+}
+
+.modal-body * {
+    font-style: normal;
+    text-align: left;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 0;
+}
+
+.modal-body em {
+    font-style: italic;
+}
+
+.modal-body li {
+  margin-left: 15px;
+}
+
 /* row and column */
 
 @media (min-width: 544px) {
@@ -279,9 +455,6 @@ p {
     position: absolute;
     left: 50%;
     top:50%;
-}
-
-.login-page {
 }
 
 .create-join {
@@ -353,8 +526,6 @@ p {
 
 .hot-links {
   position: relative;
-  border: 3px solid #5cb85c;
-  background: black;
   text-align: left;
   padding-left: 10px;
   padding-right: 10px;
@@ -418,30 +589,18 @@ p {
   width: 100%;
 }
 
-.about-heading {
-  color: #2ebd59;
-  text-shadow: none;
-}
-
-.about-body {
-  background-image: none;
-}
-
 .marginless {
   margin-right: 0;
   margin-left: 0;
 }
 
-.about-text {
-  color: black;
-  font-style: normal;
-  font-weight: 400;
-  text-shadow: none;
+.dropdown { 
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width:150px;
+  }
 
+.tooltip {
+  width: 125%;
 }
-
-.about-team {
-  background-color: black;
-}
-
-/* */
